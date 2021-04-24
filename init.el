@@ -7,22 +7,25 @@
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+	(package-refresh-contents)
+	(package-install 'use-package))
 
 ;; ----  Evil mode settings
 (require 'evil)
 (evil-mode 1)
 ;; Set the leader in normal mode to space
 (evil-set-leader 'normal (kbd "SPC"))
+
+;; Change the window using the leader key
 (evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
 (evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
 (evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
 (evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
 (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
+
+;; Go into normal mode without having to reach out for ESC
 (evil-define-key 'insert 'global (kbd "C-j") 'evil-force-normal-state)
 (evil-define-key 'insert 'global (kbd "C-k") 'evil-force-normal-state)
-
 ;; ----
 
 ;; Improve performance
@@ -41,6 +44,9 @@
 ;; Use UTF-8
 (set-language-environment "UTF-8")
 
+;; Change up the scrolling a bit
+(setq scroll-conservatively 101)
+
 ;; Cleanup whitespaces
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
@@ -48,43 +54,54 @@
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
 (use-package helm
-  :ensure t
-  :config
-  (helm-mode 1)
-  (setq helm-autoresize-mode t)
-  (setq helm-buffer-max-length 40)
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (define-key helm-map (kbd "S-SPC") 'helm-toggle-visible-mark)
-  (define-key helm-find-files-map (kbd "C-k") 'helm-find-files-up-one-level))
+	:ensure t
+	:config
+	(helm-mode 1)
+	(setq helm-autoresize-mode t)
+	(setq helm-buffer-max-length 40)
+	(global-set-key (kbd "M-x") #'helm-M-x)
+	(define-key helm-map (kbd "S-SPC") 'helm-toggle-visible-mark)
+	(define-key helm-find-files-map (kbd "C-k") 'helm-find-files-up-one-level))
 
 ;; helm-projectile configuration
 (use-package helm-projectile
-  :bind (("C-S-P" . helm-projectile-switch-project)
+	:bind (("C-S-P" . helm-projectile-switch-project)
 		 :map evil-normal-state-map
 		 ("C-p" . helm-projectile))
-  :ensure t
-  :config
-  (evil-leader/set-key
+	:ensure t
+	:config
+	(evil-leader/set-key
 	"ps" 'helm-projectile-ag
 	"pa" 'helm-projectile-find-file-in-known-projects
-  ))
+	))
 
-;; Make emacs look more minimal
+;; Disable the menubar
 (menu-bar-mode -1)
+
+;; Disable the scroll bar
 (scroll-bar-mode -1)
-(tool-bar-mode -1) ; no toolbar
-(tooltip-mode -1) ; no toopl tips
-(global-hl-line-mode 1) ; highlight current line
+
+;; Disable the toolbar
+(tool-bar-mode -1)
+
+;; Disable tooltips
+(tooltip-mode -1)
+
+;; Add special highlighting for the current line
+(global-hl-line-mode 1)
+
+;; Stop the cursor from blinking
+(blink-cursor-mode -1)
 
 ;; y or n instead of yes-or-no
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Use a custom theme
-(load-theme 'doom-wilmersdorf t)
+(load-theme 'doom-solarized-dark t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
-  (global-display-line-numbers-mode))
+	(global-display-line-numbers-mode))
 
 ;; Add line wrapping
 (global-visual-line-mode 1)
@@ -94,7 +111,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Meslo LG S" :height 130)
+(set-face-attribute 'default nil :font "Meslo LG S" :height 150)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -104,14 +121,14 @@
 
 ;; Company configuration
 (use-package company
-  :ensure t
-  :config
-  (global-company-mode)
-  (setq company-idle-delay 0)
-  (setq company-selection-wrap-around t)
-  (define-key company-active-map [tab] 'company-complete)
-  (define-key company-active-map (kbd "C-n") 'company-select-next)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous))
+	:ensure t
+	:config
+	(global-company-mode)
+	(setq company-idle-delay 0)
+	(setq company-selection-wrap-around t)
+	(define-key company-active-map [tab] 'company-complete)
+	(define-key company-active-map (kbd "C-n") 'company-select-next)
+	(define-key company-active-map (kbd "C-p") 'company-select-previous))
 
 (require 'lsp-mode)
 (add-hook 'go-mode-hook #'lsp-deferred)
@@ -122,14 +139,14 @@
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
 (defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+	(add-hook 'before-save-hook #'lsp-format-buffer t t)
+	(add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 (use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode
-  :config (setq lsp-ui-sideline-enable nil
+	:ensure t
+	:commands lsp-ui-mode
+	:config (setq lsp-ui-sideline-enable nil
 			lsp-ui-peek-enable t
 				lsp-ui-doc-enable nil
 				lsp-ui-flycheck-enable nil
@@ -140,8 +157,8 @@
 
 ;; Configuration for Go LSP support
 (defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-book #'lsp-organize-imports t t))
+	(add-hook 'before-save-hook #'lsp-format-buffer t t)
+	(add-hook 'before-save-book #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 (add-hook 'go-mode-hook #'lsp-deferred)
 
@@ -158,9 +175,13 @@
 
 ;; Add a simpler and cleaner bar compared to the default one
 (use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
+	:ensure t
+	:init (doom-modeline-mode 1)
+	:custom ((doom-modeline-height 15)))
+
+;; global key-binding settings for comment (jetbrains style)
+(global-set-key (kbd "C-/") 'comment-line)
+(global-set-key (kbd "C-?") 'comment-or-uncomment-region)
 
 ;; Resize bindings
 (global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
@@ -170,13 +191,13 @@
 
 ;; Git integration
 (use-package magit
-  :ensure t)
+	:ensure t)
 
 ;; So I don't have to type many things twice
 (use-package smartparens
-  :ensure t
-  :init
-  (smartparens-global-mode))
+	:ensure t
+	:init
+	(smartparens-global-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -184,9 +205,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
+	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(package-selected-packages
-   '(acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
