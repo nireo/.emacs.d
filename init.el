@@ -11,22 +11,27 @@
 	(package-install 'use-package))
 
 ;; ----  Evil mode settings
-(require 'evil)
-(evil-mode 1)
-;; Set the leader in normal mode to space
-(evil-set-leader 'normal (kbd "SPC"))
+(use-package evil
+	:config
+	(evil-mode 1)
+	(setq evil-vsplit-window-right t)
+	(setq evil-split-window-below t)
+	(evil-set-leader 'normal (kbd "SPC"))
+	(define-key evil-insert-state-map (kbd "C-j") 'evil-normal-state)
+	(define-key evil-insert-state-map (kbd "C-f") 'evil-delete-backward-char-and-join)
 
-;; Change the window using the leader key
-(evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
-(evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
-(evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
-(evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
-(evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
+	(evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
+	(evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
+	(evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
+	(evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
+	(evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
 
-;; Go into normal mode without having to reach out for ESC
-(evil-define-key 'insert 'global (kbd "C-j") 'evil-force-normal-state)
-(evil-define-key 'insert 'global (kbd "C-k") 'evil-force-normal-state)
-;; ----
+	;; Use visual line motions even outside of visual-line-mode buffers
+	(evil-global-set-key 'motion "j" 'evil-next-visual-line)
+	(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+	(evil-set-initial-state 'messages-buffer-mode 'normal)
+	(evil-set-initial-state 'dashboard-mode 'normal))
 
 ;; Improve performance
 (setq gc-cons-threshold 100000000)
@@ -43,6 +48,7 @@
 
 ;; Use UTF-8
 (set-language-environment "UTF-8")
+(prefer-coding-system 'utf-8)
 
 ;; Change up the scrolling a bit
 (setq scroll-conservatively 101)
@@ -68,12 +74,7 @@
 	:bind (("C-S-P" . helm-projectile-switch-project)
 		 :map evil-normal-state-map
 		 ("C-p" . helm-projectile))
-	:ensure t
-	:config
-	(evil-leader/set-key
-	"ps" 'helm-projectile-ag
-	"pa" 'helm-projectile-find-file-in-known-projects
-	))
+	:ensure t)
 
 ;; Disable the menubar
 (menu-bar-mode -1)
@@ -97,7 +98,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Use a custom theme
-(load-theme 'doom-solarized-dark t)
+;; (load-theme 'doom-wilmersdorf t)
+;; (load-theme 'doom-sourcerer t)
+(load-theme 'zenburn t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -111,7 +114,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Meslo LG S" :height 150)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono" :height 150)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -199,6 +202,8 @@
 	:init
 	(smartparens-global-mode))
 
+(use-package all-the-icons)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -207,7 +212,7 @@
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(package-selected-packages
-	 '(acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
