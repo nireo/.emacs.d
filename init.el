@@ -35,7 +35,20 @@
 
 ;; Improve performance
 (setq gc-cons-threshold 100000000)
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
+(setq read-process-output-max (* 3 1024 1024)) ;; 1mb
+
+(defvar file-name-handler-alist-original file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
+(defvar better-gc-cons-threshold 134217728 ; 128mb
+	"The default value to use for `gc-cons-threshold'.
+If you experience freezing, decrease this.  If you experience stuttering, increase this.")
+
+(add-hook 'emacs-startup-hook
+					(lambda ()
+						(setq gc-cons-threshold better-gc-cons-threshold)
+						(setq file-name-handler-alist file-name-handler-alist-original)
+						(makunbound 'file-name-handler-alist-original)))
 
 ;; Change indentation
 (setq-default tab-width 2)
@@ -58,7 +71,6 @@
 
 ;; Kill the current buffer rather than askin which buffer
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
-
 (use-package helm
 	:ensure t
 	:config
@@ -98,9 +110,10 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Use a custom theme
-;; (load-theme 'doom-wilmersdorf t)
-;; (load-theme 'doom-sourcerer t)
-(load-theme 'zenburn t)
+(load-theme 'doom-sourcerer t)
+;; (load-theme 'zenburn t)
+;; (load-theme 'anti-zenburn t)
+;; (load-theme 'tao-yin t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -114,7 +127,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono" :height 150)
+(set-face-attribute 'default nil :font "InconsolataGo Nerd Font" :height 160)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -138,6 +151,7 @@
 
 ;; Since clangd in quite fast
 (setq lsp-idle-delay 0.1)
+(setq lsp-log-io nil)
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
@@ -212,7 +226,7 @@
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(package-selected-packages
-	 '(zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

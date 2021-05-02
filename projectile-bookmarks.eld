@@ -1,0 +1,1 @@
+("~/go/src/github.com/nireo/upfi/" "~/dev/c++/kantaplus/" "~/.emacs.d/" "~/go/src/github.com/nireo/kantadb/" "~/dev/misc/competitive-programming/" "~/.config/dotfiles/")
