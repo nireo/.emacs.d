@@ -1,1 +1,1 @@
-("~/go/src/github.com/nireo/upfi/" "~/dev/c++/kantaplus/" "~/.emacs.d/" "~/go/src/github.com/nireo/kantadb/" "~/dev/misc/competitive-programming/" "~/.config/dotfiles/")
+("~/.emacs.d/" "~/dev/c++/kantaplus/" "~/go/src/github.com/nireo/ikarus/" "~/go/src/github.com/nireo/upfi/" "~/go/src/github.com/nireo/kantadb/" "~/dev/misc/competitive-programming/" "~/.config/dotfiles/")
