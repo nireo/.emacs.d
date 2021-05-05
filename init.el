@@ -116,10 +116,12 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Use a custom theme
-(load-theme 'doom-solarized-dark t)
-;; (load-theme 'zenburn t)
+;; (load-theme 'monochrome t)
 ;; (load-theme 'anti-zenburn t)
-;; (load-theme 'tao-yin t)
+(use-package kaolin-themes
+	:config
+	(load-theme 'kaolin-dark t)
+	(kaolin-treemacs-theme))
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -133,7 +135,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "InconsolataGo Nerd Font" :height 160)
+(set-face-attribute 'default nil :font "Meslo LG S" :height 150)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -173,8 +175,8 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 			lsp-ui-peek-enable t
 				lsp-ui-doc-enable nil
 				lsp-ui-flycheck-enable nil
-		lsp-ui-sideline-enable nil
-				lsp-ui-imenu-enable nil
+		lsp-ui-sideline-enable t
+				lsp-ui-imenu-enable t
 				lsp-ui-sideline-ignore-duplicate t))
 
 
@@ -326,7 +328,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(package-selected-packages
-	 '(treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
