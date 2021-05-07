@@ -10,6 +10,15 @@
 	(package-refresh-contents)
 	(package-install 'use-package))
 
+(defun display-startup-time ()
+	(message "Emacs loaded in %s with %d garbage collections."
+					 (format "%.2f seconds"
+									 (float-time
+									 (time-subtract after-init-time before-init-time)))
+					 gcs-done))
+
+(add-hook 'emacs-startup-hook #'display-startup-time)
+
 ;; ----  Evil mode settings
 (use-package evil
 	:config
@@ -31,7 +40,17 @@
 	(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
 	(evil-set-initial-state 'messages-buffer-mode 'normal)
-	(evil-set-initial-state 'dashboard-mode 'normal))
+	(evil-set-initial-state 'dashboard-mode 'normal)
+
+	(setq evil-insert-state-cursor 'hbar)
+	(setq evil-normal-state-cursor 'hbar))
+
+;; Disable line numbers for some modes
+(dolist (mode '(org-mode-hook
+								term-mode-hook
+								shell-mode-hook
+								eshell-mode-hook))
+	(add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Improve performance
 (setq gc-cons-threshold 100000000)
@@ -108,9 +127,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 
 ;; Add special highlighting for the current line
 (global-hl-line-mode 1)
-
-;; Stop the cursor from blinking
-(blink-cursor-mode -1)
 
 ;; y or n instead of yes-or-no
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -320,6 +336,51 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 	:ensure t
 	:config (treemacs-set-scope-type 'Perspectives))
 
+(defun org-mode-setup ()
+	(org-indent-mode)
+	(variable-pitch-mode 1)
+	(auto-fill-mode 0)
+	(visual-line-mode 1)
+	(setq evil-auto-indent nil))
+
+(use-package org
+	:hook (org-mode . org-mode-setup)
+	:config
+	(setq org-ellipsis " ▾"
+				org-hide-emphasis-markers t))
+
+(use-package org-bullets
+	:after org
+	:hook (org-mode . org-bullets-mode)
+	:custom
+	(org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; Replace list hyphen with dot
+(font-lock-add-keywords 'org-mode
+												'(("^ *\\([-]\\) "
+													(0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(dolist (face '((org-level-1 . 1.2)
+								(org-level-2 . 1.1)
+								(org-level-3 . 1.05)
+								(org-level-4 . 1.0)
+								(org-level-5 . 1.1)
+								(org-level-6 . 1.1)
+								(org-level-7 . 1.1)
+								(org-level-8 . 1.1))))
+
+;; Make sure org-indent face is available
+(require 'org-indent)
+
+;; Ensure that anything that should be fixed-pitch in Org files appears that way
+(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -328,7 +389,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(package-selected-packages
-	 '(kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
