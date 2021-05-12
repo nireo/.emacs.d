@@ -42,8 +42,7 @@
 	(evil-set-initial-state 'messages-buffer-mode 'normal)
 	(evil-set-initial-state 'dashboard-mode 'normal)
 
-	(setq evil-insert-state-cursor 'hbar)
-	(setq evil-normal-state-cursor 'hbar))
+	(setq evil-insert-state-cursor 'hbar))
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -113,6 +112,11 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 		 ("C-p" . helm-projectile))
 	:ensure t)
 
+(require 'elcord)
+(elcord-mode)
+
+(setq elcord-use-major-mode-as-main-icon t)
+
 ;; Disable the menubar
 (menu-bar-mode -1)
 
@@ -132,12 +136,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Use a custom theme
-;; (load-theme 'monochrome t)
-;; (load-theme 'anti-zenburn t)
-(use-package kaolin-themes
-	:config
-	(load-theme 'kaolin-dark t)
-	(kaolin-treemacs-theme))
+(load-theme 'doom-opera t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -151,7 +150,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Meslo LG S" :height 150)
+(set-face-attribute 'default nil :font "Monospace" :height 140)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -216,9 +215,26 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 
 ;; Add a simpler and cleaner bar compared to the default one
 (use-package doom-modeline
-	:ensure t
-	:init (doom-modeline-mode 1)
-	:custom ((doom-modeline-height 15)))
+	:hook (after-init . doom-modeline-mode)
+	:custom
+	(doom-modeline-height 25)
+	(doom-modeline-bar-width 1)
+	(doom-modeline-icon t)
+	(doom-modeline-major-mode-icon t)
+	(doom-modeline-major-mode-color-icon t)
+	(doom-modeline-buffer-file-name-style 'truncate-upto-project)
+	(doom-modeline-buffer-state-icon t)
+	(doom-modeline-buffer-modification-icon t)
+	(doom-modeline-minor-modes nil)
+	(doom-modeline-enable-word-count nil)
+	(doom-modeline-buffer-encoding t)
+	(doom-modeline-indent-info nil)
+	(doom-modeline-checker-simple-format t)
+	(doom-modeline-vcs-max-length 12)
+	(doom-modeline-env-version t)
+	(doom-modeline-irc-stylize 'identity)
+	(doom-modeline-github-timer nil)
+	(doom-modeline-gnus-timer nil))
 
 ;; global key-binding settings for comment (jetbrains style)
 (global-set-key (kbd "C-/") 'comment-line)
@@ -233,6 +249,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; Git integration
 (use-package magit
 	:ensure t)
+
 
 ;; So I don't have to type many things twice
 (use-package smartparens
@@ -381,6 +398,24 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
+(global-set-key (kbd "C-x m") 'shell)
+
+
+(define-key global-map(kbd "C-+") 'text-scale-increase)
+(define-key global-map(kbd "C--") 'text-scale-decrease)
+
+;; Make sure the font size increases in every buffer
+(defadvice text-scale-increase (around all-buffers (arg) activate)
+	(dolist (buffer (buffer-list))
+		(with-current-buffer buffer
+			ad-do-it)))
+
+;; Make sure the font size decreased in every buffer
+(defadvice text-scale-decrease (around all-buffers (arg) activate)
+	(dolist (buffer (buffer-list))
+		(with-current-buffer buffer
+			ad-do-it)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -389,7 +424,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(package-selected-packages
-	 '(org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(elcord telephone-line eziam-theme org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
