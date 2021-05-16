@@ -1,1 +1,1 @@
-("~/.emacs.d/" "~/go/src/github.com/nireo/bitcask/" "~/dev/misc/competitive-programming/" "~/dev/c++/yeplang/" "~/.config/dotfiles/" "~/dev/c++/kantaplus/" "~/go/src/github.com/nireo/ikarus/" "~/go/src/github.com/nireo/upfi/" "~/go/src/github.com/nireo/kantadb/")
+("~/.emacs.d/" "~/dev/c++/lups/" "~/go/src/github.com/nireo/bitcask/" "~/dev/misc/competitive-programming/" "~/.config/dotfiles/" "~/dev/c++/kantaplus/" "~/go/src/github.com/nireo/ikarus/" "~/go/src/github.com/nireo/upfi/" "~/go/src/github.com/nireo/kantadb/")

@@ -87,6 +87,10 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-language-environment "UTF-8")
 (prefer-coding-system 'utf-8)
 
+;; Disable cursor blinking
+(blink-cursor-mode 0)
+
+
 ;; Change up the scrolling a bit
 (setq scroll-conservatively 101)
 
@@ -136,7 +140,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Use a custom theme
-(load-theme 'doom-opera t)
+(load-theme 'kaolin-temple t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -214,27 +218,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (setq auto-save-default nil)
 
 ;; Add a simpler and cleaner bar compared to the default one
-(use-package doom-modeline
-	:hook (after-init . doom-modeline-mode)
-	:custom
-	(doom-modeline-height 25)
-	(doom-modeline-bar-width 1)
-	(doom-modeline-icon t)
-	(doom-modeline-major-mode-icon t)
-	(doom-modeline-major-mode-color-icon t)
-	(doom-modeline-buffer-file-name-style 'truncate-upto-project)
-	(doom-modeline-buffer-state-icon t)
-	(doom-modeline-buffer-modification-icon t)
-	(doom-modeline-minor-modes nil)
-	(doom-modeline-enable-word-count nil)
-	(doom-modeline-buffer-encoding t)
-	(doom-modeline-indent-info nil)
-	(doom-modeline-checker-simple-format t)
-	(doom-modeline-vcs-max-length 12)
-	(doom-modeline-env-version t)
-	(doom-modeline-irc-stylize 'identity)
-	(doom-modeline-github-timer nil)
-	(doom-modeline-gnus-timer nil))
 
 ;; global key-binding settings for comment (jetbrains style)
 (global-set-key (kbd "C-/") 'comment-line)
@@ -258,100 +241,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 	(smartparens-global-mode))
 
 (use-package all-the-icons)
-
-(use-package treemacs
-	:ensure t
-	:defer t
-	:init
-	(with-eval-after-load 'winum
-		(define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-	:config
-	(progn
-		(setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
-					treemacs-deferred-git-apply-delay      0.5
-					treemacs-directory-name-transformer    #'identity
-					treemacs-display-in-side-window        t
-					treemacs-eldoc-display                 t
-					treemacs-file-event-delay              5000
-					treemacs-file-extension-regex          treemacs-last-period-regex-value
-					treemacs-file-follow-delay             0.2
-					treemacs-file-name-transformer         #'identity
-					treemacs-follow-after-init             t
-					treemacs-git-command-pipe              ""
-					treemacs-goto-tag-strategy             'refetch-index
-					treemacs-indentation                   2
-					treemacs-indentation-string            " "
-					treemacs-is-never-other-window         nil
-					treemacs-max-git-entries               5000
-					treemacs-missing-project-action        'ask
-					treemacs-move-forward-on-expand        nil
-					treemacs-no-png-images                 nil
-					treemacs-no-delete-other-windows       t
-					treemacs-project-follow-cleanup        nil
-					treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-					treemacs-position                      'left
-					treemacs-read-string-input             'from-child-frame
-					treemacs-recenter-distance             0.1
-					treemacs-recenter-after-file-follow    nil
-					treemacs-recenter-after-tag-follow     nil
-					treemacs-recenter-after-project-jump   'always
-					treemacs-recenter-after-project-expand 'on-distance
-					treemacs-show-cursor                   nil
-					treemacs-show-hidden-files             t
-					treemacs-silent-filewatch              nil
-					treemacs-silent-refresh                nil
-					treemacs-sorting                       'alphabetic-asc
-					treemacs-space-between-root-nodes      t
-					treemacs-tag-follow-cleanup            t
-					treemacs-tag-follow-delay              1.5
-					treemacs-user-mode-line-format         nil
-					treemacs-user-header-line-format       nil
-					treemacs-width                         35
-					treemacs-workspace-switch-cleanup      nil)
-
-		;; The default width and height of the icons is 22 pixels. If you are
-		;; using a Hi-DPI display, uncomment this to double the icon size.
-		;;(treemacs-resize-icons 44)
-
-		(treemacs-follow-mode t)
-		(treemacs-filewatch-mode t)
-		(treemacs-fringe-indicator-mode 'always)
-		(pcase (cons (not (null (executable-find "git")))
-								 (not (null treemacs-python-executable)))
-			(`(t . t)
-			 (treemacs-git-mode 'deferred))
-			(`(t . _)
-			 (treemacs-git-mode 'simple))))
-	:bind
-	(:map global-map
-				("M-0"       . treemacs-select-window)
-				("C-x t 1"   . treemacs-delete-other-windows)
-				("C-x t t"   . treemacs)
-				("C-x t B"   . treemacs-bookmark)
-				("C-x t C-t" . treemacs-find-file)
-				("C-x t M-t" . treemacs-find-tag)))
-
-(use-package treemacs-evil
-	:after (treemacs evil)
-	:ensure t)
-
-(use-package treemacs-projectile
-	:after (treemacs projectile)
-	:ensure t)
-
-(use-package treemacs-icons-dired
-	:after (treemacs dired)
-	:ensure t
-	:config (treemacs-icons-dired-mode))
-
-(use-package treemacs-magit
-	:after (treemacs magit)
-	:ensure t)
-
-(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
-	:after (treemacs persp-mode) ;;or perspective vs. persp-mode
-	:ensure t
-	:config (treemacs-set-scope-type 'Perspectives))
 
 (defun org-mode-setup ()
 	(org-indent-mode)
@@ -400,7 +289,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 
 (global-set-key (kbd "C-x m") 'shell)
 
-
 (define-key global-map(kbd "C-+") 'text-scale-increase)
 (define-key global-map(kbd "C--") 'text-scale-decrease)
 
@@ -424,7 +312,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(package-selected-packages
-	 '(elcord telephone-line eziam-theme org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(moe-theme modus-themes elcord telephone-line eziam-theme org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
