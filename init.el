@@ -140,7 +140,21 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Use a custom theme
-(load-theme 'kaolin-temple t)
+;; (load-theme 'kaolin-temple t)
+(use-package modus-themes
+	:ensure
+	:init
+	;; Add all your customizations prior to loading the themes
+	(setq modus-themes-slanted-constructs t
+				modus-themes-bold-constructs nil
+				modus-themes-region 'no-extend)
+
+	;; Load the theme files before enabling a theme
+	(modus-themes-load-themes)
+	:config
+	;; Load the theme of your choice:
+	(modus-themes-load-vivendi) ;; OR (modus-themes-load-vivendi)
+	:bind ("<f5>" . modus-themes-toggle))
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -217,8 +231,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; Stop auto saving files, since they're not needed
 (setq auto-save-default nil)
 
-;; Add a simpler and cleaner bar compared to the default one
-
 ;; global key-binding settings for comment (jetbrains style)
 (global-set-key (kbd "C-/") 'comment-line)
 (global-set-key (kbd "C-?") 'comment-or-uncomment-region)
@@ -229,10 +241,20 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (global-set-key (kbd "s-C-<down>") 'shrink-window)
 (global-set-key (kbd "s-C-<up>") 'enlarge-window)
 
+;; For markdown editing
+(use-package markdown-mode
+	:ensure t
+	:commands (markdown-mode gfm-mode)
+	:mode (("README\\.md\\'" . gfm-mode)
+				 ("\\.md\\'" . markdown-mode)
+				 ("\\.markdown\\'" . markdown-mode))
+	:init (setq markdown-command "multimarkdown"))
+
+
+
 ;; Git integration
 (use-package magit
 	:ensure t)
-
 
 ;; So I don't have to type many things twice
 (use-package smartparens
@@ -240,6 +262,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 	:init
 	(smartparens-global-mode))
 
+;; Better looks by adding more icons
 (use-package all-the-icons)
 
 (defun org-mode-setup ()
@@ -248,6 +271,8 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 	(auto-fill-mode 0)
 	(visual-line-mode 1)
 	(setq evil-auto-indent nil))
+
+(define-key global-map "\C-ca" 'org-agenda)
 
 (use-package org
 	:hook (org-mode . org-mode-setup)
@@ -286,6 +311,18 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
 (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+;; Use evil mode in org-mode
+(use-package evil-org
+	:ensure t
+	:after (evil org)
+	:config
+	(add-hook 'org-mode-hook 'evil-org-mode)
+	(add-hook 'evil-org-mode-hook
+						(lambda ()
+							(evil-org-set-key-theme '(navigation insert textobjects additional calendar))))
+	(require 'evil-org-agenda)
+	(evil-org-agenda-set-keys))
 
 (global-set-key (kbd "C-x m") 'shell)
 
