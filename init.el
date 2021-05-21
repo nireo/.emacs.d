@@ -139,6 +139,9 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; y or n instead of yes-or-no
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; Set up the visible bell
+(setq visible-bell t)
+
 ;; Use a custom theme
 ;; (load-theme 'kaolin-temple t)
 (use-package modus-themes
@@ -231,6 +234,10 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; Stop auto saving files, since they're not needed
 (setq auto-save-default nil)
 
+(setq x-stretch-cursor t)
+(setq select-enable-clipboard t)
+(setq fill-column 80)
+
 ;; global key-binding settings for comment (jetbrains style)
 (global-set-key (kbd "C-/") 'comment-line)
 (global-set-key (kbd "C-?") 'comment-or-uncomment-region)
@@ -249,8 +256,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 				 ("\\.md\\'" . markdown-mode)
 				 ("\\.markdown\\'" . markdown-mode))
 	:init (setq markdown-command "multimarkdown"))
-
-
 
 ;; Git integration
 (use-package magit
@@ -280,11 +285,11 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 	(setq org-ellipsis " ▾"
 				org-hide-emphasis-markers t))
 
-(use-package org-bullets
-	:after org
-	:hook (org-mode . org-bullets-mode)
-	:custom
-	(org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+(setq org-directory "~/docs/org")
+(setq org-agenda-files '("todo.org" "habits.org"))
+
+(require 'org-superstar)
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
 ;; Replace list hyphen with dot
 (font-lock-add-keywords 'org-mode
@@ -329,17 +334,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (define-key global-map(kbd "C-+") 'text-scale-increase)
 (define-key global-map(kbd "C--") 'text-scale-decrease)
 
-;; Make sure the font size increases in every buffer
-(defadvice text-scale-increase (around all-buffers (arg) activate)
-	(dolist (buffer (buffer-list))
-		(with-current-buffer buffer
-			ad-do-it)))
-
-;; Make sure the font size decreased in every buffer
-(defadvice text-scale-decrease (around all-buffers (arg) activate)
-	(dolist (buffer (buffer-list))
-		(with-current-buffer buffer
-			ad-do-it)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -349,7 +343,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(package-selected-packages
-	 '(moe-theme modus-themes elcord telephone-line eziam-theme org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(org-superstar moe-theme modus-themes elcord telephone-line eziam-theme org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
