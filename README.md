@@ -11,4 +11,4 @@ git clone https://github.com/nireo/.emacs.d
 
 ## Screenshot
 
-![editor screenshot](~/.emacs.d/editor-screenshot.png)
+![editor screenshot](./editor-screenshot.png)
