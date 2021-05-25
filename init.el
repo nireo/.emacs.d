@@ -83,6 +83,9 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; Show matching parenthesies
 (show-paren-mode 1)
 
+;; Prettify symbols
+(global-prettify-symbols-mode t)
+
 ;; Use UTF-8
 (set-language-environment "UTF-8")
 (prefer-coding-system 'utf-8)
@@ -171,7 +174,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Monospace" :height 140)
+(set-face-attribute 'default nil :font "Meslo LG S" :height 130)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -308,15 +311,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; Make sure org-indent face is available
 (require 'org-indent)
 
-;; Ensure that anything that should be fixed-pitch in Org files appears that way
-(set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
-(set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
-(set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-(set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-(set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-
 ;; Use evil mode in org-mode
 (use-package evil-org
 	:ensure t
@@ -334,6 +328,21 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (define-key global-map(kbd "C-+") 'text-scale-increase)
 (define-key global-map(kbd "C--") 'text-scale-decrease)
 
+;; A simple modeline
+(use-package powerline
+	 :config
+	 (setq powerline-default-separator 'bar)
+	 :init
+	 (require 'powerline)
+	 (powerline-center-theme)
+	 :hook
+	 ('after-init-hook) . 'powerline-reset)
+
+(defun config-reload ()
+	"Reloads ~/.emacs.d/config.org at runtine"
+	(interactive)
+	(org-babel-load-file (expand-file-name "~/.emacs.d/init.el")))
+(global-set-key (kbd "C-c r") 'config-reload)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -342,8 +351,9 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
+ '(helm-minibuffer-history-key "M-p")
  '(package-selected-packages
-	 '(org-superstar moe-theme modus-themes elcord telephone-line eziam-theme org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(gruvbox-theme org-superstar moe-theme modus-themes elcord telephone-line eziam-theme org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
