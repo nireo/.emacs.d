@@ -84,7 +84,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (show-paren-mode 1)
 
 ;; Prettify symbols
-(global-prettify-symbols-mode t)
+(global-prettify-symbols-mode t)				;
 
 ;; Use UTF-8
 (set-language-environment "UTF-8")
@@ -151,9 +151,10 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 	:ensure
 	:init
 	;; Add all your customizations prior to loading the themes
-	(setq modus-themes-slanted-constructs t
-				modus-themes-bold-constructs nil
-				modus-themes-region 'no-extend)
+	(setq modus-themes-bold-constructs nil
+				modus-themes-region 'no-extend
+				modus-themes-mode-line 'borderless-accented-moody
+				modus-themes-syntax 'yellow-comments)
 
 	;; Load the theme files before enabling a theme
 	(modus-themes-load-themes)
@@ -174,7 +175,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Meslo LG S" :height 130)
+(set-face-attribute 'default nil :font "Monospace" :height 150)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -241,9 +242,11 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (setq select-enable-clipboard t)
 (setq fill-column 80)
 
-;; global key-binding settings for comment (jetbrains style)
-(global-set-key (kbd "C-/") 'comment-line)
-(global-set-key (kbd "C-?") 'comment-or-uncomment-region)
+;; Fix the window not being fullscreen and leaving a gap
+(setq frame-resize-pixelwise t)
+
+;; Set the title to be something other than emacs@hostname
+(setq frame-title-format "%b - emacs")
 
 ;; Resize bindings
 (global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
@@ -262,7 +265,8 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 
 ;; Git integration
 (use-package magit
-	:ensure t)
+	:defer t
+	:bind (("C-x g" . magit-status)))
 
 ;; So I don't have to type many things twice
 (use-package smartparens
@@ -299,15 +303,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 												'(("^ *\\([-]\\) "
 													(0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(dolist (face '((org-level-1 . 1.2)
-								(org-level-2 . 1.1)
-								(org-level-3 . 1.05)
-								(org-level-4 . 1.0)
-								(org-level-5 . 1.1)
-								(org-level-6 . 1.1)
-								(org-level-7 . 1.1)
-								(org-level-8 . 1.1))))
-
 ;; Make sure org-indent face is available
 (require 'org-indent)
 
@@ -323,26 +318,22 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 	(require 'evil-org-agenda)
 	(evil-org-agenda-set-keys))
 
-(global-set-key (kbd "C-x m") 'shell)
-
-(define-key global-map(kbd "C-+") 'text-scale-increase)
-(define-key global-map(kbd "C--") 'text-scale-decrease)
-
-;; A simple modeline
-(use-package powerline
-	 :config
-	 (setq powerline-default-separator 'bar)
-	 :init
-	 (require 'powerline)
-	 (powerline-center-theme)
-	 :hook
-	 ('after-init-hook) . 'powerline-reset)
-
 (defun config-reload ()
 	"Reloads ~/.emacs.d/config.org at runtine"
 	(interactive)
 	(org-babel-load-file (expand-file-name "~/.emacs.d/init.el")))
+
+;; Custom key bindings
 (global-set-key (kbd "C-c r") 'config-reload)
+(global-set-key (kbd "C-/") 'comment-line)
+(global-set-key (kbd "C-?") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-x m") 'shell)
+(global-set-key (kbd "C-w") 'kill-this-buffer)
+(global-set-key (kbd "C-s") 'save-buffer)
+(global-set-key (kbd "C-,") 'org-cycle-agenda-files)
+
+(define-key global-map(kbd "C-+") 'text-scale-increase)
+(define-key global-map(kbd "C--") 'text-scale-decrease)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -352,8 +343,9 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(helm-minibuffer-history-key "M-p")
+ '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-	 '(gruvbox-theme org-superstar moe-theme modus-themes elcord telephone-line eziam-theme org-bullets kaolin-themes treemacs tao-theme zenburn-theme acme-theme smartparens magit which-key doom-themes doom-modeline helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
