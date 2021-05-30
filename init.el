@@ -6,33 +6,40 @@
 ;; (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
+;; Use-package
 (unless (package-installed-p 'use-package)
 	(package-refresh-contents)
 	(package-install 'use-package))
 
+
+;; Display the time it took when starting up emacs.
 (defun display-startup-time ()
 	(message "Emacs loaded in %s with %d garbage collections."
 					 (format "%.2f seconds"
 									 (float-time
 									 (time-subtract after-init-time before-init-time)))
 					 gcs-done))
-
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
-;; ----  Evil mode settings
+;; Vim keybindings in emacs.
 (use-package evil
 	:config
 	(evil-mode 1)
 	(setq evil-vsplit-window-right t)
 	(setq evil-split-window-below t)
 	(evil-set-leader 'normal (kbd "SPC"))
+
+	;; Such that there is no need to use the ESC-key.
 	(define-key evil-insert-state-map (kbd "C-j") 'evil-normal-state)
 	(define-key evil-insert-state-map (kbd "C-f") 'evil-delete-backward-char-and-join)
 
+	;; Some keybindings for better window navigation
 	(evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
 	(evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
 	(evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
 	(evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
+
+	;; Save a file.
 	(evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
 
 	;; Use visual line motions even outside of visual-line-mode buffers
@@ -42,6 +49,7 @@
 	(evil-set-initial-state 'messages-buffer-mode 'normal)
 	(evil-set-initial-state 'dashboard-mode 'normal)
 
+	;; Set the cursor to a underline cursor in insert mode.
 	(setq evil-insert-state-cursor 'hbar))
 
 ;; Disable line numbers for some modes
@@ -88,20 +96,26 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 
 ;; Use UTF-8
 (set-language-environment "UTF-8")
+(set-keyboard-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
 ;; Disable cursor blinking
 (blink-cursor-mode 0)
 
+;; Better scrolling
+(setq scroll-margin 0
+			scroll-conservatively 100000
+			scroll-preserve-screen-position 1)
 
-;; Change up the scrolling a bit
-(setq scroll-conservatively 101)
+(setq mode-line-position '(line-number-mode ("%l")))
 
 ;; Cleanup whitespaces
 (add-hook 'before-save-hook 'whitespace-cleanup)
 
 ;; Kill the current buffer rather than askin which buffer
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
+
 (use-package helm
 	:ensure t
 	:config
@@ -119,9 +133,9 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 		 ("C-p" . helm-projectile))
 	:ensure t)
 
+;; Enable rich presense on discord and some configuration for it.
 (require 'elcord)
 (elcord-mode)
-
 (setq elcord-use-major-mode-as-main-icon t)
 
 ;; Disable the menubar
@@ -142,11 +156,13 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; y or n instead of yes-or-no
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;; Navigation in camel case words.
+(global-subword-mode)
+
+
 ;; Set up the visible bell
 (setq visible-bell t)
 
-;; Use a custom theme
-;; (load-theme 'kaolin-temple t)
 (use-package modus-themes
 	:ensure
 	:init
@@ -175,7 +191,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Monospace" :height 150)
+(set-face-attribute 'default nil :font "Terminus" :height 150)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -238,8 +254,13 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; Stop auto saving files, since they're not needed
 (setq auto-save-default nil)
 
+;; Make the cursor the size of the underlying character.
 (setq x-stretch-cursor t)
+
+;; Enable the usage of the system clipboard.
 (setq select-enable-clipboard t)
+
+;; Make the max width of a line to be 80 characters.
 (setq fill-column 80)
 
 ;; Fix the window not being fullscreen and leaving a gap
@@ -293,7 +314,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 				org-hide-emphasis-markers t))
 
 (setq org-directory "~/docs/org")
-(setq org-agenda-files '("todo.org" "habits.org"))
+(setq org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
 
 (require 'org-superstar)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
@@ -305,6 +326,27 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 
 ;; Make sure org-indent face is available
 (require 'org-indent)
+
+;; Add more TODO keywords.
+(setq org-todo-keywords
+			(quote ((sequence "TODO(t)"
+												"IN_PROGRESS(i!)"
+												"DONE(d!)"
+												"CANCELLED(c!)"
+												"POSTPONED(p!)"
+												))))
+
+
+(setq org-todo-keyword-faces
+			(quote (("TODO" :foreground "red" :weight bold)
+							("IN_PROGRESS" :foreground "orange" :weight bold)
+							("DONE" :foreground "forest green" :weight bold)
+							("CANCELLED" :foreground "forest green" :weight bold)
+							("POSTPONED" :foreground "orange" :weight bold)
+							)))
+
+;; Fast selection for todos
+(setq org-use-fast-todo-selection t)
 
 ;; Use evil mode in org-mode
 (use-package evil-org
@@ -335,6 +377,12 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (define-key global-map(kbd "C-+") 'text-scale-increase)
 (define-key global-map(kbd "C--") 'text-scale-decrease)
 
+;; Load a theme without all of questions
+(advice-add 'load-theme
+						:around
+						(lambda (fn theme &optional no-confirm no-enable)
+							(funcall fn theme t)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -345,7 +393,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-	 '(gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
