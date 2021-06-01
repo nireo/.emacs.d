@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 ;; Enable the package manager
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -11,7 +13,6 @@
 	(package-refresh-contents)
 	(package-install 'use-package))
 
-
 ;; Display the time it took when starting up emacs.
 (defun display-startup-time ()
 	(message "Emacs loaded in %s with %d garbage collections."
@@ -20,6 +21,37 @@
 									 (time-subtract after-init-time before-init-time)))
 					 gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
+
+;; Mostly taken from: https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly
+(setq read-process-output-max (* 3 1024 1024)) ;; 3mb
+(setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
+			gc-cons-percentage 0.6)
+
+(add-hook 'emacs-startup-hook
+	(lambda ()
+		(setq gc-cons-threshold 31457280 ; 32mb
+					gc-cons-percentage 0.1)))
+
+(defun nro/defer-garbage-collection-h ()
+	(setq gc-cons-threshold most-positive-fixnum))
+
+(defun nro/restore-garbage-collection-h ()
+	;; Defer it so that commands launched immediately after will enjoy the
+	;; benefits.
+	(run-at-time
+	 1 nil (lambda () (setq gc-cons-threshold 31457280))))
+
+(add-hook 'minibuffer-setup-hook #'nro/defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
+
+;; Emacs checks if a special handler is needed to read a certain file. But that is not needed
+;; during startup. So we can temporarily disable it.
+(defvar nro--file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
+(add-hook 'emacs-startup-hook
+	(lambda ()
+		(setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -59,22 +91,6 @@
 								eshell-mode-hook))
 	(add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-;; Improve performance
-(setq gc-cons-threshold 100000000)
-(setq read-process-output-max (* 3 1024 1024)) ;; 1mb
-
-(defvar file-name-handler-alist-original file-name-handler-alist)
-(setq file-name-handler-alist nil)
-
-(defvar better-gc-cons-threshold 134217728 ; 128mb
-	"The default value to use for `gc-cons-threshold'.
-If you experience freezing, decrease this.  If you experience stuttering, increase this.")
-
-(add-hook 'emacs-startup-hook
-					(lambda ()
-						(setq gc-cons-threshold better-gc-cons-threshold)
-						(setq file-name-handler-alist file-name-handler-alist-original)
-						(makunbound 'file-name-handler-alist-original)))
 
 ;; Change indentation
 (setq-default tab-width 2)
@@ -99,6 +115,9 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-keyboard-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
+
+;; Set a warning when opening files larger than 100mb
+(setq large-file-warning-threshold 100000000)
 
 ;; Disable cursor blinking
 (blink-cursor-mode 0)
@@ -191,7 +210,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Terminus" :height 150)
+(set-face-attribute 'default nil :font "Source Code Pro" :height 130)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -269,6 +288,14 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 ;; Set the title to be something other than emacs@hostname
 (setq frame-title-format "%b - emacs")
 
+;; When opening a file, always follow symlinks
+(setq vc-follow-symlinks t)
+
+;; Make the user confirm that they're closing emacs
+(setq confirm-kill-emacs 'y-or-n-p)
+;; Disable the warning when closing processes
+(setq confirm-kill-processes nil)
+
 ;; Resize bindings
 (global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
 (global-set-key (kbd "s-C-<right>") 'enlarge-window-horizontally)
@@ -345,6 +372,11 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 							("POSTPONED" :foreground "orange" :weight bold)
 							)))
 
+;; Add a focus mode for writing and other stuff
+(require 'olivetti)
+(setq olivetti-body-width 80)
+(add-hook 'text-mode-hook 'turn-on-olivetti-mode)
+
 ;; Fast selection for todos
 (setq org-use-fast-todo-selection t)
 
@@ -359,11 +391,6 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 							(evil-org-set-key-theme '(navigation insert textobjects additional calendar))))
 	(require 'evil-org-agenda)
 	(evil-org-agenda-set-keys))
-
-(defun config-reload ()
-	"Reloads ~/.emacs.d/config.org at runtine"
-	(interactive)
-	(org-babel-load-file (expand-file-name "~/.emacs.d/init.el")))
 
 ;; Custom key bindings
 (global-set-key (kbd "C-c r") 'config-reload)
@@ -393,7 +420,7 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-	 '(solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(olivetti solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
