@@ -79,10 +79,8 @@
 	(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
 	(evil-set-initial-state 'messages-buffer-mode 'normal)
-	(evil-set-initial-state 'dashboard-mode 'normal)
+	(evil-set-initial-state 'dashboard-mode 'normal))
 
-	;; Set the cursor to a underline cursor in insert mode.
-	(setq evil-insert-state-cursor 'hbar))
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -325,34 +323,61 @@
 ;; Better looks by adding more icons
 (use-package all-the-icons)
 
+;; Add a focus mode for writing and other stuff
+(require 'olivetti)
+(setq olivetti-body-width 80)
+(add-hook 'text-mode-hook 'turn-on-olivetti-mode)
+
 (defun org-mode-setup ()
 	(org-indent-mode)
 	(variable-pitch-mode 1)
 	(auto-fill-mode 0)
 	(visual-line-mode 1)
-	(setq evil-auto-indent nil))
+	(setq evil-auto-indent nil)
+	(setq org-hide-emphasis-markers t))
 
-(define-key global-map "\C-ca" 'org-agenda)
-
-(use-package org
-	:hook (org-mode . org-mode-setup)
-	:config
-	(setq org-ellipsis " ▾"
-				org-hide-emphasis-markers t))
-
-(setq org-directory "~/docs/org")
-(setq org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
-
-(require 'org-superstar)
-(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
-
-;; Replace list hyphen with dot
 (font-lock-add-keywords 'org-mode
 												'(("^ *\\([-]\\) "
 													(0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-;; Make sure org-indent face is available
-(require 'org-indent)
+(use-package org-bullets
+	:config
+	(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(use-package org
+	:hook (org-mode . org-mode-setup))
+
+(let* ((variable-tuple
+					(cond ((x-list-fonts "Source Sans Pro")         '(:font "Source Sans Pro"))
+								((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+								((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+								((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+								(nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+				 (base-font-color     (face-foreground 'default nil 'default))
+				 (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+
+		(custom-theme-set-faces
+		 'user
+		 `(org-level-8 ((t (,@headline ,@variable-tuple))))
+		 `(org-level-7 ((t (,@headline ,@variable-tuple))))
+		 `(org-level-6 ((t (,@headline ,@variable-tuple))))
+		 `(org-level-5 ((t (,@headline ,@variable-tuple))))
+		 `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+		 `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+		 `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+		 `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
+		 `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+
+(custom-theme-set-faces
+ 'user
+ '(variable-pitch ((t (:family "Source Sans Pro" :height 160 :weight medium))))
+ '(fixed-pitch ((t ( :family "Source Code Pro" :height 140)))))
+
+(setq org-directory "~/docs/org")
+(setq org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
+
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+(add-hook 'org-mode-hook 'visual-line-mode)
 
 ;; Add more TODO keywords.
 (setq org-todo-keywords
@@ -363,19 +388,21 @@
 												"POSTPONED(p!)"
 												))))
 
+(custom-theme-set-faces
+ 'user
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-info ((t (:foreground "dark orange"))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-link ((t (:foreground "royal blue" :underline t))))
+ '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+ '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
 
-(setq org-todo-keyword-faces
-			(quote (("TODO" :foreground "red" :weight bold)
-							("IN_PROGRESS" :foreground "orange" :weight bold)
-							("DONE" :foreground "forest green" :weight bold)
-							("CANCELLED" :foreground "forest green" :weight bold)
-							("POSTPONED" :foreground "orange" :weight bold)
-							)))
-
-;; Add a focus mode for writing and other stuff
-(require 'olivetti)
-(setq olivetti-body-width 80)
-(add-hook 'text-mode-hook 'turn-on-olivetti-mode)
 
 ;; Fast selection for todos
 (setq org-use-fast-todo-selection t)
@@ -403,6 +430,7 @@
 
 (define-key global-map(kbd "C-+") 'text-scale-increase)
 (define-key global-map(kbd "C--") 'text-scale-decrease)
+(define-key global-map "\C-ca" 'org-agenda)
 
 ;; Load a theme without all of questions
 (advice-add 'load-theme
@@ -418,12 +446,6 @@
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(helm-minibuffer-history-key "M-p")
- '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
+ '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org") t)
  '(package-selected-packages
-	 '(olivetti solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+	 '(org-bullets olivetti solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
