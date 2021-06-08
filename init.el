@@ -3,9 +3,6 @@
 ;; Enable the package manager
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-;; and `package-pinned-packages`. Most users will not need or want to do this.
-;; (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
 ;; Use-package
@@ -22,7 +19,7 @@
 					 gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
-;; Mostly taken from: https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly
+;; Some startup time boosters
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
 			gc-cons-percentage 0.6)
@@ -176,7 +173,6 @@
 ;; Navigation in camel case words.
 (global-subword-mode)
 
-
 ;; Set up the visible bell
 (setq visible-bell t)
 
@@ -186,8 +182,9 @@
 	;; Add all your customizations prior to loading the themes
 	(setq modus-themes-bold-constructs nil
 				modus-themes-region 'no-extend
-				modus-themes-mode-line 'borderless-accented-moody
-				modus-themes-syntax 'yellow-comments)
+				modus-themes-mode-line '3d
+				modus-themes-syntax 'yellow-comments
+				modus-themes-hl-line 'accented-background)
 
 	;; Load the theme files before enabling a theme
 	(modus-themes-load-themes)
@@ -208,7 +205,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Source Code Pro" :height 130)
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 135)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -325,7 +322,7 @@
 
 ;; Add a focus mode for writing and other stuff
 (require 'olivetti)
-(setq olivetti-body-width 80)
+(setq olivetti-body-width 88)
 (add-hook 'text-mode-hook 'turn-on-olivetti-mode)
 
 (defun org-mode-setup ()
@@ -428,6 +425,9 @@
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-,") 'org-cycle-agenda-files)
 
+;; Make QSC quit prompts
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
 (define-key global-map(kbd "C-+") 'text-scale-increase)
 (define-key global-map(kbd "C--") 'text-scale-decrease)
 (define-key global-map "\C-ca" 'org-agenda)
@@ -438,6 +438,13 @@
 						(lambda (fn theme &optional no-confirm no-enable)
 							(funcall fn theme t)))
 
+;; Add a modeline
+(require 'spaceline-config)
+(spaceline-emacs-theme) ;; Use the emacs theme since it doesn't need spacemacs stuff
+(spaceline-helm-mode) ;; Enable the theme in helm as well
+(spaceline-toggle-flycheck-error-on) ;; Toggle flycheck errors on the modeline
+(spaceline-toggle-flycheck-warning-on) ;; Toggle flycheck warnings on the modeline
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -446,6 +453,34 @@
  '(custom-safe-themes
 	 '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(helm-minibuffer-history-key "M-p")
- '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org") t)
+ '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-	 '(org-bullets olivetti solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(spaceline smart-mode-line-atom-one-dark-theme smart-mode-line-powerline-theme smart-mode-line org-bullets olivetti solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(fixed-pitch ((t (:family "Source Code Pro" :height 140))))
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-info ((t (:foreground "dark orange"))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-title ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 2.0 :underline nil))))
+ '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-level-1 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 1.75))))
+ '(org-level-2 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 1.5))))
+ '(org-level-3 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 1.25))))
+ '(org-level-4 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 1.1))))
+ '(org-level-5 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande"))))
+ '(org-level-6 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande"))))
+ '(org-level-7 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande"))))
+ '(org-level-8 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande"))))
+ '(org-link ((t (:foreground "royal blue" :underline t))))
+ '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+ '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+ '(variable-pitch ((t (:family "Source Sans Pro" :height 160 :weight medium)))))
