@@ -176,22 +176,20 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-(use-package modus-themes
-	:ensure
-	:init
-	;; Add all your customizations prior to loading the themes
-	(setq modus-themes-bold-constructs nil
-				modus-themes-region 'no-extend
-				modus-themes-mode-line '3d
-				modus-themes-syntax 'yellow-comments
-				modus-themes-hl-line 'accented-background)
-
-	;; Load the theme files before enabling a theme
-	(modus-themes-load-themes)
+(use-package doom-themes
+	:ensure t
 	:config
-	;; Load the theme of your choice:
-	(modus-themes-load-vivendi) ;; OR (modus-themes-load-vivendi)
-	:bind ("<f5>" . modus-themes-toggle))
+	;; Global settings (defaults)
+	(setq doom-themes-enable-bold t
+				doom-themes-enable-italic t)
+	(load-theme 'doom-homage-black t)
+
+	;; Enable flashing mode-line on errors
+	(doom-themes-visual-bell-config)
+	;; Enable custom neotree theme (all-the-icons must be installed!)
+	(doom-themes-neotree-config)
+	;; Corrects (and improves) org-mode's native fontification.
+	(doom-themes-org-config))
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -205,7 +203,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Fira Code Retina" :height 135)
+(set-face-attribute 'default nil :font "Iosevka" :height 150)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -288,8 +286,15 @@
 
 ;; Make the user confirm that they're closing emacs
 (setq confirm-kill-emacs 'y-or-n-p)
+
 ;; Disable the warning when closing processes
 (setq confirm-kill-processes nil)
+
+;; Newline at the of file
+(setq require-final-newline t)
+
+;; Revert buffers automatically when underlying files are changed externally
+(global-auto-revert-mode t)
 
 ;; Resize bindings
 (global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
@@ -320,11 +325,6 @@
 ;; Better looks by adding more icons
 (use-package all-the-icons)
 
-;; Add a focus mode for writing and other stuff
-(require 'olivetti)
-(setq olivetti-body-width 88)
-(add-hook 'text-mode-hook 'turn-on-olivetti-mode)
-
 (defun org-mode-setup ()
 	(org-indent-mode)
 	(variable-pitch-mode 1)
@@ -344,32 +344,6 @@
 (use-package org
 	:hook (org-mode . org-mode-setup))
 
-(let* ((variable-tuple
-					(cond ((x-list-fonts "Source Sans Pro")         '(:font "Source Sans Pro"))
-								((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-								((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-								((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-								(nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-				 (base-font-color     (face-foreground 'default nil 'default))
-				 (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
-
-		(custom-theme-set-faces
-		 'user
-		 `(org-level-8 ((t (,@headline ,@variable-tuple))))
-		 `(org-level-7 ((t (,@headline ,@variable-tuple))))
-		 `(org-level-6 ((t (,@headline ,@variable-tuple))))
-		 `(org-level-5 ((t (,@headline ,@variable-tuple))))
-		 `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
-		 `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
-		 `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
-		 `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
-		 `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
-
-(custom-theme-set-faces
- 'user
- '(variable-pitch ((t (:family "Source Sans Pro" :height 160 :weight medium))))
- '(fixed-pitch ((t ( :family "Source Code Pro" :height 140)))))
-
 (setq org-directory "~/docs/org")
 (setq org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
 
@@ -384,22 +358,6 @@
 												"CANCELLED(c!)"
 												"POSTPONED(p!)"
 												))))
-
-(custom-theme-set-faces
- 'user
- '(org-block ((t (:inherit fixed-pitch))))
- '(org-code ((t (:inherit (shadow fixed-pitch)))))
- '(org-document-info ((t (:foreground "dark orange"))))
- '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
- '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
- '(org-link ((t (:foreground "royal blue" :underline t))))
- '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-property-value ((t (:inherit fixed-pitch))) t)
- '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
- '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
- '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
-
 
 ;; Fast selection for todos
 (setq org-use-fast-todo-selection t)
@@ -424,6 +382,15 @@
 (global-set-key (kbd "C-w") 'kill-this-buffer)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-,") 'org-cycle-agenda-files)
+(global-set-key (kbd "C-x |") 'split-window-right)
+(global-set-key (kbd "C-x _") 'split-window-below)
+(global-set-key (kbd "C-x \\") 'delete-window)
+
+(use-package doom-modeline
+	:ensure t
+	:config
+	(setq doom-modeline-height 15)
+	:init (doom-modeline-mode 1))
 
 ;; Make QSC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -432,18 +399,12 @@
 (define-key global-map(kbd "C--") 'text-scale-decrease)
 (define-key global-map "\C-ca" 'org-agenda)
 
+
 ;; Load a theme without all of questions
 (advice-add 'load-theme
 						:around
 						(lambda (fn theme &optional no-confirm no-enable)
 							(funcall fn theme t)))
-
-;; Add a modeline
-(require 'spaceline-config)
-(spaceline-emacs-theme) ;; Use the emacs theme since it doesn't need spacemacs stuff
-(spaceline-helm-mode) ;; Enable the theme in helm as well
-(spaceline-toggle-flycheck-error-on) ;; Toggle flycheck errors on the modeline
-(spaceline-toggle-flycheck-warning-on) ;; Toggle flycheck warnings on the modeline
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -455,7 +416,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-	 '(spaceline smart-mode-line-atom-one-dark-theme smart-mode-line-powerline-theme smart-mode-line org-bullets olivetti solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(doom-modeline simple-modeline spacemacs-theme spaceline smart-mode-line-atom-one-dark-theme smart-mode-line-powerline-theme smart-mode-line org-bullets olivetti solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -466,16 +427,16 @@
  '(org-code ((t (:inherit (shadow fixed-pitch)))))
  '(org-document-info ((t (:foreground "dark orange"))))
  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
- '(org-document-title ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 2.0 :underline nil))))
+ '(org-document-title ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 2.0 :underline nil))))
  '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
- '(org-level-1 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 1.75))))
- '(org-level-2 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 1.5))))
- '(org-level-3 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 1.25))))
- '(org-level-4 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande" :height 1.1))))
- '(org-level-5 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande"))))
- '(org-level-6 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande"))))
- '(org-level-7 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande"))))
- '(org-level-8 ((t (:inherit default :weight bold :foreground "#ffffff" :font "Lucida Grande"))))
+ '(org-level-1 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 1.75))))
+ '(org-level-2 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 1.5))))
+ '(org-level-3 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 1.25))))
+ '(org-level-4 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 1.1))))
+ '(org-level-5 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande"))))
+ '(org-level-6 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande"))))
+ '(org-level-7 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande"))))
+ '(org-level-8 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande"))))
  '(org-link ((t (:foreground "royal blue" :underline t))))
  '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
  '(org-property-value ((t (:inherit fixed-pitch))) t)
