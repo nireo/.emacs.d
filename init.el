@@ -203,7 +203,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Iosevka" :height 150)
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 130)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -235,6 +235,10 @@
 	(add-hook 'before-save-hook #'lsp-format-buffer t t)
 	(add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+;; Add support for rust
+(require 'rust-mode)
+(setq rust-format-on-save t)
 
 (use-package lsp-ui
 	:ensure t
@@ -399,6 +403,11 @@
 (define-key global-map(kbd "C--") 'text-scale-decrease)
 (define-key global-map "\C-ca" 'org-agenda)
 
+;; Get the other file
+(add-hook 'c-mode-common-hook
+	(lambda()
+		(local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+
 
 ;; Load a theme without all of questions
 (advice-add 'load-theme
@@ -416,7 +425,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-	 '(doom-modeline simple-modeline spacemacs-theme spaceline smart-mode-line-atom-one-dark-theme smart-mode-line-powerline-theme smart-mode-line org-bullets olivetti solarized-theme gruvbox-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(rust-mode doom-modeline spacemacs-theme org-bullets org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
