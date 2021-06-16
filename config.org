@@ -1,4 +1,5 @@
 * My emacs configuration
+#+OPTIONS: toc:2
 This org file contains all of the emacs configuration needed. To run my own version of emacs.
 
 ** Setup package manager
@@ -168,6 +169,42 @@ This org file contains all of the emacs configuration needed. To run my own vers
 ;; Remove the startup message
 (setq inhibit-startup-message t)
 (set-fringe-mode 10)
+
+;; Stop saving backups since they're quite useless
+(setq make-backup-files nil)
+
+;; Stop auto saving files, since they're not needed
+(setq auto-save-default nil)
+
+;; Make the cursor the size of the underlying character.
+(setq x-stretch-cursor t)
+
+;; Enable the usage of the system clipboard.
+(setq select-enable-clipboard t)
+
+;; Make the max width of a line to be 80 characters.
+(setq fill-column 80)
+
+;; Fix the window not being fullscreen and leaving a gap
+(setq frame-resize-pixelwise t)
+
+;; Set the title to be something other than emacs@hostname
+(setq frame-title-format "%b - emacs")
+
+;; When opening a file, always follow symlinks
+(setq vc-follow-symlinks t)
+
+;; Make the user confirm that they're closing emacs
+(setq confirm-kill-emacs 'y-or-n-p)
+
+;; Disable the warning when closing processes
+(setq confirm-kill-processes nil)
+
+;; Newline at the of file
+(setq require-final-newline t)
+
+;; Revert buffers automatically when underlying files are changed externally
+(global-auto-revert-mode t)
 #+END_SRC
 
 ** Helm configurtion
@@ -199,28 +236,16 @@ This org file contains all of the emacs configuration needed. To run my own vers
 
 ** Custom theme
 #+BEGIN_SRC emacs-lisp
-(use-package modus-themes
-  :ensure
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-bold-constructs nil
-        modus-themes-region 'no-extend
-        modus-themes-mode-line '3d
-        modus-themes-syntax 'yellow-comments
-        modus-themes-hl-line 'accented-background)
-
-  ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
+(use-package kaolin-themes
   :config
-  ;; Load the theme of your choice:
-  (modus-themes-load-vivendi) ;; OR (modus-themes-load-vivendi)
-  :bind ("<f5>" . modus-themes-toggle))
+  (load-theme 'kaolin-ocean t)
+  (kaolin-treemacs-theme))
 #+END_SRC
 
 ** Set font
 #+BEGIN_SRC emacs-lisp
 ;; Set font
-(set-face-attribute 'default nil :font "Fira Code Retina" :height 135)
+(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :height 135)
 #+END_SRC
 
 ** Projectile
@@ -231,4 +256,187 @@ This org file contains all of the emacs configuration needed. To run my own vers
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 #+END_SRC
 
-** Add rest of the configuration here :D
+** Company
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :ensure t
+  :config
+  (global-company-mode)
+  (setq company-idle-delay 0)
+  (setq company-selection-wrap-around t)
+  (define-key company-active-map [tab] 'company-complete)
+  (define-key company-active-map (kbd "C-n") 'company-select-next)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous))
+#+END_SRC
+
+** LSP and other language support
+#+BEGIN_SRC emacs-lisp
+(require 'lsp-mode)
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+;; Since clangd in quite fast
+(setq lsp-idle-delay 0.1)
+(setq lsp-log-io nil)
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+;; Add support for rust
+(use-package rust-mode
+  :hook (rust-mode . lsp))
+(setq rust-format-on-save t)
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :config (setq lsp-ui-sideline-enable nil
+      lsp-ui-peek-enable t
+        lsp-ui-doc-enable nil
+        lsp-ui-flycheck-enable nil
+    lsp-ui-sideline-enable t
+        lsp-ui-imenu-enable t
+        lsp-ui-sideline-ignore-duplicate t))
+
+
+;; Configuration for Go LSP support
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-book #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+;; For C++ LSP support
+(which-key-mode)
+(add-hook 'c-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'lsp)
+
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+#+END_SRC
+
+** Keybindings
+#+BEGIN_SRC emacs-lisp
+;; Resize bindings
+(global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "s-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "s-C-<down>") 'shrink-window)
+(global-set-key (kbd "s-C-<up>") 'enlarge-window)
+(global-set-key (kbd "C-/") 'comment-line)
+(global-set-key (kbd "C-?") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-x m") 'shell)
+(global-set-key (kbd "C-w") 'kill-this-buffer)
+(global-set-key (kbd "C-s") 'save-buffer)
+(global-set-key (kbd "C-,") 'org-cycle-agenda-files)
+(global-set-key (kbd "C-x |") 'split-window-right)
+(global-set-key (kbd "C-x _") 'split-window-below)
+(global-set-key (kbd "C-x \\") 'delete-window)
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+(define-key global-map(kbd "C-+") 'text-scale-increase)
+(define-key global-map(kbd "C--") 'text-scale-decrease)
+(define-key global-map "\C-ca" 'org-agenda)
+#+END_SRC
+
+** Magit
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :defer t
+  :bind (("C-x g" . magit-status)))
+#+END_SRC
+
+** Smartparens
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens
+  :ensure t
+  :init
+  (smartparens-global-mode))
+#+END_SRC
+
+** All the icons
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons)
+#+END_SRC
+
+** Org mode configuration
+#+BEGIN_SRC emacs-lisp
+(defun org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (auto-fill-mode 0)
+  (visual-line-mode 1)
+  (setq evil-auto-indent nil)
+  (setq org-hide-emphasis-markers t))
+
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(require 'org-superstar)
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+
+(use-package org
+  :hook (org-mode . org-mode-setup))
+
+(setq org-directory "~/docs/org")
+(setq org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
+
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+;; Add more TODO keywords.
+(setq org-todo-keywords
+      (quote ((sequence "TODO(t)"
+                        "IN_PROGRESS(i!)"
+                        "DONE(d!)"
+                        "CANCELLED(c!)"
+                        "POSTPONED(p!)"
+                        ))))
+
+;; Fast selection for todos
+(setq org-use-fast-todo-selection t)
+
+;; Use evil mode in org-mode
+(use-package evil-org
+  :ensure t
+  :after (evil org)
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda ()
+              (evil-org-set-key-theme '(navigation insert textobjects additional calendar))))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+#+END_SRC
+
+** Modeline
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :config
+  (setq doom-modeline-height 15)
+  :init (doom-modeline-mode 1))
+#+END_SRC
+
+** Get header/source file from other file in c/c++
+#+BEGIN_SRC emacs-lisp
+(add-hook 'c-mode-common-hook
+  (lambda()
+    (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+#+END_SRC
+
+** Load themes without questions
+#+BEGIN_SRC emacs-lisp
+(advice-add 'load-theme
+            :around
+            (lambda (fn theme &optional no-confirm no-enable)
+              (funcall fn theme t)))
+#+END_SRC
