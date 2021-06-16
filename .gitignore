@@ -1,5 +1,8 @@
 projectile.cache
 .lsp-session-v1
-projectile-bookmarks.el
+projectile-bookmarks.eld
 recentf
-transistent
+transient/
+elpa/
+.cache/
+auto-save-list/
