@@ -19,6 +19,13 @@
 					 gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
+(defun reload-init-file ()
+	(interactive)
+	(load-file user-init-file)
+	(princ "init file reloaded"))
+
+(global-set-key (kbd "C-x C-l") 'reload-init-file)
+
 ;; Some startup time boosters
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
@@ -76,7 +83,9 @@
 	(evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
 	(evil-set-initial-state 'messages-buffer-mode 'normal)
-	(evil-set-initial-state 'dashboard-mode 'normal))
+	(evil-set-initial-state 'dashboard-mode 'normal)
+	(setq evil-insert-state-cursor 'hbar)
+	)
 
 
 ;; Disable line numbers for some modes
@@ -176,20 +185,26 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-(use-package doom-themes
-	:ensure t
-	:config
-	;; Global settings (defaults)
-	(setq doom-themes-enable-bold t
-				doom-themes-enable-italic t)
-	(load-theme 'doom-homage-black t)
+;; (use-package kaolin-themes
+;;	:config
+;;	(load-theme 'kaolin-ocean t)
+;;	(kaolin-treemacs-theme))
 
-	;; Enable flashing mode-line on errors
-	(doom-themes-visual-bell-config)
-	;; Enable custom neotree theme (all-the-icons must be installed!)
-	(doom-themes-neotree-config)
-	;; Corrects (and improves) org-mode's native fontification.
-	(doom-themes-org-config))
+(use-package modus-themes
+	:ensure
+	:init
+	;; Add all your customizations prior to loading the themes
+	(setq modus-themes-slanted-constructs t
+				modus-themes-bold-constructs nil
+				modus-themes-region 'no-extend
+				modus-themes-syntax 'yellow-comments-green-strings)
+
+	;; Load the theme files before enabling a theme
+	(modus-themes-load-themes)
+	:config
+	;; Load the theme of your choice:
+	(modus-themes-load-vivendi) ;; OR (modus-themes-load-operandi)
+	:bind ("<f5>" . modus-themes-toggle))
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -203,7 +218,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Fira Code Retina" :height 130)
+(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :height 130)
 
 ;; Projectile configuration
 (require 'projectile)
@@ -237,8 +252,12 @@
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 ;; Add support for rust
-(require 'rust-mode)
+(use-package rust-mode
+	:hook (rust-mode . lsp))
 (setq rust-format-on-save t)
+
+;; Add support for toml files which rust uses for configuration
+(use-package toml-mode)
 
 (use-package lsp-ui
 	:ensure t
@@ -329,6 +348,12 @@
 ;; Better looks by adding more icons
 (use-package all-the-icons)
 
+;; Add the same icons when using dired
+(use-package all-the-icons-dired
+	:config
+	(add-hook 'dired-mode-hook #'all-the-icons-dired-mode)
+	(setq all-the-icons-dired-monochrome nil))
+
 (defun org-mode-setup ()
 	(org-indent-mode)
 	(variable-pitch-mode 1)
@@ -341,9 +366,8 @@
 												'(("^ *\\([-]\\) "
 													(0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(use-package org-bullets
-	:config
-	(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+(require 'org-superstar)
+(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
 (use-package org
 	:hook (org-mode . org-mode-setup))
@@ -379,7 +403,6 @@
 	(evil-org-agenda-set-keys))
 
 ;; Custom key bindings
-(global-set-key (kbd "C-c r") 'config-reload)
 (global-set-key (kbd "C-/") 'comment-line)
 (global-set-key (kbd "C-?") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-x m") 'shell)
@@ -389,12 +412,6 @@
 (global-set-key (kbd "C-x |") 'split-window-right)
 (global-set-key (kbd "C-x _") 'split-window-below)
 (global-set-key (kbd "C-x \\") 'delete-window)
-
-(use-package doom-modeline
-	:ensure t
-	:config
-	(setq doom-modeline-height 15)
-	:init (doom-modeline-mode 1))
 
 ;; Make QSC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -415,6 +432,18 @@
 						(lambda (fn theme &optional no-confirm no-enable)
 							(funcall fn theme t)))
 
+;; Change to scratch buffer
+(global-set-key (kbd "<f12>")
+	(lambda()(interactive)
+		(switch-to-buffer (get-buffer-create "*scratch*"))))
+
+;; Edit config file
+(defun nro/edit-config ()
+	(interactive)
+	(find-file (concat user-emacs-directory "init.el")))
+(global-set-key (kbd "<f11>") 'nro/edit-config)
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -425,32 +454,10 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-	 '(rust-mode doom-modeline spacemacs-theme org-bullets org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(all-the-icons-dired toml-mode kaolin-themes rust-mode doom-modeline spacemacs-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(fixed-pitch ((t (:family "Source Code Pro" :height 140))))
- '(org-block ((t (:inherit fixed-pitch))))
- '(org-code ((t (:inherit (shadow fixed-pitch)))))
- '(org-document-info ((t (:foreground "dark orange"))))
- '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
- '(org-document-title ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 2.0 :underline nil))))
- '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
- '(org-level-1 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 1.75))))
- '(org-level-2 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 1.5))))
- '(org-level-3 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 1.25))))
- '(org-level-4 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande" :height 1.1))))
- '(org-level-5 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande"))))
- '(org-level-6 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande"))))
- '(org-level-7 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande"))))
- '(org-level-8 ((t (:inherit default :weight bold :foreground "#bbc2cf" :font "Lucida Grande"))))
- '(org-link ((t (:foreground "royal blue" :underline t))))
- '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-property-value ((t (:inherit fixed-pitch))) t)
- '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
- '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
- '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
- '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
- '(variable-pitch ((t (:family "Source Sans Pro" :height 160 :weight medium)))))
+ )
