@@ -57,6 +57,12 @@
 	(lambda ()
 		(setq file-name-handler-alist nro--file-name-handler-alist)))
 
+(defun nro/lsp-ui-doc-show ()
+		(interactive)
+		(lsp-ui-doc-hide)
+		(lsp-ui-doc-show)
+		(lsp-ui-doc-show))
+
 ;; Vim keybindings in emacs.
 (use-package evil
 	:config
@@ -75,6 +81,16 @@
 	(evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
 	(evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
 
+	;; Other leader keybindings
+	(evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
+	(evil-define-key 'normal 'global (kbd "<leader>sh") 'shell)
+	(evil-define-key 'normal 'global (kbd "<leader>fb") 'lsp-format-buffer)
+	(evil-define-key 'normal 'global (kbd "<leader>fr") 'lsp-format-region)
+	(evil-define-key 'normal 'global (kbd "<leader>dsh") 'nro/lsp-ui-doc-show)
+	(evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
+	(evil-define-key 'normal 'global (kbd "<leader>ne") 'flyspell-goto-next-error)
+	(evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
+
 	;; Save a file.
 	(evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
 
@@ -84,8 +100,7 @@
 
 	(evil-set-initial-state 'messages-buffer-mode 'normal)
 	(evil-set-initial-state 'dashboard-mode 'normal)
-	(setq evil-insert-state-cursor 'hbar)
-	)
+	(setq evil-insert-state-cursor 'hbar))
 
 
 ;; Disable line numbers for some modes
@@ -100,7 +115,7 @@
 (setq-default tab-width 2)
 (setq-default standard-indent 2)
 (setq-default electric-indent-inhibit t)
-(setq-default indent-tabs-mode t)
+(setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
 
 ;; Enable copypasting outside of emacs
 (setq x-select-enable-clipboard t)
@@ -157,9 +172,10 @@
 	:ensure t)
 
 ;; Enable rich presense on discord and some configuration for it.
-(require 'elcord)
-(elcord-mode)
-(setq elcord-use-major-mode-as-main-icon t)
+(use-package elcord
+	:config
+	(elcord-mode)
+	(setq elcord-use-major-mode-as-main-icon t))
 
 ;; Disable the menubar
 (menu-bar-mode -1)
@@ -185,10 +201,6 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-;; (use-package kaolin-themes
-;;	:config
-;;	(load-theme 'kaolin-ocean t)
-;;	(kaolin-treemacs-theme))
 
 (use-package modus-themes
 	:ensure
@@ -206,6 +218,7 @@
 	(modus-themes-load-vivendi) ;; OR (modus-themes-load-operandi)
 	:bind ("<f5>" . modus-themes-toggle))
 
+
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
 	(global-display-line-numbers-mode))
@@ -221,10 +234,11 @@
 (set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :height 130)
 
 ;; Projectile configuration
-(require 'projectile)
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(use-package projectile
+	:config
+	(projectile-mode +1)
+	(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+	(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 ;; Company configuration
 (use-package company
@@ -306,6 +320,9 @@
 
 ;; When opening a file, always follow symlinks
 (setq vc-follow-symlinks t)
+
+;; Speed up line movement
+(setq auto-window-vscroll nil)
 
 ;; Make the user confirm that they're closing emacs
 (setq confirm-kill-emacs 'y-or-n-p)
@@ -443,7 +460,6 @@
 	(find-file (concat user-emacs-directory "init.el")))
 (global-set-key (kbd "<f11>") 'nro/edit-config)
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -454,7 +470,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-	 '(all-the-icons-dired toml-mode kaolin-themes rust-mode doom-modeline spacemacs-theme org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+	 '(all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

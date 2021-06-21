@@ -236,10 +236,14 @@ This org file contains all of the emacs configuration needed. To run my own vers
 
 ** Custom theme
 #+BEGIN_SRC emacs-lisp
-(use-package kaolin-themes
-  :config
-  (load-theme 'kaolin-ocean t)
-  (kaolin-treemacs-theme))
+(use-package modus-themes
+  :ensure
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-slanted-constructs t
+        modus-themes-bold-constructs nil
+        modus-themes-region 'no-extend
+        modus-themes-syntax 'yellow-comments-green-strings)
 #+END_SRC
 
 ** Set font
