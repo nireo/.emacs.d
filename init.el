@@ -83,13 +83,17 @@
 
   ;; Other leader keybindings
   (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
-  (evil-define-key 'normal 'global (kbd "<leader>sh") 'shell)
+  (evil-define-key 'normal 'global (kbd "<leader>he") 'shell)
   (evil-define-key 'normal 'global (kbd "<leader>fb") 'lsp-format-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fr") 'lsp-format-region)
   (evil-define-key 'normal 'global (kbd "<leader>dsh") 'nro/lsp-ui-doc-show)
   (evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>ne") 'flyspell-goto-next-error)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
+
+  (evil-define-key 'normal 'global (kbd "<leader>wr") 'split-window-right)
+  (evil-define-key 'normal 'global (kbd "<leader>wb") 'split-window-below)
+  (evil-define-key 'normal 'global (kbd "<leader>dw") 'delete-window)
 
   ;; Save a file.
   (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
@@ -145,6 +149,8 @@
 (setq scroll-margin 0
       scroll-conservatively 100000
       scroll-preserve-screen-position 1)
+
+(setq echo-keystrokes 0.1)
 
 (setq mode-line-position '(line-number-mode ("%l")))
 
@@ -206,6 +212,7 @@
 (setq visible-bell t)
 
 
+;; Some different themes to use
 (use-package modus-themes
   :ensure
   :init
@@ -224,6 +231,12 @@
   (modus-themes-load-vivendi) ;; OR (modus-themes-load-operandi)
   :bind ("<f5>" . modus-themes-toggle))
 
+(use-package zenburn-theme
+  :ensure t)
+
+(use-package faff-theme
+  :ensure t)
+
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -237,7 +250,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :height 140)
+(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :height 135)
 (set-face-attribute 'variable-pitch nil :family "JetBrains Mono Nerd Font" :height 150)
 
 ;; Projectile configuration
@@ -483,6 +496,21 @@
   (find-file (concat user-emacs-directory "init.el")))
 (global-set-key (kbd "<f11>") 'nro/edit-config)
 
+;; Dired configuration
+(require 'dired-x)
+
+(setq-default dired-listing-switches "-alh")
+(setq dired-recursive-copies 'always)
+(setq dired-recursive-delets 'always)
+(setq dired-ls-F-marks-symlinks t)
+
+(use-package dired-subtree
+  :config
+  (bind-keys :map dired-mode-map
+             ("i" . dired-subtree-insert)
+             ("r" . dired-subtree-remove)))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -493,7 +521,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-   '(all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
