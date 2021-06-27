@@ -213,23 +213,22 @@
 
 
 ;; Some different themes to use
-(use-package modus-themes
-  :ensure
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-slanted-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region 'no-extend
-        modus-themes-syntax 'yellow-comments-green-strings
-        modus-themes-mode-line '3d
-        modus-themes-hl-line 'accented-background)
+;; (use-package modus-themes
+;;   :ensure
+;;   :init
+;;   ;; Add all your customizations prior to loading the themes
+;;   (setq modus-themes-slanted-constructs nil
+;;         modus-themes-bold-constructs nil
+;;         modus-themes-region 'no-extend
+;;         modus-themes-syntax 'yellow-comments-green-strings
+;;         modus-themes-mode-line '3d
+;;         modus-themes-hl-line 'accented-background)
 
-  ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
-  :config
-  ;; Load the theme of your choice:
-  (modus-themes-load-vivendi) ;; OR (modus-themes-load-operandi)
-  :bind ("<f5>" . modus-themes-toggle))
+;;   ;; Load the theme files before enabling a theme
+;;   (modus-themes-load-themes)
+;;   :config
+;;   (modus-themes-load-vivendi)
+;;   :bind ("<f5>" . modus-themes-toggle))
 
 (use-package zenburn-theme
   :ensure t)
@@ -237,6 +236,16 @@
 (use-package faff-theme
   :ensure t)
 
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic nil) ; if nil, italics is universally disabled
+  (load-theme 'doom-sourcerer t)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -250,7 +259,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :height 135)
+(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :height 145)
 (set-face-attribute 'variable-pitch nil :family "JetBrains Mono Nerd Font" :height 150)
 
 ;; Projectile configuration
@@ -293,6 +302,7 @@
 ;; Add support for toml files which rust uses for configuration
 (use-package toml-mode)
 
+;; Add some visual elements to lsp mode.
 (use-package lsp-ui
   :ensure t
   :commands lsp-ui-mode
@@ -372,6 +382,18 @@
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+(use-package web-mode
+  :mode (("\\.html?\\'" . web-mode)
+         ("\\.css\\'"   . web-mode)
+         ("\\.jsx?\\'"  . web-mode)
+         ("\\.tsx?\\'"  . web-mode)
+         ("\\.json\\'"  . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2) ; HTML
+  (setq web-mode-css-indent-offset 2)    ; CSS
+  (setq web-mode-code-indent-offset 2)   ; JS/JSX/TS/TSX
+  (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
+
 ;; Git integration
 (use-package magit
   :defer t
@@ -402,7 +424,7 @@
 (setq org-adapt-indentation nil)
 (setq org-indent-indentation-per-level 1)
 
-;; Add spell checking
+;; Add spell checking when using text mode.
 (customize-set-variable 'ispell-program-name "aspell")
 (customize-set-variable 'ispell-extra-args '("--sug-mode=ultra"))
 (add-hook 'text-mode-hook 'flyspell-mode)
@@ -510,18 +532,17 @@
              ("i" . dired-subtree-insert)
              ("r" . dired-subtree-remove)))
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
+   '("0f7fa4835d02a927d7d738a0d2d464c38be079913f9d4aba9c97f054e67b8db9" "0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-   '(dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
