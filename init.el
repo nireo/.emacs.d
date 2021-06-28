@@ -91,6 +91,9 @@
   (evil-define-key 'normal 'global (kbd "<leader>ne") 'flyspell-goto-next-error)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
 
+
+  (evil-define-key 'normal 'global (kbd "<leader>na") 'org-cycle-agenda-files)
+
   (evil-define-key 'normal 'global (kbd "<leader>wr") 'split-window-right)
   (evil-define-key 'normal 'global (kbd "<leader>wb") 'split-window-below)
   (evil-define-key 'normal 'global (kbd "<leader>dw") 'delete-window)
@@ -211,7 +214,6 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-
 ;; Some different themes to use
 ;; (use-package modus-themes
 ;;   :ensure
@@ -242,7 +244,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic nil) ; if nil, italics is universally disabled
-  (load-theme 'doom-sourcerer t)
+  (load-theme 'doom-solarized-dark t)
 
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
@@ -429,6 +431,14 @@
 (customize-set-variable 'ispell-extra-args '("--sug-mode=ultra"))
 (add-hook 'text-mode-hook 'flyspell-mode)
 
+(setq org-modules '(org-habit))
+(eval-after-load 'org
+  '(org-load-modules-maybe t))
+(setq org-default-notes-file "~/docs/org/notes.org")
+(setq org-habit-graph-column 80)
+(setq org-habit-show-habits-only-for-today nil)
+
+
 (defun org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
@@ -483,7 +493,6 @@
 (global-set-key (kbd "C-x m") 'shell)
 (global-set-key (kbd "C-w") 'kill-this-buffer)
 (global-set-key (kbd "C-s") 'save-buffer)
-(global-set-key (kbd "C-,") 'org-cycle-agenda-files)
 (global-set-key (kbd "C-x |") 'split-window-right)
 (global-set-key (kbd "C-x _") 'split-window-below)
 (global-set-key (kbd "C-x \\") 'delete-window)
@@ -499,7 +508,6 @@
 (add-hook 'c-mode-common-hook
   (lambda()
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
-
 
 ;; Load a theme without all of questions
 (advice-add 'load-theme
@@ -532,6 +540,11 @@
              ("i" . dired-subtree-insert)
              ("r" . dired-subtree-remove)))
 
+(require 'spaceline-config)
+(setq powerline-default-separator 'wave)
+(spaceline-helm-mode)
+(spaceline-spacemacs-theme)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -542,7 +555,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-   '(doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
