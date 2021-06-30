@@ -88,7 +88,7 @@
   (evil-define-key 'normal 'global (kbd "<leader>fr") 'lsp-format-region)
   (evil-define-key 'normal 'global (kbd "<leader>dsh") 'nro/lsp-ui-doc-show)
   (evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
-  (evil-define-key 'normal 'global (kbd "<leader>ne") 'flyspell-goto-next-error)
+  (evil-define-key 'normal 'global (kbd "<leader>ne") 'flycheck-list-errors)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
 
 
@@ -215,28 +215,22 @@
 (setq visible-bell t)
 
 ;; Some different themes to use
-;; (use-package modus-themes
-;;   :ensure
-;;   :init
-;;   ;; Add all your customizations prior to loading the themes
-;;   (setq modus-themes-slanted-constructs nil
-;;         modus-themes-bold-constructs nil
-;;         modus-themes-region 'no-extend
-;;         modus-themes-syntax 'yellow-comments-green-strings
-;;         modus-themes-mode-line '3d
-;;         modus-themes-hl-line 'accented-background)
+(use-package modus-themes
+  :ensure
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-slanted-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-region 'no-extend
+        modus-themes-syntax 'yellow-comments-green-strings
+        modus-themes-mode-line '3d
+        modus-themes-hl-line 'accented-background)
 
-;;   ;; Load the theme files before enabling a theme
-;;   (modus-themes-load-themes)
-;;   :config
-;;   (modus-themes-load-vivendi)
-;;   :bind ("<f5>" . modus-themes-toggle))
-
-(use-package zenburn-theme
-  :ensure t)
-
-(use-package faff-theme
-  :ensure t)
+    ;; Load the theme files before enabling a theme
+   (modus-themes-load-themes)
+   :config
+   (modus-themes-load-vivendi)
+   :bind ("<f5>" . modus-themes-toggle))
 
 (use-package doom-themes
   :ensure t
@@ -244,7 +238,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic nil) ; if nil, italics is universally disabled
-  (load-theme 'doom-solarized-dark t)
+  ;; (load-theme 'doom-solarized-dark t)
 
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
@@ -261,8 +255,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :height 145)
-(set-face-attribute 'variable-pitch nil :family "JetBrains Mono Nerd Font" :height 150)
+(set-face-attribute 'default nil :font "Hack Nerd Font" :weight 'normal :height 140)
+(set-face-attribute 'variable-pitch nil :family "Hack Kerd Font" :weight 'normal :height 150)
 
 ;; Projectile configuration
 (use-package projectile
@@ -289,6 +283,9 @@
 (setq lsp-idle-delay 0.1)
 (setq lsp-log-io nil)
 
+(setq lsp-keymap-prefix "C-c l")
+
+
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
 (defun lsp-go-install-save-hooks ()
@@ -297,9 +294,14 @@
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 ;; Add support for rust
-(use-package rust-mode
-  :hook (rust-mode . lsp))
-(setq rust-format-on-save t)
+(use-package rustic
+  :config
+  (setq lsp-eldoc-hook nil)
+  (setq lsp-enable-symbol-highlighting nil)
+  (setq lsp-signature-auto-activate nil))
+
+(use-package flycheck :ensure)
+(setq lsp-rust-analyzer-server-display-inlay-hints t)
 
 ;; Add support for toml files which rust uses for configuration
 (use-package toml-mode)
@@ -490,7 +492,6 @@
 ;; Custom key bindings
 (global-set-key (kbd "C-/") 'comment-line)
 (global-set-key (kbd "C-?") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-x m") 'shell)
 (global-set-key (kbd "C-w") 'kill-this-buffer)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-x |") 'split-window-right)
@@ -555,7 +556,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-   '(spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(flycheck rustic spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
