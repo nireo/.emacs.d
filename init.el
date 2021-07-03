@@ -65,8 +65,9 @@
 
 ;; Vim keybindings in emacs.
 (use-package evil
-  :config
+  :init
   (evil-mode 1)
+  :config
   (setq evil-vsplit-window-right t)
   (setq evil-split-window-below t)
   (evil-set-leader 'normal (kbd "SPC"))
@@ -106,8 +107,8 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal)
-  (setq evil-insert-state-cursor 'hbar))
+  (evil-set-initial-state 'dashboard-mode 'normal))
+
 
 
 ;; Disable line numbers for some modes
@@ -214,31 +215,13 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-;; Some different themes to use
-(use-package modus-themes
-  :ensure
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-slanted-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region 'no-extend
-        modus-themes-syntax 'yellow-comments-green-strings
-        modus-themes-mode-line '3d
-        modus-themes-hl-line 'accented-background)
-
-    ;; Load the theme files before enabling a theme
-   (modus-themes-load-themes)
-   :config
-   (modus-themes-load-vivendi)
-   :bind ("<f5>" . modus-themes-toggle))
-
 (use-package doom-themes
   :ensure t
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic nil) ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-solarized-dark t)
+    (load-theme 'doom-sourcerer t)
 
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
@@ -255,8 +238,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Hack Nerd Font" :weight 'normal :height 140)
-(set-face-attribute 'variable-pitch nil :family "Hack Kerd Font" :weight 'normal :height 150)
+(set-face-attribute 'default nil :font "Iosevka" :weight 'normal :height 155)
+(set-face-attribute 'variable-pitch nil :family "Iosevka" :weight 'normal :height 180)
 
 ;; Projectile configuration
 (use-package projectile
@@ -400,7 +383,6 @@
 
 ;; Git integration
 (use-package magit
-  :defer t
   :bind (("C-x g" . magit-status)))
 
 ;; So I don't have to type many things twice
@@ -432,6 +414,12 @@
 (customize-set-variable 'ispell-program-name "aspell")
 (customize-set-variable 'ispell-extra-args '("--sug-mode=ultra"))
 (add-hook 'text-mode-hook 'flyspell-mode)
+
+;; Add writegood mode for better quality writing.
+(require 'writegood-mode)
+(global-set-key "\C-cg" 'writegood-mode)
+(global-set-key "\C-c\C-gg" 'writegood-grade-level)
+(global-set-key "\C-c\C-ge" 'writegood-reading-ease)
 
 (setq org-modules '(org-habit))
 (eval-after-load 'org
@@ -498,11 +486,14 @@
 (global-set-key (kbd "C-x _") 'split-window-below)
 (global-set-key (kbd "C-x \\") 'delete-window)
 
+
+;; I have this bad habit of pressing this key combination, and if it doesn't exist it opens a
+;; mail window
+(global-set-key (kbd "C-x m") 'shell)
+
 ;; Make QSC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-(define-key global-map(kbd "C-+") 'text-scale-increase)
-(define-key global-map(kbd "C--") 'text-scale-decrease)
 (define-key global-map "\C-ca" 'org-agenda)
 
 ;; Get the other file
@@ -556,7 +547,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-   '(flycheck rustic spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(writegood-mode flycheck rustic spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
