@@ -1,0 +1,5 @@
+ls
+cd
+cd go/src/
+ls
+cd github.com/ls

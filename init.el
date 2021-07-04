@@ -26,7 +26,7 @@
 
 (global-set-key (kbd "C-x C-l") 'reload-init-file)
 
-;; Some startup time boosters
+;; Some performance boosters.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
       gc-cons-percentage 0.6)
@@ -71,6 +71,8 @@
   (setq evil-vsplit-window-right t)
   (setq evil-split-window-below t)
   (evil-set-leader 'normal (kbd "SPC"))
+  (setq evil-vsplit-window-right t)
+  (setq evil-split-window-below t)
 
   ;; Such that there is no need to use the ESC-key.
   (define-key evil-insert-state-map (kbd "C-j") 'evil-normal-state)
@@ -145,6 +147,7 @@
 
 ;; Set a warning when opening files larger than 100mb
 (setq large-file-warning-threshold 100000000)
+
 
 ;; Disable cursor blinking
 (blink-cursor-mode 0)
@@ -230,6 +233,8 @@
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
+(setq display-line-numbers-type 'relative)
+
 ;; Add line wrapping
 (global-visual-line-mode 1)
 
@@ -238,8 +243,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Iosevka" :weight 'normal :height 155)
-(set-face-attribute 'variable-pitch nil :family "Iosevka" :weight 'normal :height 180)
+(set-face-attribute 'default nil :font "Monospace" :weight 'normal :height 140)
+(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'normal :height 165)
 
 ;; Projectile configuration
 (use-package projectile
@@ -283,7 +288,8 @@
   (setq lsp-enable-symbol-highlighting nil)
   (setq lsp-signature-auto-activate nil))
 
-(use-package flycheck :ensure)
+(use-package flycheck
+  :ensure t)
 (setq lsp-rust-analyzer-server-display-inlay-hints t)
 
 ;; Add support for toml files which rust uses for configuration
@@ -518,6 +524,12 @@
   (find-file (concat user-emacs-directory "init.el")))
 (global-set-key (kbd "<f11>") 'nro/edit-config)
 
+(defun insert-date ()
+  "Insert today's date at point"
+  (interactive "*")
+  (insert (format-time-string "%F")))
+(global-set-key (kbd "C-c C-.") #'insert-date)
+
 ;; Dired configuration
 (require 'dired-x)
 
@@ -531,6 +543,11 @@
   (bind-keys :map dired-mode-map
              ("i" . dired-subtree-insert)
              ("r" . dired-subtree-remove)))
+
+(use-package dired-narrow
+  :ensure t
+  :bind (:map dired-mode-map
+              ("/" . dired-narrow)))
 
 (require 'spaceline-config)
 (setq powerline-default-separator 'wave)
