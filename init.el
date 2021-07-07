@@ -224,10 +224,16 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic nil) ; if nil, italics is universally disabled
-    (load-theme 'doom-sourcerer t)
+    (load-theme 'doom-gruvbox t)
 
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
+
+(use-package planet-theme
+  :ensure t)
+
+(use-package kaolin-themes
+  :ensure t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -538,6 +544,16 @@
 (setq dired-recursive-delets 'always)
 (setq dired-ls-F-marks-symlinks t)
 
+;; Count all of the words
+(use-package wc-mode)
+(defun novel-count-words (&optional begin end)
+  "count words between BEGIN and END (region); if no region defined, count words in buffer"
+  (interactive "r")
+  (let ((b (if mark-active begin (point-min)))
+      (e (if mark-active end (point-max))))
+    (message "Word count: %s" (how-many "\\w+" b e))))
+(global-set-key (kbd "C-c C-,") 'novel-count-words)
+
 (use-package dired-subtree
   :config
   (bind-keys :map dired-mode-map
@@ -549,10 +565,18 @@
   :bind (:map dired-mode-map
               ("/" . dired-narrow)))
 
-(require 'spaceline-config)
-(setq powerline-default-separator 'wave)
-(spaceline-helm-mode)
-(spaceline-spacemacs-theme)
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
+
+;; Open a shell temporarily for a quick command
+(use-package shell-pop
+  :bind (("C-t" . shell-pop))
+  :config
+  (setq shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
+  (setq shell-pop-term-shell "/bin/zsh")
+  ;; need to do this manually or not picked up by `shell-pop'
+  (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -564,7 +588,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(package-selected-packages
-   '(writegood-mode flycheck rustic spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(wc-mode sorcery-theme planet-theme writegood-mode flycheck rustic spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
