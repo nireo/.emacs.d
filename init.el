@@ -19,11 +19,11 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
+;; Reload the init file with a quick keybinding
 (defun reload-init-file ()
   (interactive)
   (load-file user-init-file)
   (princ "init file reloaded"))
-
 (global-set-key (kbd "C-x C-l") 'reload-init-file)
 
 ;; Some performance boosters.
@@ -120,6 +120,8 @@
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
+(use-package haskell-mode
+  :ensure t)
 
 ;; Change indentation
 (setq-default tab-width 2)
@@ -224,16 +226,27 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic nil) ; if nil, italics is universally disabled
-    (load-theme 'doom-gruvbox t)
 
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
-(use-package planet-theme
-  :ensure t)
+(use-package modus-themes
+  :ensure
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-mode-line '3d
+        modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-syntax 'yellow-comments
+        modus-themes-region 'no-extend)
 
-(use-package kaolin-themes
-  :ensure t)
+  ;; Load the theme files before enabling a theme
+  (modus-themes-load-themes)
+  :config
+  ;; Load the theme of your choice:
+  (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
+  :bind ("<f5>" . modus-themes-toggle))
+
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -249,8 +262,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Monospace" :weight 'normal :height 140)
-(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'normal :height 165)
+(set-face-attribute 'default nil :font "Droid Sans Mono Nerd Font" :weight 'normal :height 135)
+(set-face-attribute 'variable-pitch nil :family "Droid Sans Mono Nerd Font" :weight 'normal :height 140)
 
 ;; Projectile configuration
 (use-package projectile
@@ -433,13 +446,14 @@
 (global-set-key "\C-c\C-gg" 'writegood-grade-level)
 (global-set-key "\C-c\C-ge" 'writegood-reading-ease)
 
+
+;; Setup some org-mode configuration.
 (setq org-modules '(org-habit))
 (eval-after-load 'org
   '(org-load-modules-maybe t))
 (setq org-default-notes-file "~/docs/org/notes.org")
 (setq org-habit-graph-column 80)
 (setq org-habit-show-habits-only-for-today nil)
-
 
 (defun org-mode-setup ()
   (org-indent-mode)
@@ -530,6 +544,7 @@
   (find-file (concat user-emacs-directory "init.el")))
 (global-set-key (kbd "<f11>") 'nro/edit-config)
 
+;; Insert date at cursor.
 (defun insert-date ()
   "Insert today's date at point"
   (interactive "*")
@@ -554,6 +569,7 @@
     (message "Word count: %s" (how-many "\\w+" b e))))
 (global-set-key (kbd "C-c C-,") 'novel-count-words)
 
+;; Some dired configuration.
 (use-package dired-subtree
   :config
   (bind-keys :map dired-mode-map
@@ -565,18 +581,12 @@
   :bind (:map dired-mode-map
               ("/" . dired-narrow)))
 
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode))
-
-;; Open a shell temporarily for a quick command
-(use-package shell-pop
-  :bind (("C-t" . shell-pop))
-  :config
-  (setq shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
-  (setq shell-pop-term-shell "/bin/zsh")
-  ;; need to do this manually or not picked up by `shell-pop'
-  (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
+;; Increase/decrease text size in all buffers.
+(use-package default-text-scale
+  :ensure t)
+(global-set-key (kbd "C-+") 'default-text-scale-increase)
+(global-set-key (kbd "C--") 'default-text-scale-decrease)
+(global-set-key (kbd "C-=") 'default-text-scale-reset)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -586,9 +596,12 @@
  '(custom-safe-themes
    '("0f7fa4835d02a927d7d738a0d2d464c38be079913f9d4aba9c97f054e67b8db9" "0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(helm-minibuffer-history-key "M-p")
+ '(ispell-extra-args '("--sug-mode=ultra"))
+ '(ispell-program-name "aspell")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
+ '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(wc-mode sorcery-theme planet-theme writegood-mode flycheck rustic spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(default-text-scale wc-mode sorcery-theme planet-theme writegood-mode flycheck rustic spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
