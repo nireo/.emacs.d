@@ -19,13 +19,6 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
-;; Reload the init file with a quick keybinding
-(defun reload-init-file ()
-  (interactive)
-  (load-file user-init-file)
-  (princ "init file reloaded"))
-(global-set-key (kbd "C-x C-l") 'reload-init-file)
-
 ;; Some performance boosters.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
@@ -512,7 +505,6 @@
 (global-set-key (kbd "C-x _") 'split-window-below)
 (global-set-key (kbd "C-x \\") 'delete-window)
 
-
 ;; I have this bad habit of pressing this key combination, and if it doesn't exist it opens a
 ;; mail window
 (global-set-key (kbd "C-x m") 'shell)
@@ -526,23 +518,6 @@
 (add-hook 'c-mode-common-hook
   (lambda()
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
-
-;; Load a theme without all of questions
-(advice-add 'load-theme
-            :around
-            (lambda (fn theme &optional no-confirm no-enable)
-              (funcall fn theme t)))
-
-;; Change to scratch buffer
-(global-set-key (kbd "<f12>")
-  (lambda()(interactive)
-    (switch-to-buffer (get-buffer-create "*scratch*"))))
-
-;; Edit config file
-(defun nro/edit-config ()
-  (interactive)
-  (find-file (concat user-emacs-directory "init.el")))
-(global-set-key (kbd "<f11>") 'nro/edit-config)
 
 ;; Insert date at cursor.
 (defun insert-date ()
