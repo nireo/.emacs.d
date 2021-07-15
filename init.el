@@ -79,7 +79,6 @@
 
   ;; Other leader keybindings
   (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
-  (evil-define-key 'normal 'global (kbd "<leader>he") 'shell)
   (evil-define-key 'normal 'global (kbd "<leader>fb") 'lsp-format-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fr") 'lsp-format-region)
   (evil-define-key 'normal 'global (kbd "<leader>dsh") 'nro/lsp-ui-doc-show)
@@ -110,7 +109,8 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 shell-mode-hook
-                eshell-mode-hook))
+                eshell-mode-hook
+                vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package haskell-mode
@@ -213,32 +213,24 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-(use-package doom-themes
-  :ensure t
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic nil) ; if nil, italics is universally disabled
+;; (use-package modus-themes
+;;   :ensure
+;;   :init
+;;   ;; Add all your customizations prior to loading the themes
+;;   (setq modus-themes-mode-line '3d
+;;         modus-themes-italic-constructs nil
+;;         modus-themes-bold-constructs nil
+;;         modus-themes-syntax 'yellow-comments
+;;         modus-themes-region 'no-extend)
 
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+;;   ;; Load the theme files before enabling a theme
+;;   (modus-themes-load-themes)
+;;   :config
+;;   ;; Load the theme of your choice:
+;;   (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
+;;   :bind ("<f5>" . modus-themes-toggle))
 
-(use-package modus-themes
-  :ensure
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-mode-line '3d
-        modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-syntax 'yellow-comments
-        modus-themes-region 'no-extend)
-
-  ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
-  :config
-  ;; Load the theme of your choice:
-  (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
-  :bind ("<f5>" . modus-themes-toggle))
+(load-theme 'zenburn t)
 
 
 ;; Add line number display
@@ -399,6 +391,19 @@
   (setq web-mode-code-indent-offset 2)   ; JS/JSX/TS/TSX
   (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
 
+;; Focused writing environment
+(use-package writeroom-mode
+  :ensure t
+  :config
+  (setq writeroom-bottom-divider-width 0))
+(global-set-key (kbd "<f12>") 'writeroom-mode)
+
+(use-package vterm
+  :ensure t)
+
+(use-package vterm-toggle
+  :ensure t)
+
 ;; Git integration
 (use-package magit
   :bind (("C-x g" . magit-status)))
@@ -507,7 +512,7 @@
 
 ;; I have this bad habit of pressing this key combination, and if it doesn't exist it opens a
 ;; mail window
-(global-set-key (kbd "C-x m") 'shell)
+(global-set-key (kbd "C-x m") 'vterm)
 
 ;; Make QSC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -559,9 +564,6 @@
 ;; Increase/decrease text size in all buffers.
 (use-package default-text-scale
   :ensure t)
-(global-set-key (kbd "C-+") 'default-text-scale-increase)
-(global-set-key (kbd "C--") 'default-text-scale-decrease)
-(global-set-key (kbd "C-=") 'default-text-scale-reset)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -576,7 +578,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(default-text-scale wc-mode sorcery-theme planet-theme writegood-mode flycheck rustic spaceline doom-themes dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(default-text-scale wc-mode sorcery-theme planet-theme writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
