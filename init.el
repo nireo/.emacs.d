@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
+
 ;; Enable the package manager
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -18,6 +19,10 @@
                    (time-subtract after-init-time before-init-time)))
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
+
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+
+(setq use-package-always-ensure t)
 
 ;; Some performance boosters.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
@@ -103,7 +108,15 @@
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
+(use-package rainbow-mode
+  :init
+    (add-hook 'prog-mode-hook 'rainbow-mode))
 
+(use-package cmake-mode)
+
+(use-package rainbow-delimiters
+  :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -230,8 +243,9 @@
 ;;   (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
 ;;   :bind ("<f5>" . modus-themes-toggle))
 
-(load-theme 'zenburn t)
+(use-package almost-mono-themes)
 
+(load-theme 'kaolin-dark t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -247,7 +261,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Droid Sans Mono Nerd Font" :weight 'normal :height 135)
+(set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal :height 125)
 (set-face-attribute 'variable-pitch nil :family "Droid Sans Mono Nerd Font" :weight 'normal :height 140)
 
 ;; Projectile configuration
@@ -565,20 +579,30 @@
 (use-package default-text-scale
   :ensure t)
 
+(defun kill-buffer-and-file (buffer-name)
+  "Removes file connected to current buffer and kills buffer."
+  (interactive "bKill buffer and its file:")
+  (let* ((buffer (get-buffer buffer-name))
+         (filename (buffer-file-name buffer)))
+    (if (not (and filename (file-exists-p filename)))
+        (error "Buffer '%s' is not visiting a file!" buffer-name)
+      (delete-file filename)
+      (kill-buffer buffer))))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("0f7fa4835d02a927d7d738a0d2d464c38be079913f9d4aba9c97f054e67b8db9" "0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
+   '("76c36aaf67479c7b65aba53988ae28f7f0fc386d0e6ec26ee2459061ef232a35" "6bffac6f528e43839861be1d7facf8054b57edc1ffc70f7be885da7d181ecbac" "0f7fa4835d02a927d7d738a0d2d464c38be079913f9d4aba9c97f054e67b8db9" "0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(helm-minibuffer-history-key "M-p")
  '(ispell-extra-args '("--sug-mode=ultra"))
  '(ispell-program-name "aspell")
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(default-text-scale wc-mode sorcery-theme planet-theme writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(cmake-mode rainbow-delimiters rainbow-mode almost-mono-themes tao-theme default-text-scale wc-mode sorcery-theme planet-theme writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
