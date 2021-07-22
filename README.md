@@ -1,6 +1,6 @@
 # emacs configuration
 
-This is quite a minimal emacs configuration with LSP support for C/C++ and Golang.
+This is a emacs configuration with support for C++, Web development, Rust and Golang.
 
 ## Installation
 

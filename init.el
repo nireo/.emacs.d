@@ -226,26 +226,10 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-;; (use-package modus-themes
-;;   :ensure
-;;   :init
-;;   ;; Add all your customizations prior to loading the themes
-;;   (setq modus-themes-mode-line '3d
-;;         modus-themes-italic-constructs nil
-;;         modus-themes-bold-constructs nil
-;;         modus-themes-syntax 'yellow-comments
-;;         modus-themes-region 'no-extend)
-
-;;   ;; Load the theme files before enabling a theme
-;;   (modus-themes-load-themes)
-;;   :config
-;;   ;; Load the theme of your choice:
-;;   (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
-;;   :bind ("<f5>" . modus-themes-toggle))
-
-(use-package almost-mono-themes)
-
-(load-theme 'kaolin-dark t)
+(use-package kaolin-themes
+  :ensure t
+  :config
+  (load-theme 'kaolin-dark t))
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -518,11 +502,6 @@
 ;; Custom key bindings
 (global-set-key (kbd "C-/") 'comment-line)
 (global-set-key (kbd "C-?") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-w") 'kill-this-buffer)
-(global-set-key (kbd "C-s") 'save-buffer)
-(global-set-key (kbd "C-x |") 'split-window-right)
-(global-set-key (kbd "C-x _") 'split-window-below)
-(global-set-key (kbd "C-x \\") 'delete-window)
 
 ;; I have this bad habit of pressing this key combination, and if it doesn't exist it opens a
 ;; mail window
@@ -588,6 +567,12 @@
         (error "Buffer '%s' is not visiting a file!" buffer-name)
       (delete-file filename)
       (kill-buffer buffer))))
+
+(use-package spaceline
+  :ensure t
+  :config
+  (setq powerline-default-separator 'wave)
+  (spaceline-emacs-theme))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
