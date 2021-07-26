@@ -108,9 +108,11 @@
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
-(use-package rainbow-mode
-  :init
-    (add-hook 'prog-mode-hook 'rainbow-mode))
+;; Uncomment to highlight colors inside of code. Removed since #define in c/c++ keeps getting
+;; a color.
+;; (use-package rainbow-mode
+;;   :init
+;;     (add-hook 'prog-mode-hook 'rainbow-mode))
 
 (use-package cmake-mode)
 
@@ -200,7 +202,8 @@
 (use-package elcord
   :config
   (elcord-mode)
-  (setq elcord-use-major-mode-as-main-icon t))
+  (setq elcord-use-major-mode-as-main-icon t)
+  (setq elcord-quiet t))
 
 ;; Disable the menubar
 (menu-bar-mode -1)
@@ -227,9 +230,26 @@
 (setq visible-bell t)
 
 (use-package kaolin-themes
-  :ensure t
+  :defer t
+  :ensure t)
+
+(use-package modus-themes
+  :ensure
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-syntax 'alt-syntax
+        modus-themes-links 'background
+        modus-themes-region '(bg-only no-extend))
+
+  ;; Load the theme files before enabling a theme
+  (modus-themes-load-themes)
   :config
-  (load-theme 'kaolin-dark t))
+  ;; Load the theme of your choice:
+  (modus-themes-load-vivendi) ;; OR (modus-themes-load-vivendi)
+  :bind ("<f5>" . modus-themes-toggle))
+
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -245,7 +265,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Source Code Pro" :weight 'normal :height 125)
+(set-face-attribute 'default nil :font "LiterationMono NF" :weight 'normal :height 140)
 (set-face-attribute 'variable-pitch nil :family "Droid Sans Mono Nerd Font" :weight 'normal :height 140)
 
 ;; Projectile configuration
@@ -392,9 +412,10 @@
 ;; Focused writing environment
 (use-package writeroom-mode
   :ensure t
+  :defer t
   :config
-  (setq writeroom-bottom-divider-width 0))
-(global-set-key (kbd "<f12>") 'writeroom-mode)
+  (setq writeroom-bottom-divider-width 0)
+  (global-set-key (kbd "<f12>") 'writeroom-mode))
 
 (use-package vterm
   :ensure t)
@@ -404,6 +425,7 @@
 
 ;; Git integration
 (use-package magit
+  :defer t
   :bind (("C-x g" . magit-status)))
 
 ;; So I don't have to type many things twice
@@ -413,10 +435,13 @@
   (smartparens-global-mode))
 
 ;; Better looks by adding more icons
-(use-package all-the-icons)
+(use-package all-the-icons
+  :ensure t)
 
 ;; Add the same icons when using dired
 (use-package all-the-icons-dired
+  :ensure t
+  :defer t
   :config
   (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)
   (setq all-the-icons-dired-monochrome nil))
@@ -436,11 +461,14 @@
 (customize-set-variable 'ispell-extra-args '("--sug-mode=ultra"))
 (add-hook 'text-mode-hook 'flyspell-mode)
 
-;; Add writegood mode for better quality writing.
-(require 'writegood-mode)
-(global-set-key "\C-cg" 'writegood-mode)
-(global-set-key "\C-c\C-gg" 'writegood-grade-level)
-(global-set-key "\C-c\C-ge" 'writegood-reading-ease)
+;; Add writegood mode for finding problems in different texts
+(use-package writegood-mode
+  :ensure t
+  :defer t
+  :config
+  (global-set-key "\C-cg" 'writegood-mode)
+  (global-set-key "\C-c\C-gg" 'writegood-grade-level)
+  (global-set-key "\C-c\C-ge" 'writegood-reading-ease))
 
 
 ;; Setup some org-mode configuration.
@@ -544,19 +572,23 @@
 
 ;; Some dired configuration.
 (use-package dired-subtree
+  :ensure t
+  :defer t
   :config
   (bind-keys :map dired-mode-map
              ("i" . dired-subtree-insert)
              ("r" . dired-subtree-remove)))
 
 (use-package dired-narrow
+  :defer t
   :ensure t
   :bind (:map dired-mode-map
               ("/" . dired-narrow)))
 
 ;; Increase/decrease text size in all buffers.
 (use-package default-text-scale
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (defun kill-buffer-and-file (buffer-name)
   "Removes file connected to current buffer and kills buffer."
@@ -587,7 +619,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(cmake-mode rainbow-delimiters rainbow-mode almost-mono-themes tao-theme default-text-scale wc-mode sorcery-theme planet-theme writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
