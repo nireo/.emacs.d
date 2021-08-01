@@ -15,6 +15,7 @@
 
 ;; Display the time it took when starting up emacs.
 (defun display-startup-time ()
+  "Display startup time when opening Emacs."
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
                    (float-time
@@ -35,11 +36,13 @@
           gc-cons-percentage 0.1)))
 
 (defun nro/defer-garbage-collection-h ()
+  "Set the garbage collection threshold to 'most-positive-fixnum'."
   (setq gc-cons-threshold most-positive-fixnum))
 
 ;; Defer it so that commands launched immediately after will enjoy the
 ;; benefits.
 (defun nro/restore-garbage-collection-h ()
+  "Restore the garbage collection threshold back to a normal number."
   (run-at-time
    1 nil (lambda () (setq gc-cons-threshold 31457280))))
 
@@ -54,12 +57,6 @@
 (add-hook 'emacs-startup-hook
   (lambda ()
     (setq file-name-handler-alist nro--file-name-handler-alist)))
-
-(defun nro/lsp-ui-doc-show ()
-    (interactive)
-    (lsp-ui-doc-hide)
-    (lsp-ui-doc-show)
-    (lsp-ui-doc-show))
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -86,7 +83,6 @@
   (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
   (evil-define-key 'normal 'global (kbd "<leader>fb") 'lsp-format-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fr") 'lsp-format-region)
-  (evil-define-key 'normal 'global (kbd "<leader>dsh") 'nro/lsp-ui-doc-show)
   (evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>ne") 'flycheck-list-errors)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
@@ -116,13 +112,25 @@
 ;;   :init
 ;;     (add-hook 'prog-mode-hook 'rainbow-mode))
 
+;; Display errors in red error mode
+
+(add-hook 'prog-common-hook
+   (lambda ()
+   (font-lock-add-keywords nil
+   '(("\\<\\(FIX\\|FIXME\\|TODO\\|BUG\\|HACK\\):"
+          1 font-lock-warning-face t)))))
+
+
 (use-package cmake-mode
-  :ensure t)
+  :ensure t
+  :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
+         ("\\.cmake\\'" . cmake-mode)))
 
 (use-package rainbow-delimiters
   :ensure t
   :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -142,7 +150,7 @@
 (setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
 
 ;; Enable copypasting outside of emacs
-(setq x-select-enable-clipboard t)
+(setq select-enable-clipboard t)
 
 ;; Disable ring-bell
 (setq ring-bell-function 'ignore)
@@ -270,7 +278,7 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Ubuntu Mono" :weight 'normal :height 140)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono" :weight 'normal :height 140)
 (set-face-attribute 'variable-pitch nil :family "Ubuntu Mono" :weight 'normal :height 140)
 
 ;; Projectile configuration
@@ -291,6 +299,9 @@
   (define-key company-active-map [tab] 'company-complete)
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous))
+
+
+(global-set-key (kbd "TAB") #'company-indent-or-complete-common)
 
 (require 'lsp-mode)
 (add-hook 'go-mode-hook #'lsp-deferred)
@@ -577,6 +588,7 @@
 ;; Count all of the words
 (use-package wc-mode)
 (defun novel-count-words (&optional begin end)
+  "Count words in a document. Optionally you can provide BEGIN and END "
   (interactive "r")
   (let ((b (if mark-active begin (point-min)))
       (e (if mark-active end (point-max))))
