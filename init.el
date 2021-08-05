@@ -278,8 +278,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono" :weight 'normal :height 140)
-(set-face-attribute 'variable-pitch nil :family "Ubuntu Mono" :weight 'normal :height 140)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono" :weight 'normal :height 130)
+(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono" :weight 'normal :height 130)
 
 ;; Projectile configuration
 (use-package projectile
@@ -541,6 +541,7 @@
 ;; Fast selection for todos
 (setq org-use-fast-todo-selection t)
 
+
 ;; Use evil mode in org-mode
 (use-package evil-org
   :ensure t
@@ -552,6 +553,7 @@
               (evil-org-set-key-theme '(navigation insert textobjects additional calendar))))
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
+
 
 ;; Custom key bindings
 (global-set-key (kbd "C-/") 'comment-line)
@@ -595,6 +597,7 @@
     (message "Word count: %s" (how-many "\\w+" b e))))
 (global-set-key (kbd "C-c C-,") 'novel-count-words)
 
+
 ;; Some dired configuration.
 (use-package dired-subtree
   :ensure t
@@ -604,16 +607,19 @@
              ("i" . dired-subtree-insert)
              ("r" . dired-subtree-remove)))
 
+
 (use-package dired-narrow
   :defer t
   :ensure t
   :bind (:map dired-mode-map
               ("/" . dired-narrow)))
 
+
 ;; Increase/decrease text size in all buffers.
 (use-package default-text-scale
   :ensure t
   :defer t)
+
 
 (defun kill-buffer-and-file (buffer-name)
   (interactive "bKill buffer and its file:")
@@ -624,11 +630,32 @@
       (delete-file filename)
       (kill-buffer buffer))))
 
+
 (use-package spaceline
   :ensure t
   :config
   (setq powerline-default-separator 'wave)
   (spaceline-emacs-theme))
+
+
+(use-package org-roam
+      :ensure t
+      :init
+      (setq org-roam-v2-ack t)
+      :custom
+      (org-roam-directory (file-truename "~/docs/roam"))
+      :bind (("C-c n l" . org-roam-buffer-toggle)
+             ("C-c n f" . org-roam-node-find)
+             ("C-c n g" . org-roam-graph)
+             ("C-c n i" . org-roam-node-insert)
+             ("C-c n c" . org-roam-capture)
+             ;; Dailies
+             ("C-c n j" . org-roam-dailies-capture-today))
+      :config
+      (org-roam-setup)
+      ;; If using org-roam-protocol
+      (require 'org-roam-protocol))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
