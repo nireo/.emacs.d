@@ -6,3 +6,4 @@ transient/
 elpa/
 .cache/
 auto-save-list/
+org-roam.db
