@@ -246,22 +246,28 @@
   :defer t
   :ensure t)
 
-(use-package modus-themes
-  :ensure t
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-syntax 'yellow-comments
-        modus-themes-links 'background
-        modus-themes-region '(bg-only no-extend))
+;; (use-package modus-themes
+;;   :ensure t
+;;   :init
+;;   ;; Add all your customizations prior to loading the themes
+;;   (setq modus-themes-italic-constructs nil
+;;         modus-themes-bold-constructs nil
+;;         modus-themes-syntax 'yellow-comments
+;;         modus-themes-links 'background
+;;         modus-themes-region '(bg-only no-extend))
 
-  ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
-  :config
-  ;; Load the theme of your choice:
-  (modus-themes-load-vivendi) ;; OR (modus-themes-load-vivendi)
-  :bind ("<f5>" . modus-themes-toggle))
+;;   ;; Load the theme files before enabling a theme
+;;   (modus-themes-load-themes)
+;;   :config
+;;   ;; Load the theme of your choice:
+;;   (modus-themes-load-vivendi) ;; OR (modus-themes-load-vivendi)
+;;   :bind ("<f5>" . modus-themes-toggle))
+(use-package zenburn-theme
+  :ensure t)
+
+(setq zenburn-override-colors-alist
+      '(("zenburn-bg" . "#181818")))
+(load-theme 'zenburn t)
 
 
 ;; Add line number display
@@ -270,16 +276,20 @@
 
 (setq display-line-numbers-type 'relative)
 
+
 ;; Add line wrapping
 (global-visual-line-mode 1)
+
 
 ;; Remove the startup message
 (setq inhibit-startup-message t)
 (set-fringe-mode 10)
 
+
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono" :weight 'normal :height 130)
-(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono" :weight 'normal :height 130)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'normal :height 130)
+(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'normal :height 130)
+
 
 ;; Projectile configuration
 (use-package projectile
@@ -288,6 +298,7 @@
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
 
 ;; Company configuration
 (use-package company
@@ -656,6 +667,29 @@
       ;; If using org-roam-protocol
       (require 'org-roam-protocol))
 
+(use-package dashboard
+  :ensure t
+  :defer nil
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-items '((recents . 5)))
+  (setq dashboard-banner-logo-title "nireo's emacs")
+  (setq dashboard-startup-banner "~/.emacs.d/animgirl.png")
+  (setq dashboard-center-content t)
+  (setq dashboard-show-shortcuts nil)
+  (setq dashboard-set-init-info t)
+  (setq dashboard-init-info (format "%d packages loaded in %s"
+                                    (length package-activated-list) (emacs-init-time)))
+  (setq dashboard-set-footer nil)
+  (setq dashboard-set-navigator t)
+  (setq dashboard-navigator-buttons
+        `(;; line1
+          ((,nil
+            "Configuration github"
+            "Open Emacs configuration's github page on your browser"
+            (lambda (&rest _) (browse-url "https://github.com/nireo/.emacs.d"))
+            'default)))))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -670,7 +704,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
+   '(zenburn-theme plan9-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
