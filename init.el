@@ -167,6 +167,8 @@
 (set-terminal-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
+(fringe-mode '(4 . 0))
+
 ;; Set a warning when opening files larger than 100mb
 (setq large-file-warning-threshold 100000000)
 
@@ -608,7 +610,6 @@
     (message "Word count: %s" (how-many "\\w+" b e))))
 (global-set-key (kbd "C-c C-,") 'novel-count-words)
 
-
 ;; Some dired configuration.
 (use-package dired-subtree
   :ensure t
@@ -673,7 +674,7 @@
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-items '((recents . 5)))
-  (setq dashboard-banner-logo-title "nireo's emacs")
+  (setq dashboard-banner-logo-title "cutemacs")
   (setq dashboard-startup-banner "~/.emacs.d/animgirl.png")
   (setq dashboard-center-content t)
   (setq dashboard-show-shortcuts nil)
@@ -690,6 +691,23 @@
             (lambda (&rest _) (browse-url "https://github.com/nireo/.emacs.d"))
             'default)))))
 
+(defun nro/yank-filename ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                     default-directory
+                   (buffer-file-name))))
+    (when filename
+      (kill-new filename)
+      (message "Copied buffer file name '%s' to the clipboard." filename))))
+
+(defun nro/switch-theme (theme)
+  "Disable active themes and load THEME."
+  (interactive (list (intern (completing-read "Theme: "
+                               (->> (custom-available-themes)
+                                 (-map #'symbol-name))))))
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme theme 'no-confirm))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
