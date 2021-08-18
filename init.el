@@ -101,7 +101,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (setq evil-insert-state-cursor 'hbar)
+  ;; (setq evil-insert-state-cursor 'hbar)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -248,28 +248,25 @@
   :defer t
   :ensure t)
 
-;; (use-package modus-themes
-;;   :ensure t
-;;   :init
-;;   ;; Add all your customizations prior to loading the themes
-;;   (setq modus-themes-italic-constructs nil
-;;         modus-themes-bold-constructs nil
-;;         modus-themes-syntax 'yellow-comments
-;;         modus-themes-links 'background
-;;         modus-themes-region '(bg-only no-extend))
-
-;;   ;; Load the theme files before enabling a theme
-;;   (modus-themes-load-themes)
-;;   :config
-;;   ;; Load the theme of your choice:
-;;   (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
-;;   :bind ("<f5>" . modus-themes-toggle))
-
 (use-package foggy-night-theme
   :ensure t)
-(load-theme 'foggy-night t)
 
-(set-cursor-color "White")
+(use-package doom-themes
+  :ensure t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; or for treemacs users
+  (doom-themes-org-config))
+
+(use-package base16-theme
+  :ensure t
+  :config
+  (load-theme 'base16-black-metal-khold t))
 
 
 ;; Add line number display
@@ -725,7 +722,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
