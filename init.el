@@ -444,6 +444,22 @@
   (setq web-mode-code-indent-offset 2)   ; JS/JSX/TS/TSX
   (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
 
+(defun web-mode-init-prettier-hook ()
+  (add-node-modules-path)
+  (prettier-js-mode))
+
+(add-hook 'web-mode-hook  'web-mode-init-prettier-hook)
+
+(setq-default flycheck-disabled-checkers
+              (append flycheck-disabled-checkers
+                      '(javascript-jshint json-jsonlist)))
+
+(use-package typescript-mode
+  :ensure t
+  :config
+  (setq typescript-indent-level 2)
+  (add-hook 'typescript-mode #'subword-mode))
+
 ;; Focused writing environment
 (use-package writeroom-mode
   :ensure t
