@@ -718,6 +718,10 @@
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
+(use-package nyan-mode
+  :ensure t
+  :config (nyan-mode t))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -738,7 +742,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(prettier-js base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
