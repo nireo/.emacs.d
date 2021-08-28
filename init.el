@@ -183,8 +183,6 @@
 
 (setq echo-keystrokes 0.1)
 
-(setq mode-line-position '(line-number-mode ("%l")))
-
 ;; Show empty scratch buffer and make the mode org mode
 (setq initial-scratch-message nil)
 (setq initial-major-mode 'org-mode)
@@ -285,8 +283,8 @@
 
 
 ;; Set font
-(set-face-attribute 'default nil :font "Monospace" :weight 'normal :height 130)
-(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'normal :height 130)
+(set-face-attribute 'default nil :font "Monospace" :weight 'normal :height 145)
+(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'normal :height 145)
 
 
 ;; Projectile configuration
@@ -677,7 +675,7 @@
   :defer nil
   :config
   (dashboard-setup-startup-hook)
-  (setq dashboard-items '((recents . 8)))
+  (setq dashboard-items '((recents . 12)))
   (setq dashboard-banner-logo-title "cutemacs")
   (setq dashboard-startup-banner "~/.emacs.d/animgirl.png")
   (setq dashboard-center-content t)
@@ -718,10 +716,28 @@
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
-(use-package nyan-mode
-  :ensure t
-  :config (nyan-mode t))
 
+(sml/setup)
+
+(use-package yaml-mode
+  :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
+  :ensure yaml-mode
+  :defer t)
+
+(use-package emmet-mode
+  :custom
+  (emmet-move-cursor-between-quotes t)
+  :custom-face
+  (emmet-preview-input ((t (:inherit lazy-highlight))))
+  :bind
+  ( :map emmet-mode-keymap
+    ([remap yas-expand] . emmet-expand-line)
+    ("M-n"  . emmet-next-edit-point)
+    ("M-p"  . emmet-prev-edit-point)
+    ("C-c p" . emmet-preview-mode))
+  :hook
+  (web-mode . emmet-mode)
+  (css-mode . emmet-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -742,7 +758,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(prettier-js base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(smart-mode-line prettier-js base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
