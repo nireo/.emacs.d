@@ -144,6 +144,8 @@
   :ensure t)
 
 ;; Change indentation
+
+
 (setq-default tab-width 2)
 (setq-default standard-indent 2)
 (setq-default electric-indent-inhibit t)
@@ -262,9 +264,18 @@
   (doom-themes-org-config))
 
 (use-package base16-theme
+  :ensure t)
+  ;; (load-theme 'base16-black-metal-khold t))
+
+(use-package doom-themes
   :ensure t
   :config
-  (load-theme 'base16-black-metal-khold t))
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic nil)
+  (load-theme 'doom-dark+ t)
+
+  (doom-themes-visual-bell-config)
+  (doom-themes-org-config))
 
 
 ;; Add line number display
@@ -283,8 +294,8 @@
 
 
 ;; Set font
-(set-face-attribute 'default nil :font "Monospace" :weight 'normal :height 145)
-(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'normal :height 145)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono" :weight 'normal :height 145)
+(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono" :weight 'normal :height 145)
 
 
 ;; Projectile configuration
@@ -663,12 +674,11 @@
              ("C-c n g" . org-roam-graph)
              ("C-c n i" . org-roam-node-insert)
              ("C-c n c" . org-roam-capture)
-             ;; Dailies
              ("C-c n j" . org-roam-dailies-capture-today))
       :config
       (org-roam-setup)
-      ;; If using org-roam-protocol
       (require 'org-roam-protocol))
+
 
 (use-package dashboard
   :ensure t
@@ -712,11 +722,6 @@
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme theme 'no-confirm))
 
-(defun nro/edit-emacs-configuration ()
-  (interactive)
-  (find-file "~/.emacs.d/init.el"))
-
-
 (sml/setup)
 
 (use-package yaml-mode
@@ -758,7 +763,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(smart-mode-line prettier-js base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(yaml-mode smart-mode-line prettier-js base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
@@ -786,4 +791,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(emmet-preview-input ((t (:inherit lazy-highlight)))))
