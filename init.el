@@ -106,20 +106,6 @@
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
-;; Uncomment to highlight colors inside of code. Removed since #define in c/c++ keeps getting
-;; a color.
-;; (use-package rainbow-mode
-;;   :init
-;;     (add-hook 'prog-mode-hook 'rainbow-mode))
-
-;; Display errors in red error mode
-
-(add-hook 'prog-common-hook
-   (lambda ()
-   (font-lock-add-keywords nil
-   '(("\\<\\(FIX\\|FIXME\\|TODO\\|BUG\\|HACK\\):"
-          1 font-lock-warning-face t)))))
-
 
 (use-package cmake-mode
   :ensure t
@@ -251,18 +237,6 @@
 (use-package foggy-night-theme
   :ensure t)
 
-(use-package doom-themes
-  :ensure t
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; or for treemacs users
-  (doom-themes-org-config))
-
 (use-package base16-theme
   :ensure t)
   ;; (load-theme 'base16-black-metal-khold t))
@@ -272,7 +246,7 @@
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic nil)
-  (load-theme 'doom-dark+ t)
+  (load-theme 'doom-sourcerer t)
 
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
@@ -498,14 +472,6 @@
 (use-package all-the-icons
   :ensure t)
 
-;; Add the same icons when using dired
-(use-package all-the-icons-dired
-  :ensure t
-  :defer t
-  :config
-  (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)
-  (setq all-the-icons-dired-monochrome nil))
-
 (add-hook 'text-mode-hook
           'variable-pitch-mode)
 
@@ -631,23 +597,6 @@
     (message "Word count: %s" (how-many "\\w+" b e))))
 (global-set-key (kbd "C-c C-,") 'novel-count-words)
 
-;; Some dired configuration.
-(use-package dired-subtree
-  :ensure t
-  :defer t
-  :config
-  (bind-keys :map dired-mode-map
-             ("i" . dired-subtree-insert)
-             ("r" . dired-subtree-remove)))
-
-
-(use-package dired-narrow
-  :defer t
-  :ensure t
-  :bind (:map dired-mode-map
-              ("/" . dired-narrow)))
-
-
 ;; Increase/decrease text size in all buffers.
 (use-package default-text-scale
   :ensure t
@@ -679,13 +628,29 @@
       (org-roam-setup)
       (require 'org-roam-protocol))
 
+(use-package no-littering
+  :ensure t)
+
+(setq auto-save-file-name-transforms
+      `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+
+(use-package hl-todo
+  :ensure t
+  :hook (prog-mode . hl-todo-mode)
+  :config
+  (setq hl-todo-keyword-faces
+    '(("FIXME" error bold)
+      ("TODO" org-todo)
+      ("DONE" org-done)
+      ("NOTE" bold))))
 
 (use-package dashboard
   :ensure t
   :defer nil
   :config
   (dashboard-setup-startup-hook)
-  (setq dashboard-items '((recents . 12)))
+  (setq dashboard-items '((recents . 8)
+                          (bookmarks . 5)))
   (setq dashboard-banner-logo-title "cutemacs")
   (setq dashboard-startup-banner "~/.emacs.d/animgirl.png")
   (setq dashboard-center-content t)
