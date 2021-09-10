@@ -709,6 +709,46 @@
   (web-mode . emmet-mode)
   (css-mode . emmet-mode))
 
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-page)
+  (setq pdf-annot-activate-created-annotations t)
+  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+  (define-key pdf-view-mode-map (kbd "C-r") 'isearch-backward))
+
+(use-package company-auctex
+  :ensure t
+  :init (company-auctex-init))
+
+(use-package tex
+  :ensure auctex
+  :mode ("\\.tex\\'" . latex-mode)
+  :config (progn
+      (setq TeX-source-correlate-mode t)
+      (setq TeX-source-correlate-method 'synctex)
+      (setq TeX-auto-save t)
+      (setq TeX-parse-self t)
+      (setq-default TeX-master "paper.tex")
+      (setq reftex-plug-into-AUCTeX t)
+      (pdf-tools-install)
+      (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+      TeX-source-correlate-start-server t)
+      ;; Update PDF buffers after successful LaTeX runs
+      (add-hook 'TeX-after-compilation-finished-functions
+          #'TeX-revert-document-buffer)
+      (add-hook 'LaTeX-mode-hook
+          (lambda ()
+      (reftex-mode t)
+      (flyspell-mode t)))))
+
+(use-package auctex-latexmk
+  :ensure t
+  :config
+  (auctex-latexmk-setup)
+  (setq auctex-latexmk-inherit-TeX-PDF-mode t))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
