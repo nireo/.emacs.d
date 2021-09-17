@@ -84,11 +84,8 @@
   (evil-define-key 'normal 'global (kbd "<leader>fb") 'lsp-format-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>fr") 'lsp-format-region)
   (evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
-  (evil-define-key 'normal 'global (kbd "<leader>ne") 'flycheck-list-errors)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
 
-
-  (evil-define-key 'normal 'global (kbd "<leader>na") 'org-cycle-agenda-files)
 
   (evil-define-key 'normal 'global (kbd "<leader>wr") 'split-window-right)
   (evil-define-key 'normal 'global (kbd "<leader>wb") 'split-window-below)
@@ -230,17 +227,6 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-(use-package kaolin-themes
-  :defer t
-  :ensure t)
-
-(use-package foggy-night-theme
-  :ensure t)
-
-(use-package base16-theme
-  :ensure t)
-  ;; (load-theme 'base16-black-metal-khold t))
-
 (use-package doom-themes
   :ensure t
   :config
@@ -261,16 +247,13 @@
 ;; Add line wrapping
 (global-visual-line-mode 1)
 
-
 ;; Remove the startup message
 (setq inhibit-startup-message t)
 (set-fringe-mode 10)
 
-
 ;; Set font
 (set-face-attribute 'default nil :font "DejaVu Sans Mono" :weight 'normal :height 145)
 (set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono" :weight 'normal :height 145)
-
 
 ;; Projectile configuration
 (use-package projectile
@@ -279,7 +262,6 @@
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
-
 
 ;; Company configuration
 (use-package company
@@ -292,10 +274,10 @@
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 
-
 (global-set-key (kbd "TAB") #'company-indent-or-complete-common)
 
-(require 'lsp-mode)
+(use-package lsp-mode
+  :ensure t)
 (add-hook 'go-mode-hook #'lsp-deferred)
 
 ;; Since clangd in quite fast
@@ -517,7 +499,8 @@
                         '(("^ *\\([-]\\) "
                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(require 'org-superstar)
+(use-package org-superstar
+  :ensure t)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
 (use-package org
@@ -573,12 +556,6 @@
   (lambda()
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
-;; Insert date at cursor.
-(defun insert-date ()
-  (interactive "*")
-  (insert (format-time-string "%F")))
-(global-set-key (kbd "C-c C-.") #'insert-date)
-
 ;; Dired configuration
 (require 'dired-x)
 
@@ -586,16 +563,6 @@
 (setq dired-recursive-copies 'always)
 (setq dired-recursive-deletes 'always)
 (setq dired-ls-F-marks-symlinks t)
-
-;; Count all of the words
-(use-package wc-mode)
-(defun novel-count-words (&optional begin end)
-  "Count words in a document. Optionally you can provide BEGIN and END "
-  (interactive "r")
-  (let ((b (if mark-active begin (point-min)))
-      (e (if mark-active end (point-max))))
-    (message "Word count: %s" (how-many "\\w+" b e))))
-(global-set-key (kbd "C-c C-,") 'novel-count-words)
 
 ;; Increase/decrease text size in all buffers.
 (use-package default-text-scale
@@ -759,7 +726,7 @@
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(custom-safe-themes
-   '("76c36aaf67479c7b65aba53988ae28f7f0fc386d0e6ec26ee2459061ef232a35" "6bffac6f528e43839861be1d7facf8054b57edc1ffc70f7be885da7d181ecbac" "0f7fa4835d02a927d7d738a0d2d464c38be079913f9d4aba9c97f054e67b8db9" "0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
+   '("84d2f9eeb3f82d619ca4bfffe5f157282f4779732f48a5ac1484d94d5ff5b279" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "76c36aaf67479c7b65aba53988ae28f7f0fc386d0e6ec26ee2459061ef232a35" "6bffac6f528e43839861be1d7facf8054b57edc1ffc70f7be885da7d181ecbac" "0f7fa4835d02a927d7d738a0d2d464c38be079913f9d4aba9c97f054e67b8db9" "0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
  '(helm-minibuffer-history-key "M-p")
  '(ispell-extra-args '("--sug-mode=ultra"))
  '(ispell-program-name "aspell")
@@ -768,7 +735,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(yaml-mode smart-mode-line prettier-js base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
