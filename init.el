@@ -227,12 +227,27 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
+(use-package modus-themes
+  :ensure
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend))
+
+  ;; Load the theme files before enabling a theme
+  (modus-themes-load-themes)
+  :config
+  ;; Load the theme of your choice:
+  (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
+  :bind ("<f5>" . modus-themes-toggle))
+
+
 (use-package doom-themes
   :ensure t
   :config
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic nil)
-  (load-theme 'doom-sourcerer t)
 
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
@@ -300,6 +315,10 @@
   (setq lsp-eldoc-hook nil)
   (setq lsp-enable-symbol-highlighting nil)
   (setq lsp-signature-auto-activate nil))
+
+(use-package eldoc
+  :diminish
+  :hook (after-init . global-eldoc-mode))
 
 (use-package yasnippet
   :ensure t
@@ -424,6 +443,10 @@
   :config
   (setq typescript-indent-level 2)
   (add-hook 'typescript-mode #'subword-mode))
+
+(use-package json-mode
+  :ensure t
+  :mode (("\\.json\\'" . json-mode)))
 
 ;; Focused writing environment
 (use-package writeroom-mode
@@ -735,7 +758,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js base16-theme doom-themes foggy-night-theme sorcery-theme zenburn-theme yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode rust-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
