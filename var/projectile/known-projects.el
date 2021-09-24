@@ -1,0 +1,1 @@
+("~/dev/asmlai/" "~/.emacs.d/" "~/dev/clai/")
