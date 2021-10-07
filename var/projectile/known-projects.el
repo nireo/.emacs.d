@@ -1,1 +1,1 @@
-("~/dev/asmlai/" "~/.emacs.d/" "~/dev/clai/")
+("~/.emacs.d/" "~/dev/clai/" "~/dev/asmlai/" "~/go/src/github.com/nireo/goshop/" "~/go/src/github.com/nireo/kantadb/" "~/dev/kantaplus/")

@@ -98,7 +98,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  ;; (setq evil-insert-state-cursor 'hbar)
+  (setq evil-insert-state-cursor 'hbar)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -127,8 +127,6 @@
   :ensure t)
 
 ;; Change indentation
-
-
 (setq-default tab-width 2)
 (setq-default standard-indent 2)
 (setq-default electric-indent-inhibit t)
@@ -237,12 +235,11 @@
         modus-themes-syntax 'yellow-comments)
 
   ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
-  :config
+  ;; (modus-themes-load-themes)
+  ;; :config
   ;; Load the theme of your choice:
-  (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
+  ;; (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
   :bind ("<f5>" . modus-themes-toggle))
-
 
 (use-package doom-themes
   :ensure t
@@ -253,6 +250,7 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
+(load-theme 'base16-black-metal-immortal t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -268,8 +266,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'normal :height 145)
-(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'normal :height 145)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'normal :height 150)
+(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'normal :height 150)
 
 ;; Projectile configuration
 (use-package projectile
@@ -548,7 +546,6 @@
 ;; Fast selection for todos
 (setq org-use-fast-todo-selection t)
 
-
 ;; Use evil mode in org-mode
 (use-package evil-org
   :ensure t
@@ -592,7 +589,6 @@
 (use-package default-text-scale
   :ensure t
   :defer t)
-
 
 (defun kill-buffer-and-file (buffer-name)
   (interactive "bKill buffer and its file:")
@@ -641,8 +637,8 @@
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-items '((recents . 8)
-                          (bookmarks . 5)))
-  (setq dashboard-banner-logo-title "cutemacs")
+                          (projects . 5)))
+  (setq dashboard-banner-logo-title "lainmacs")
   (setq dashboard-startup-banner "~/.emacs.d/animgirl.png")
   (setq dashboard-center-content t)
   (setq dashboard-show-shortcuts nil)
@@ -670,6 +666,7 @@
       (kill-new filename)
       (message "Copied buffer file name '%s' to the clipboard." filename))))
 
+
 (defun nro/switch-theme (theme)
   "Disable active themes and load THEME."
   (interactive (list (intern (completing-read "Theme: "
@@ -678,24 +675,21 @@
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme theme 'no-confirm))
 
+
 (sml/setup)
+
 
 (use-package yaml-mode
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
   :ensure yaml-mode
   :defer t)
 
+
 (use-package emmet-mode
   :custom
   (emmet-move-cursor-between-quotes t)
   :custom-face
   (emmet-preview-input ((t (:inherit lazy-highlight))))
-  :bind
-  ( :map emmet-mode-keymap
-    ([remap yas-expand] . emmet-expand-line)
-    ("M-n"  . emmet-next-edit-point)
-    ("M-p"  . emmet-prev-edit-point)
-    ("C-c p" . emmet-preview-mode))
   :hook
   (web-mode . emmet-mode)
   (css-mode . emmet-mode))
@@ -719,7 +713,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(anti-zenburn-theme smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
