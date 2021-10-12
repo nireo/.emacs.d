@@ -82,14 +82,8 @@
   ;; Other leader keybindings
   (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
   (evil-define-key 'normal 'global (kbd "<leader>fb") 'lsp-format-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>fr") 'lsp-format-region)
   (evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
-
-
-  (evil-define-key 'normal 'global (kbd "<leader>wr") 'split-window-right)
-  (evil-define-key 'normal 'global (kbd "<leader>wb") 'split-window-below)
-  (evil-define-key 'normal 'global (kbd "<leader>dw") 'delete-window)
 
   ;; Save a file.
   (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
@@ -119,12 +113,8 @@
 (dolist (mode '(org-mode-hook
                 term-mode-hook
                 shell-mode-hook
-                eshell-mode-hook
                 vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-(use-package haskell-mode
-  :ensure t)
 
 ;; Change indentation
 (setq-default tab-width 2)
@@ -235,10 +225,10 @@
         modus-themes-syntax 'yellow-comments)
 
   ;; Load the theme files before enabling a theme
-  ;; (modus-themes-load-themes)
-  ;; :config
+  (modus-themes-load-themes)
+  :config
   ;; Load the theme of your choice:
-  ;; (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
+  (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
   :bind ("<f5>" . modus-themes-toggle))
 
 (use-package doom-themes
@@ -250,7 +240,8 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
-(load-theme 'base16-black-metal-immortal t)
+;; good theme (load-theme 'base16-black-metal-immortal t)
+;; good theme (load-theme 'doom-miramare t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -266,8 +257,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'normal :height 150)
-(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'normal :height 150)
+(set-face-attribute 'default nil :font "Ubuntu Mono Nerd Font" :weight 'normal :height 150)
+(set-face-attribute 'variable-pitch nil :family "Ubuntu Mono Nerd Font" :weight 'normal :height 150)
 
 ;; Projectile configuration
 (use-package projectile
@@ -446,14 +437,6 @@
 (use-package json-mode
   :ensure t
   :mode (("\\.json\\'" . json-mode)))
-
-;; Focused writing environment
-(use-package writeroom-mode
-  :ensure t
-  :defer t
-  :config
-  (setq writeroom-bottom-divider-width 0)
-  (global-set-key (kbd "<f12>") 'writeroom-mode))
 
 (use-package vterm
   :ensure t)
@@ -678,7 +661,6 @@
 
 (sml/setup)
 
-
 (use-package yaml-mode
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
   :ensure yaml-mode
@@ -693,6 +675,15 @@
   :hook
   (web-mode . emmet-mode)
   (css-mode . emmet-mode))
+
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+
+(use-package dockerfile-mode
+  :ensure t)
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
