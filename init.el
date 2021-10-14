@@ -222,14 +222,14 @@
   (setq modus-themes-italic-constructs nil
         modus-themes-bold-constructs nil
         modus-themes-region '(bg-only no-extend)
-        modus-themes-syntax 'yellow-comments)
+        modus-themes-syntax 'yellow-comments))
 
   ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
-  :config
-  ;; Load the theme of your choice:
-  (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
-  :bind ("<f5>" . modus-themes-toggle))
+  ;; (modus-themes-load-themes)
+  ;; :config
+  ;; ;; Load the theme of your choice:
+  ;; (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
+  ;; :bind ("<f5>" . modus-themes-toggle))
 
 (use-package doom-themes
   :ensure t
@@ -240,8 +240,7 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
-;; good theme (load-theme 'base16-black-metal-immortal t)
-;; good theme (load-theme 'doom-miramare t)
+(load-theme 'base16-black-metal-immortal t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -467,22 +466,11 @@
                           (plain-list-item . nil)))
 (setq org-cycle-separator-lines 1)
 (setq org-adapt-indentation nil)
-(setq org-indent-indentation-per-level 1)
 
 ;; Add spell checking when using text mode.
 (customize-set-variable 'ispell-program-name "aspell")
 (customize-set-variable 'ispell-extra-args '("--sug-mode=ultra"))
 (add-hook 'text-mode-hook 'flyspell-mode)
-
-;; Add writegood mode for finding problems in different texts
-(use-package writegood-mode
-  :ensure t
-  :defer t
-  :config
-  (global-set-key "\C-cg" 'writegood-mode)
-  (global-set-key "\C-c\C-gg" 'writegood-grade-level)
-  (global-set-key "\C-c\C-ge" 'writegood-reading-ease))
-
 
 ;; Setup some org-mode configuration.
 (setq org-modules '(org-habit))
@@ -490,7 +478,6 @@
   '(org-load-modules-maybe t))
 (setq org-default-notes-file "~/docs/org/notes.org")
 (setq org-habit-graph-column 80)
-(setq org-habit-show-habits-only-for-today nil)
 
 (defun org-mode-setup ()
   (org-indent-mode)
@@ -573,15 +560,6 @@
   :ensure t
   :defer t)
 
-(defun kill-buffer-and-file (buffer-name)
-  (interactive "bKill buffer and its file:")
-  (let* ((buffer (get-buffer buffer-name))
-         (filename (buffer-file-name buffer)))
-    (if (not (and filename (file-exists-p filename)))
-        (error "Buffer '%s' is not visiting a file!" buffer-name)
-      (delete-file filename)
-      (kill-buffer buffer))))
-
 (use-package org-roam
       :ensure t
       :init
@@ -613,31 +591,6 @@
       ("TODO" org-todo)
       ("DONE" org-done)
       ("NOTE" bold))))
-
-(use-package dashboard
-  :ensure t
-  :defer nil
-  :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-items '((recents . 8)
-                          (projects . 5)))
-  (setq dashboard-banner-logo-title "lainmacs")
-  (setq dashboard-startup-banner "~/.emacs.d/animgirl.png")
-  (setq dashboard-center-content t)
-  (setq dashboard-show-shortcuts nil)
-  (setq dashboard-set-init-info t)
-  (setq dashboard-init-info (format "%d packages loaded in %s"
-                                    (length package-activated-list) (emacs-init-time)))
-  (setq dashboard-set-footer nil)
-  (setq dashboard-set-navigator t)
-  (setq dashboard-navigator-buttons
-        `(;; line1
-          ((,nil
-            "Configuration github"
-            "Open Emacs configuration's github page on your browser"
-            (lambda (&rest _) (browse-url "https://github.com/nireo/.emacs.d"))
-            'default)))))
-
 
 (defun nro/yank-filename ()
   "Copy the current buffer file name to the clipboard."
