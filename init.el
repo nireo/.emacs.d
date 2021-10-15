@@ -1,5 +1,4 @@
 ;; -*- lexical-binding: t; -*-
-
 ;; Enable the package manager
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -92,7 +91,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (setq evil-insert-state-cursor 'hbar)
+  (setq evil-insert-state-cursor 'block)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -140,11 +139,11 @@
 (set-terminal-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
+;; 4 left 0 right
 (fringe-mode '(4 . 0))
 
-;; Set a warning when opening files larger than 100mb
-(setq large-file-warning-threshold 100000000)
-
+;; Set a warning when opening files larger than 200mb
+(setq large-file-warning-threshold 200000000)
 
 ;; Disable cursor blinking
 (blink-cursor-mode 0)
@@ -162,9 +161,6 @@
 
 ;; Cleanup whitespaces
 (add-hook 'before-save-hook 'whitespace-cleanup)
-
-;; Kill the current buffer rather than askin which buffer
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
 
 (use-package helm
   :ensure t
@@ -215,22 +211,6 @@
 ;; Set up the visible bell
 (setq visible-bell t)
 
-(use-package modus-themes
-  :ensure
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend)
-        modus-themes-syntax 'yellow-comments))
-
-  ;; Load the theme files before enabling a theme
-  ;; (modus-themes-load-themes)
-  ;; :config
-  ;; ;; Load the theme of your choice:
-  ;; (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
-  ;; :bind ("<f5>" . modus-themes-toggle))
-
 (use-package doom-themes
   :ensure t
   :config
@@ -240,7 +220,8 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
-(load-theme 'base16-black-metal-immortal t)
+;; (load-theme 'base16-black-metal-immortal t)
+(load-theme 'doom-sourcerer t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -256,8 +237,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Ubuntu Mono Nerd Font" :weight 'normal :height 150)
-(set-face-attribute 'variable-pitch nil :family "Ubuntu Mono Nerd Font" :weight 'normal :height 150)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'normal :height 130)
+(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'normal :height 130)
 
 ;; Projectile configuration
 (use-package projectile
@@ -389,12 +370,6 @@
 
 ;; Revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
-
-;; Resize bindings
-(global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
-(global-set-key (kbd "s-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "s-C-<down>") 'shrink-window)
-(global-set-key (kbd "s-C-<up>") 'enlarge-window)
 
 ;; For markdown editing
 (use-package markdown-mode
@@ -592,16 +567,18 @@
       ("DONE" org-done)
       ("NOTE" bold))))
 
-(defun nro/yank-filename ()
-  "Copy the current buffer file name to the clipboard."
-  (interactive)
-  (let ((filename (if (equal major-mode 'dired-mode)
-                     default-directory
-                   (buffer-file-name))))
-    (when filename
-      (kill-new filename)
-      (message "Copied buffer file name '%s' to the clipboard." filename))))
+(defvar nro/good-themes '(doom-solarized doom-sourcerer doom-gruvbox doom-zenburn base16-black-metal-immortal))
 
+(defun nro/theme-cycle ()
+  "Cycle through themes from `nro/theme-known-themes' in succession."
+  (interactive)
+  (let* ((current (car custom-enabled-themes))
+         (next (or (cadr (memq current nro/good-themes))
+                   (car nro/good-themes))))
+    (me/theme-disable-themes)
+    (when next
+      (load-theme next t))
+    (message "%s" next)))
 
 (defun nro/switch-theme (theme)
   "Disable active themes and load THEME."
@@ -637,6 +614,10 @@
   :ensure t)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
+(use-package anzu-mode
+  :ensure t
+  :config
+  (global-anzu-mode +1))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -648,7 +629,7 @@
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(custom-safe-themes
-   '("84d2f9eeb3f82d619ca4bfffe5f157282f4779732f48a5ac1484d94d5ff5b279" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "76c36aaf67479c7b65aba53988ae28f7f0fc386d0e6ec26ee2459061ef232a35" "6bffac6f528e43839861be1d7facf8054b57edc1ffc70f7be885da7d181ecbac" "0f7fa4835d02a927d7d738a0d2d464c38be079913f9d4aba9c97f054e67b8db9" "0e2a7e1e632dd38a8e0227d2227cb8849f877dd878afb8219cb6bcdd02068a52" "1623aa627fecd5877246f48199b8e2856647c99c6acdab506173f9bb8b0a41ac" default))
+   '(default))
  '(helm-minibuffer-history-key "M-p")
  '(ispell-extra-args '("--sug-mode=ultra"))
  '(ispell-program-name "aspell")
