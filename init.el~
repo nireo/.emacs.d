@@ -237,8 +237,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'normal :height 130)
-(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'normal :height 130)
+(set-face-attribute 'default nil :font "Input Mono Narrow" :weight 'normal :height 130)
+(set-face-attribute 'variable-pitch nil :family "Input Mono Narrow" :weight 'normal :height 130)
 
 ;; Projectile configuration
 (use-package projectile
@@ -614,22 +614,10 @@
   :ensure t)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
-(defun code-compile ()
-  (interactive)
-  (unless (file-exists-p "Makefile")
-    (set (make-local-variable 'compile-command)
-     (let ((file (file-name-nondirectory buffer-file-name)))
-       (format "%s -o %s %s"
-           (if  (equal (file-name-extension file) "cpp") "g++" "gcc" )
-           (file-name-sans-extension file)
-           file)))
-    (compile compile-command)))
-
-(global-set-key [f9] 'code-compile)
-
-(use-package modern-cpp-font-lock
-  :ensure t)
-(modern-c++-font-lock-global-mode t)
+(use-package anzu-mode
+  :ensure t
+  :config
+  (global-anzu-mode +1))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
