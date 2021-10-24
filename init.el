@@ -116,8 +116,8 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; Change indentation
-(setq-default tab-width 2)
-(setq-default standard-indent 2)
+(setq-default tab-width 4)
+(setq-default standard-indent 4)
 (setq-default electric-indent-inhibit t)
 (setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
 
@@ -220,8 +220,20 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
-;; (load-theme 'base16-black-metal-immortal t)
+(use-package modus-themes
+  :ensure
+  :init
+  (setq modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend)))
+  ;; (modus-themes-load-themes)
+  ;; :config
+  ;; (modus-themes-load-vivendi)
+  ;; :bind ("<f5>" . modus-themes-toggle))
+
 (load-theme 'doom-sourcerer t)
+;; (load-theme 'base16-black-metal-immortal t)
+;; (load-theme 'doom-sourcerer t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -237,8 +249,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'normal :height 130)
-(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'normal :height 130)
+(set-face-attribute 'default nil :font "Noto Sans Mono" :weight 'normal :height 140)
+(set-face-attribute 'variable-pitch nil :family "Noto Sans Mono" :weight 'normal :height 140)
 
 ;; Projectile configuration
 (use-package projectile
@@ -630,6 +642,19 @@
 (use-package modern-cpp-font-lock
   :ensure t)
 (modern-c++-font-lock-global-mode t)
+
+(defun kill-other-buffers ()
+  "Kill all other buffers."
+  (interactive)
+  (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
+
+(defun kill-dired-buffers ()
+  "Kill all open dired buffers."
+  (interactive)
+  (mapc (lambda (buffer)
+          (when (eq 'dired-mode (buffer-local-value 'major-mode buffer))
+            (kill-buffer buffer)))
+        (buffer-list)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
