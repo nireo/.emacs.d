@@ -22,8 +22,6 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-
 ;; Some performance boosters.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
@@ -220,19 +218,8 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
-(use-package modus-themes
-  :ensure
-  :init
-  (setq modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend)))
-  ;; (modus-themes-load-themes)
-  ;; :config
-  ;; (modus-themes-load-vivendi)
-  ;; :bind ("<f5>" . modus-themes-toggle))
-
-(load-theme 'doom-sourcerer t)
-;; (load-theme 'base16-black-metal-immortal t)
+;; (load-theme 'doom-sourcerer t)
+(load-theme 'base16-black-metal-immortal t)
 ;; (load-theme 'doom-sourcerer t)
 
 ;; Add line number display
@@ -249,8 +236,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Noto Sans Mono" :weight 'normal :height 140)
-(set-face-attribute 'variable-pitch nil :family "Noto Sans Mono" :weight 'normal :height 140)
+(set-face-attribute 'default nil :font "Meslo LG S" :weight 'normal :height 150)
+(set-face-attribute 'variable-pitch nil :family "Meslo LG S" :weight 'normal :height 150)
 
 ;; Projectile configuration
 (use-package projectile
@@ -275,13 +262,16 @@
 
 (use-package lsp-mode
   :ensure t)
+
+(setq lsp-keymap-prefix "C-c l")
+(define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+
 (add-hook 'go-mode-hook #'lsp-deferred)
 
 ;; Since clangd in quite fast
 (setq lsp-idle-delay 0.1)
 (setq lsp-log-io nil)
 
-(setq lsp-keymap-prefix "C-c l")
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
@@ -306,6 +296,8 @@
   :ensure t
   :config
   (yas-global-mode 1))
+
+(define-key yas-keymap (kbd "<return>") 'yas/exit-all-snippets)
 
 (use-package flycheck
   :ensure t
@@ -601,13 +593,14 @@
   (load-theme theme 'no-confirm))
 
 
-(sml/setup)
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 (use-package yaml-mode
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
   :ensure yaml-mode
   :defer t)
-
 
 (use-package emmet-mode
   :custom
@@ -656,6 +649,13 @@
             (kill-buffer buffer)))
         (buffer-list)))
 
+(defun font-names-list ()
+  "Get list of names of installed fonts,which can be used to set font."
+  (seq-filter (lambda (font)
+                (when-let ((info (font-info font)))
+                  (string-match-p "spacing=100" (aref info 1))))
+              (font-family-list)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -674,7 +674,7 @@
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(anti-zenburn-theme smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(doom-modeline plan9-theme anti-zenburn-theme smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
