@@ -1,0 +1,57 @@
+# -*- mode: snippet; require-final-newline: t -*-
+# name: implementation
+# key: .cpp
+# condition: (string-suffix-p ".cpp" (buffer-file-name))
+# type: command
+# --
+;; Top line
+(let ((file-name (file-name-nondirectory (buffer-file-name))))
+  ;; Top line
+  (insert (format "// %s" file-name))
+  (dotimes (i (- 70 (current-column)))
+    (insert " "))
+  (insert "-*-C++-*-")
+  (newline))
+
+;; Include
+(insert "#include <" (bde-component-name) ".h>")
+(newline 2)
+
+;; Namespaces
+(let ((package-name (bde-package-name)))
+  (insert "#include <ball_log.h>
+
+namespace BloombergLP {
+namespace " package-name " {
+
+namespace {
+
+const char k_LOG_CATEGORY[] = \""
+(upcase package-name)
+"."
+(let ((component-name (bde-component-name)))
+  (upcase (substring component-name (1+ (string-match "_" component-name)))))
+"\";
+
+}  // close unnamed namespace
+
+
+
+}  // close package namespace
+}  // close enterprise namespace")
+  (newline 2))
+
+;; Footer
+(insert "// ----------------------------------------------------------------------------
+// NOTICE:
+//      Copyright (C) Bloomberg L.P., " (format-time-string "%Y") "
+//      All Rights Reserved.
+//      Property of Bloomberg L.P. (BLP)
+//      This software is made available solely pursuant to the
+//      terms of a BLP license agreement which governs its use.
+// ----------------------------- END-OF-FILE ----------------------------------
+")
+
+;; Cursor
+(beginning-of-buffer)
+(forward-line 14)

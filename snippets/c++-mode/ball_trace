@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: BALL TRACE
+# key: trace
+# binding: direct-keybinding
+# --
+BALL_LOG_TRACE << "$0";

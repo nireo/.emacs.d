@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: sleep
+# key: sleep
+# binding: direct-keybinding
+# --
+bslmt::ThreadUtil::sleep(bsls::TimeInterval(1.0));

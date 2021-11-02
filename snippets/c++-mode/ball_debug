@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: BALL DEBUG
+# key: debug
+# binding: direct-keybinding
+# --
+BALL_LOG_DEBUG << "$0";

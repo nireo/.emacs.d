@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: BALL ERROR
+# key: error
+# binding: direct-keybinding
+# --
+BALL_LOG_ERROR << "$0";

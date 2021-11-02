@@ -1,0 +1,109 @@
+# -*- mode: snippet; require-final-newline: t -*-
+# name: test-driver
+# key: .t.cpp
+# condition: (string-suffix-p ".t.cpp" (buffer-file-name))
+# type: command
+# --
+;; Top line
+(let ((file-name (file-name-nondirectory (buffer-file-name))))
+  ;; Top line
+  (insert (format "// %s" file-name))
+  (dotimes (i (- 70 (current-column)))
+    (insert " "))
+  (insert "-*-C++-*-")
+  (newline))
+
+;; Includes
+(insert "#include <" (bde-component-name) ".h>
+
+// DMC (test driver)
+#include <dmcu_blobutil.h>
+
+// DLC (test driver)
+#include <dlctst_testhelper.h>")
+(newline 2)
+
+;; Using namespaces
+(let ((package-name (bde-package-name)))
+     (insert "using namespace BloombergLP;
+using namespace bsl;
+using namespace " package-name ";"))
+(newline 2)
+
+;; Body
+(insert "// ============================================================================
+//                             TEST PLAN
+// ----------------------------------------------------------------------------
+//                             Overview
+//                             --------
+//
+// TODO: add doc
+//
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// [ 1] BREATHING TEST
+// ----------------------------------------------------------------------------
+
+
+//=============================================================================
+//                      GLOBAL HELPER FUNCTIONS FOR TESTING
+//-----------------------------------------------------------------------------
+
+
+// ============================================================================
+//                                TEST CASES
+// ----------------------------------------------------------------------------
+
+void test1_breathingTest(bslma::Allocator *allocator)
+{
+    // ------------------------------------------------------------------------
+    // BREATHING TEST
+    //
+    //   This test exercises (but does not fully test) basic functionality.
+    //
+    // Concerns:
+    //   The class is sufficiently functional to enable comprehensive testing
+    //   in subsequent test cases.
+    // ------------------------------------------------------------------------
+    dlctst::TestHelper::printTestName(\"BREATHING TEST\");
+}
+
+
+// ============================================================================
+//                                 MAIN PROGRAM
+// ----------------------------------------------------------------------------
+
+int main(int argc, char *argv[])
+{
+    TEST_PROLOG(dlctst::TestHelper::e_DEFAULT);
+
+    switch (_testCase) { case 0:
+      case 1: test1_breathingTest(&ta); break;
+      default: {
+        cerr << \"WARNING: CASE '\" << _testCase << \"' NOT FOUND.\" << endl;
+        s_testStatus = -1;
+      } break;
+    }
+
+    // Default and Global allocators should not have made any allocations.
+    TEST_EPILOG(dlctst::TestHelper::e_CHECK_DEF_GBL_ALLOC);
+}")
+
+;; Footer
+(insert "
+
+// ----------------------------------------------------------------------------
+// NOTICE:
+//      Copyright (C) Bloomberg L.P., " (format-time-string "%Y") "
+//      All Rights Reserved.
+//      Property of Bloomberg L.P. (BLP)
+//      This software is made available solely pursuant to the
+//      terms of a BLP license agreement which governs its use.
+// ----------------------------- END-OF-FILE ----------------------------------
+")
+
+;; Cursor
+(beginning-of-buffer)
+(forward-line 19)
+(end-of-line)
+(insert " ")

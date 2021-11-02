@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: BALL SET CATEGORY
+# key: cat
+# binding: direct-keybinding
+# --
+BALL_LOG_SET_CATEGORY(k_LOG_CATEGORY);
