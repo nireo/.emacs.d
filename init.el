@@ -152,6 +152,8 @@
       scroll-preserve-screen-position 1)
 
 (setq echo-keystrokes 0.1)
+(setq require-final-newline t)
+
 
 ;; Show empty scratch buffer and make the mode org mode
 (setq initial-scratch-message nil)
@@ -227,6 +229,7 @@
   (global-display-line-numbers-mode))
 
 (setq display-line-numbers-type 'relative)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; Add line wrapping
 (global-visual-line-mode 1)
@@ -297,8 +300,6 @@
   :config
   (yas-global-mode 1))
 
-(yas-load-directory "~/.emacs.d/snippets", t)
-
 (define-key yas-keymap (kbd "<return>") 'yas/exit-all-snippets)
 
 (use-package flycheck
@@ -306,7 +307,6 @@
   :config
   (progn
     (global-flycheck-mode)))
-(setq lsp-rust-analyzer-server-display-inlay-hints t)
 
 ;; Add support for toml files which rust uses for configuration
 (use-package toml-mode
@@ -658,10 +658,22 @@
                   (string-match-p "spacing=100" (aref info 1))))
               (font-family-list)))
 
-(use-package gdb-mi)
-(setq gdb-show-main t)
-(setq gdb-show-changed-values)
+(defun browse-current-file ()
+  "Open the current file as a URL using `browse-url'."
+  (interactive)
+  (let ((file-name (buffer-file-name)))
+    (if (and (fboundp 'tramp-tramp-file-p)
+             (tramp-tramp-file-p file-name))
+        (error "Cannot open tramp file")
+      (browse-url (concat "file://" file-name)))))
 
+(defun move-file ()
+  "Write this file to a new location, and delete the old one."
+  (interactive)
+  (let ((old-location (buffer-file-name)))
+    (call-interactively #'write-file)
+    (when old-location
+      (delete-file old-location))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -674,14 +686,16 @@
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(custom-safe-themes '(default))
  '(helm-minibuffer-history-key "M-p")
+ '(iackage-selected-packages
+   '(doom-modeline plan9-theme anti-zenburn-theme smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(ispell-extra-args '("--sug-mode=ultra"))
  '(ispell-program-name "aspell")
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
- '(iackage-selected-packages
-   '(doom-modeline plan9-theme anti-zenburn-theme smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+ '(package-selected-packages
+   '(yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo helm-projectile go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord doom-themes doom-modeline dockerfile-mode docker dired-subtree dired-narrow default-text-scale dashboard cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
