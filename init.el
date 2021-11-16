@@ -239,8 +239,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Meslo LG S" :weight 'normal :height 150)
-(set-face-attribute 'variable-pitch nil :family "Meslo LG S" :weight 'normal :height 150)
+(set-face-attribute 'default nil :font "Monospace" :weight 'medium :height 150)
+(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'medium :height 150)
 
 ;; Projectile configuration
 (use-package projectile
@@ -541,22 +541,6 @@
   :ensure t
   :defer t)
 
-(use-package org-roam
-      :ensure t
-      :init
-      (setq org-roam-v2-ack t)
-      :custom
-      (org-roam-directory (file-truename "~/docs/roam"))
-      :bind (("C-c n l" . org-roam-buffer-toggle)
-             ("C-c n f" . org-roam-node-find)
-             ("C-c n g" . org-roam-graph)
-             ("C-c n i" . org-roam-node-insert)
-             ("C-c n c" . org-roam-capture)
-             ("C-c n j" . org-roam-dailies-capture-today))
-      :config
-      (org-roam-setup)
-      (require 'org-roam-protocol))
-
 (use-package no-littering
   :ensure t)
 
@@ -572,19 +556,6 @@
       ("TODO" org-todo)
       ("DONE" org-done)
       ("NOTE" bold))))
-
-(defvar nro/good-themes '(doom-solarized doom-sourcerer doom-gruvbox doom-zenburn base16-black-metal-immortal))
-
-(defun nro/theme-cycle ()
-  "Cycle through themes from `nro/theme-known-themes' in succession."
-  (interactive)
-  (let* ((current (car custom-enabled-themes))
-         (next (or (cadr (memq current nro/good-themes))
-                   (car nro/good-themes))))
-    (me/theme-disable-themes)
-    (when next
-      (load-theme next t))
-    (message "%s" next)))
 
 (defun nro/switch-theme (theme)
   "Disable active themes and load THEME."
@@ -650,13 +621,6 @@
           (when (eq 'dired-mode (buffer-local-value 'major-mode buffer))
             (kill-buffer buffer)))
         (buffer-list)))
-
-(defun font-names-list ()
-  "Get list of names of installed fonts,which can be used to set font."
-  (seq-filter (lambda (font)
-                (when-let ((info (font-info font)))
-                  (string-match-p "spacing=100" (aref info 1))))
-              (font-family-list)))
 
 (defun browse-current-file ()
   "Open the current file as a URL using `browse-url'."
