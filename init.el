@@ -89,7 +89,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (setq evil-insert-state-cursor 'block)
+  (setq evil-insert-state-cursor 'hbar)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -104,7 +104,6 @@
   :ensure t
   :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -207,22 +206,7 @@
 
 ;; Navigation in camel case words.
 (global-subword-mode)
-
-;; Set up the visible bell
-(setq visible-bell t)
-
-(use-package doom-themes
-  :ensure t
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic nil)
-
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
-
-;; (load-theme 'doom-sourcerer t)
 (load-theme 'base16-black-metal-immortal t)
-;; (load-theme 'doom-sourcerer t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -239,8 +223,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Monospace" :weight 'medium :height 150)
-(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'medium :height 150)
+(set-face-attribute 'default nil :font "Monospace" :weight 'medium :height 145)
+(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'medium :height 145)
 
 ;; Projectile configuration
 (use-package projectile
@@ -365,15 +349,6 @@
 ;; Speed up line movement
 (setq auto-window-vscroll nil)
 
-;; Make the user confirm that they're closing emacs
-(setq confirm-kill-emacs 'y-or-n-p)
-
-;; Disable the warning when closing processes
-(setq confirm-kill-processes nil)
-
-;; Newline at the of file
-(setq require-final-newline t)
-
 ;; Revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
 
@@ -426,6 +401,7 @@
 
 ;; Git integration
 (use-package magit
+  :ensure t
   :defer t
   :bind (("C-x g" . magit-status)))
 
