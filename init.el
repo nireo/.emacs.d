@@ -89,8 +89,6 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (setq evil-insert-state-cursor 'hbar)
-
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
@@ -128,7 +126,7 @@
 (show-paren-mode 1)
 
 ;; Prettify symbols
-(global-prettify-symbols-mode t)				;
+(global-prettify-symbols-mode t)
 
 ;; Use UTF-8
 (set-language-environment "UTF-8")
@@ -152,7 +150,6 @@
 
 (setq echo-keystrokes 0.1)
 (setq require-final-newline t)
-
 
 ;; Show empty scratch buffer and make the mode org mode
 (setq initial-scratch-message nil)
@@ -206,7 +203,40 @@
 
 ;; Navigation in camel case words.
 (global-subword-mode)
-(load-theme 'base16-black-metal-immortal t)
+
+;; (load-theme 'base16-black-metal-immortal t)
+(load-theme 'modus-vivendi t)
+
+;; Stop saving backups since they're quite useless
+(setq make-backup-files nil)
+
+;; Stop auto saving files, since they're not needed
+(setq auto-save-default nil)
+
+;; Make the cursor the size of the underlying character.
+(setq x-stretch-cursor t)
+
+;; Enable the usage of the system clipboard.
+(setq select-enable-clipboard t)
+(setq x-select-enable-clipboard t)
+
+;; Make the max width of a line to be 80 characters.
+(setq fill-column 80)
+
+;; Fix the window not being fullscreen and leaving a gap
+(setq frame-resize-pixelwise t)
+
+;; Set the title to be something other than emacs@hostname
+(setq frame-title-format "%b - emacs")
+
+;; When opening a file, always follow symlinks
+(setq vc-follow-symlinks t)
+
+;; Speed up line movement
+(setq auto-window-vscroll nil)
+
+;; Revert buffers automatically when underlying files are changed externally
+(global-auto-revert-mode t)
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
@@ -223,8 +253,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Monospace" :weight 'medium :height 145)
-(set-face-attribute 'variable-pitch nil :family "Monospace" :weight 'medium :height 145)
+(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :weight 'medium :height 135)
+(set-face-attribute 'variable-pitch nil :family "JetBrains Mono Nerd Font" :weight 'medium :height 135)
 
 ;; Projectile configuration
 (use-package projectile
@@ -321,36 +351,6 @@
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
 
-;; Stop saving backups since they're quite useless
-(setq make-backup-files nil)
-
-;; Stop auto saving files, since they're not needed
-(setq auto-save-default nil)
-
-;; Make the cursor the size of the underlying character.
-(setq x-stretch-cursor t)
-
-;; Enable the usage of the system clipboard.
-(setq select-enable-clipboard t)
-(setq x-select-enable-clipboard t)
-
-;; Make the max width of a line to be 80 characters.
-(setq fill-column 80)
-
-;; Fix the window not being fullscreen and leaving a gap
-(setq frame-resize-pixelwise t)
-
-;; Set the title to be something other than emacs@hostname
-(setq frame-title-format "%b - emacs")
-
-;; When opening a file, always follow symlinks
-(setq vc-follow-symlinks t)
-
-;; Speed up line movement
-(setq auto-window-vscroll nil)
-
-;; Revert buffers automatically when underlying files are changed externally
-(global-auto-revert-mode t)
 
 ;; For markdown editing
 (use-package markdown-mode
@@ -425,9 +425,9 @@
 (setq org-adapt-indentation nil)
 
 ;; Add spell checking when using text mode.
-(customize-set-variable 'ispell-program-name "aspell")
-(customize-set-variable 'ispell-extra-args '("--sug-mode=ultra"))
-(add-hook 'text-mode-hook 'flyspell-mode)
+;; (customize-set-variable 'ispell-program-name "aspell")
+;; (customize-set-variable 'ispell-extra-args '("--sug-mode=ultra"))
+;; (add-hook 'text-mode-hook 'flyspell-mode)
 
 ;; Setup some org-mode configuration.
 (setq org-modules '(org-habit))
@@ -533,15 +533,6 @@
       ("DONE" org-done)
       ("NOTE" bold))))
 
-(defun nro/switch-theme (theme)
-  "Disable active themes and load THEME."
-  (interactive (list (intern (completing-read "Theme: "
-                               (->> (custom-available-themes)
-                                 (-map #'symbol-name))))))
-  (mapc #'disable-theme custom-enabled-themes)
-  (load-theme theme 'no-confirm))
-
-
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
@@ -568,7 +559,14 @@
   :ensure t)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
+(use-package modern-cpp-font-lock
+  :ensure t)
+(modern-c++-font-lock-global-mode t)
+
+
+;; Custom functions ------------------------
 (defun code-compile ()
+  "Compiles c++ and c code"
   (interactive)
   (unless (file-exists-p "Makefile")
     (set (make-local-variable 'compile-command)
@@ -578,12 +576,15 @@
            (file-name-sans-extension file)
            file)))
     (compile compile-command)))
-
 (global-set-key [f9] 'code-compile)
 
-(use-package modern-cpp-font-lock
-  :ensure t)
-(modern-c++-font-lock-global-mode t)
+(defun nro/switch-theme (theme)
+  "Disable active themes and load THEME."
+  (interactive (list (intern (completing-read "Theme: "
+                               (->> (custom-available-themes)
+                                 (-map #'symbol-name))))))
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme theme 'no-confirm))
 
 (defun kill-other-buffers ()
   "Kill all other buffers."
@@ -598,7 +599,7 @@
             (kill-buffer buffer)))
         (buffer-list)))
 
-(defun browse-current-file ()
+(defun open-in-browser ()
   "Open the current file as a URL using `browse-url'."
   (interactive)
   (let ((file-name (buffer-file-name)))
