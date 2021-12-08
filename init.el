@@ -90,7 +90,8 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+  (evil-set-initial-state 'dashboard-mode 'normal)
+  (setq evil-insert-state-cursor 'hbar))
 
 
 (use-package cmake-mode
@@ -146,7 +147,9 @@
 ;; Better scrolling
 (setq scroll-margin 0
       scroll-conservatively 100000
-      scroll-preserve-screen-position 1)
+      scroll-preserve-screen-position 1
+      scroll-down-aggressively 0.01
+      scroll-up-aggressively 0.01)
 
 (setq echo-keystrokes 0.1)
 (setq require-final-newline t)
@@ -205,7 +208,7 @@
 (global-subword-mode)
 
 ;; (load-theme 'base16-black-metal-immortal t)
-(load-theme 'modus-vivendi t)
+(load-theme 'doom-wilmersdorf t)
 
 ;; Stop saving backups since they're quite useless
 (setq make-backup-files nil)
@@ -253,8 +256,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "JetBrains Mono Nerd Font" :weight 'medium :height 135)
-(set-face-attribute 'variable-pitch nil :family "JetBrains Mono Nerd Font" :weight 'medium :height 135)
+(set-face-attribute 'default nil :font "Source Code Pro Medium" :weight 'medium :height 135)
+(set-face-attribute 'variable-pitch nil :family "Source Code Pro Medium" :weight 'medium :height 135)
 
 ;; Projectile configuration
 (use-package projectile
@@ -533,9 +536,10 @@
       ("DONE" org-done)
       ("NOTE" bold))))
 
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init (doom-modeline-mode 1))
+(spaceline-spacemacs-theme)
 
 (use-package yaml-mode
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
@@ -563,10 +567,9 @@
   :ensure t)
 (modern-c++-font-lock-global-mode t)
 
-
 ;; Custom functions ------------------------
 (defun code-compile ()
-  "Compiles c++ and c code"
+  "Compiles c++ and c code."
   (interactive)
   (unless (file-exists-p "Makefile")
     (set (make-local-variable 'compile-command)
