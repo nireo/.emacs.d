@@ -111,9 +111,11 @@
                 vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
+
+
 ;; Change indentation
-(setq-default tab-width 4)
-(setq-default standard-indent 4)
+(setq-default tab-width 2)
+(setq-default standard-indent 2)
 (setq-default electric-indent-inhibit t)
 (setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
 
@@ -208,7 +210,8 @@
 (global-subword-mode)
 
 ;; (load-theme 'base16-black-metal-immortal t)
-(load-theme 'doom-wilmersdorf t)
+;; (load-theme 'doom-wilmersdorf t)
+(load-theme 'modus-operandi t)
 
 ;; Stop saving backups since they're quite useless
 (setq make-backup-files nil)
@@ -256,8 +259,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "Source Code Pro Medium" :weight 'medium :height 135)
-(set-face-attribute 'variable-pitch nil :family "Source Code Pro Medium" :weight 'medium :height 135)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'medium :height 140)
+(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'medium :height 140)
 
 ;; Projectile configuration
 (use-package projectile
@@ -618,6 +621,14 @@
     (call-interactively #'write-file)
     (when old-location
       (delete-file old-location))))
+
+(defadvice find-file (before make-directory-maybe (filename &optional wildcards)
+                             activate)
+  "Create parent directory if not exists while visiting file."
+  (unless (file-exists-p filename)
+    (let ((dir (file-name-directory filename)))
+      (unless (file-exists-p dir)
+        (make-directory dir :make-parents)))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
