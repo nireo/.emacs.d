@@ -90,8 +90,8 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal)
-  (setq evil-insert-state-cursor 'hbar))
+  (evil-set-initial-state 'dashboard-mode 'normal))
+  ;; (setq evil-insert-state-cursor 'hbar))
 
 
 (use-package cmake-mode
@@ -110,8 +110,6 @@
                 shell-mode-hook
                 vterm-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
-
 
 ;; Change indentation
 (setq-default tab-width 2)
@@ -138,7 +136,8 @@
 (prefer-coding-system 'utf-8)
 
 ;; 4 left 0 right
-(fringe-mode '(4 . 0))
+;; (fringe-mode '(4 . 0))
+(set-fringe-mode 0)
 
 ;; Set a warning when opening files larger than 200mb
 (setq large-file-warning-threshold 200000000)
@@ -211,7 +210,25 @@
 
 ;; (load-theme 'base16-black-metal-immortal t)
 ;; (load-theme 'doom-wilmersdorf t)
-(load-theme 'modus-operandi t)
+
+(use-package modus-themes
+  :ensure
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend)
+        modus-themes-syntax 'yellow-comments
+        modus-themes-paren-match 'underline
+        modus-themes-fringes nil
+        modus-themes-mode-line '(borderless 3d))
+
+  ;; Load the theme files before enabling a theme
+  (modus-themes-load-themes)
+  :config
+  ;; Load the theme of your choice:
+  (modus-themes-load-vivendi)
+  :bind ("<f5>" . modus-themes-toggle))
 
 ;; Stop saving backups since they're quite useless
 (setq make-backup-files nil)
@@ -259,8 +276,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono Nerd Font" :weight 'medium :height 140)
-(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono Nerd Font" :weight 'medium :height 140)
+(set-face-attribute 'default nil :font "DejaVu Sans Mono" :weight 'medium :height 140)
+(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono" :weight 'medium :height 140)
 
 ;; Projectile configuration
 (use-package projectile
@@ -294,7 +311,6 @@
 ;; Since clangd in quite fast
 (setq lsp-idle-delay 0.1)
 (setq lsp-log-io nil)
-
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
@@ -356,7 +372,7 @@
 (which-key-mode)
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
-
+(add-hook 'python-mode 'lsp)
 
 ;; For markdown editing
 (use-package markdown-mode
@@ -542,7 +558,8 @@
 ;; (use-package doom-modeline
 ;;   :ensure t
 ;;   :init (doom-modeline-mode 1))
-(spaceline-spacemacs-theme)
+;; (setq powerline-default-separator 'wave)
+;; (spaceline-spacemacs-theme)
 
 (use-package yaml-mode
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
@@ -635,24 +652,58 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline success warning error])
  '(ansi-color-names-vector
    ["#181818" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(awesome-tray-mode-line-active-color "#2fafff")
+ '(awesome-tray-mode-line-inactive-color "#323232")
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(custom-safe-themes '(default))
+ '(exwm-floating-border-color "#646464")
+ '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
+ '(flymake-note-bitmap '(exclamation-mark modus-themes-fringe-cyan))
+ '(flymake-warning-bitmap '(exclamation-mark modus-themes-fringe-yellow))
  '(helm-minibuffer-history-key "M-p")
+ '(highlight-tail-colors '(("#2f4a00" . 0) ("#00415e" . 20)))
+ '(hl-todo-keyword-faces
+   '(("HOLD" . "#c4d030")
+     ("TODO" . "#feacd0")
+     ("NEXT" . "#b6a0ff")
+     ("THEM" . "#f78fe7")
+     ("PROG" . "#00d3d0")
+     ("OKAY" . "#4ae2f0")
+     ("DONT" . "#70b900")
+     ("FAIL" . "#ff8059")
+     ("BUG" . "#ff8059")
+     ("DONE" . "#44bc44")
+     ("NOTE" . "#e3c55f")
+     ("KLUDGE" . "#e0cc00")
+     ("HACK" . "#e0cc00")
+     ("TEMP" . "#ffcccc")
+     ("FIXME" . "#ff9077")
+     ("XXX+" . "#ef8b50")
+     ("REVIEW" . "#6ae4b9")
+     ("DEPRECATED" . "#bfd9ff")))
  '(iackage-selected-packages
    '(doom-modeline plan9-theme anti-zenburn-theme smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+ '(ibuffer-deletion-face 'modus-themes-mark-del)
+ '(ibuffer-filter-group-name-face 'modus-themes-mark-symbol)
+ '(ibuffer-marked-face 'modus-themes-mark-sel)
+ '(ibuffer-title-face 'modus-themes-pseudo-header)
  '(ispell-extra-args '("--sug-mode=ultra"))
  '(ispell-program-name "aspell")
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
+ '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo helm-projectile go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord doom-themes doom-modeline dockerfile-mode docker dired-subtree dired-narrow default-text-scale dashboard cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
+   '(tao-theme faff-theme nimbus-theme yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo helm-projectile go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord doom-themes doom-modeline dockerfile-mode docker dired-subtree dired-narrow default-text-scale dashboard cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
    '((20 . "#BC8383")
      (40 . "#CC9393")
@@ -672,7 +723,11 @@
      (320 . "#8CD0D3")
      (340 . "#94BFF3")
      (360 . "#DC8CC3")))
- '(vc-annotate-very-old-color "#DC8CC3"))
+ '(vc-annotate-very-old-color "#DC8CC3")
+ '(xterm-color-names
+   ["black" "#ff8059" "#44bc44" "#e0cc00" "#2fafff" "#feacd0" "#00d3d0" "gray65"])
+ '(xterm-color-names-bright
+   ["gray35" "#ef8b50" "#70b900" "#c4d030" "#79a8ff" "#f78fe7" "#4ae2f0" "white"]))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
