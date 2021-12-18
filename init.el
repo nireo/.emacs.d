@@ -208,9 +208,6 @@
 ;; Navigation in camel case words.
 (global-subword-mode)
 
-;; (load-theme 'base16-black-metal-immortal t)
-;; (load-theme 'doom-wilmersdorf t)
-
 (use-package modus-themes
   :ensure
   :init
@@ -218,10 +215,8 @@
   (setq modus-themes-italic-constructs nil
         modus-themes-bold-constructs nil
         modus-themes-region '(bg-only no-extend)
-        modus-themes-syntax 'yellow-comments
-        modus-themes-paren-match 'underline
-        modus-themes-fringes nil
-        modus-themes-mode-line '(borderless 3d))
+        modus-themes-mode-line '3d)
+  (setq modus-themes-syntax 'alt-syntax)
 
   ;; Load the theme files before enabling a theme
   (modus-themes-load-themes)
@@ -300,8 +295,15 @@
 
 (global-set-key (kbd "TAB") #'company-indent-or-complete-common)
 
+(defun nro/lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
 (use-package lsp-mode
-  :ensure t)
+  :hook (lsp-mode . nro/lsp-mode-setup)
+  :ensure t
+  :init
+  (setq lsp-keymap-prefix "C-c l"))
 
 (setq lsp-keymap-prefix "C-c l")
 (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
@@ -372,7 +374,6 @@
 (which-key-mode)
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
-(add-hook 'python-mode 'lsp)
 
 ;; For markdown editing
 (use-package markdown-mode
@@ -394,6 +395,19 @@
   (setq web-mode-css-indent-offset 2)    ; CSS
   (setq web-mode-code-indent-offset 2)   ; JS/JSX/TS/TSX
   (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
+
+(use-package typescript-mode
+  :mode "\\.tsx?\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+
+(use-package python-mode
+  :ensure t
+  :hook (python-mode . lsp-deferred)
+  :custom
+  ;; NOTE: Set these if Python 3 is called "python3" on your system!
+  (python-shell-interpreter "python3"))
 
 (defun web-mode-init-prettier-hook ()
   (add-node-modules-path)
@@ -554,12 +568,6 @@
       ("TODO" org-todo)
       ("DONE" org-done)
       ("NOTE" bold))))
-
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :init (doom-modeline-mode 1))
-;; (setq powerline-default-separator 'wave)
-;; (spaceline-spacemacs-theme)
 
 (use-package yaml-mode
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
