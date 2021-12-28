@@ -16,7 +16,7 @@
 (defun display-startup-time ()
   "Display startup time when opening Emacs."
   (message "Emacs loaded in %s with %d garbage collections."
-           (format "%.2f seconds"
+           (format "%.4f seconds"
                    (float-time
                    (time-subtract after-init-time before-init-time)))
            gcs-done))
@@ -54,6 +54,9 @@
 (add-hook 'emacs-startup-hook
   (lambda ()
     (setq file-name-handler-alist nro--file-name-handler-alist)))
+
+(defvar nro/default-font-size 125)
+(defvar nro/default-font "Liberation Mono")
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -135,12 +138,11 @@
 (set-terminal-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
-;; 4 left 0 right
-;; (fringe-mode '(4 . 0))
+;; Disable fringes
 (set-fringe-mode 0)
 
-;; Set a warning when opening files larger than 200mb
-(setq large-file-warning-threshold 200000000)
+;; Set a warning when opening files larger than 100mb
+(setq large-file-warning-threshold 100000000)
 
 ;; Disable cursor blinking
 (blink-cursor-mode 0)
@@ -157,10 +159,10 @@
 
 ;; Show empty scratch buffer and make the mode org mode
 (setq initial-scratch-message nil)
-(setq initial-major-mode 'org-mode)
 
 ;; Cleanup whitespaces
 (add-hook 'before-save-hook 'whitespace-cleanup)
+(setq-default sentence-end-double-space nil)
 
 (use-package helm
   :ensure t
@@ -208,22 +210,7 @@
 ;; Navigation in camel case words.
 (global-subword-mode)
 
-(use-package modus-themes
-  :ensure
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend)
-        modus-themes-mode-line '3d)
-  (setq modus-themes-syntax 'alt-syntax)
-
-  ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
-  :config
-  ;; Load the theme of your choice:
-  (modus-themes-load-vivendi)
-  :bind ("<f5>" . modus-themes-toggle))
+(load-theme 'base16-black-metal-immortal t)
 
 ;; Stop saving backups since they're quite useless
 (setq make-backup-files nil)
@@ -256,6 +243,9 @@
 ;; Revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
 
+;; Increase undo limit
+(setq undo-limit 100000000)
+
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
@@ -271,8 +261,8 @@
 (set-fringe-mode 10)
 
 ;; Set font
-(set-face-attribute 'default nil :font "DejaVu Sans Mono" :weight 'medium :height 140)
-(set-face-attribute 'variable-pitch nil :family "DejaVu Sans Mono" :weight 'medium :height 140)
+(set-face-attribute 'default nil :font nro/default-font :height nro/default-font-size)
+(set-face-attribute 'variable-pitch nil :font nro/default-font :height nro/default-font-size)
 
 ;; Projectile configuration
 (use-package projectile
@@ -280,7 +270,11 @@
   :config
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+  (when (file-directory-p "~/dev")
+    (setq projectile-project-search-path '("~/dev")))
+  (setq projectile-switch-project-action #'projectile-dired))
 
 ;; Company configuration
 (use-package company
@@ -304,9 +298,6 @@
   :ensure t
   :init
   (setq lsp-keymap-prefix "C-c l"))
-
-(setq lsp-keymap-prefix "C-c l")
-(define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
 
 (add-hook 'go-mode-hook #'lsp-deferred)
 
@@ -346,10 +337,6 @@
   (progn
     (global-flycheck-mode)))
 
-;; Add support for toml files which rust uses for configuration
-(use-package toml-mode
-  :ensure t)
-
 ;; Add some visual elements to lsp mode.
 (use-package lsp-ui
   :ensure t
@@ -360,7 +347,8 @@
         lsp-ui-flycheck-enable nil
     lsp-ui-sideline-enable t
         lsp-ui-imenu-enable t
-        lsp-ui-sideline-ignore-duplicate t))
+        lsp-ui-sideline-ignore-duplicate t)
+  (lsp-ui-doc-position 'bottom))
 
 
 ;; Configuration for Go LSP support
@@ -430,7 +418,10 @@
   :mode (("\\.json\\'" . json-mode)))
 
 (use-package vterm
-  :ensure t)
+  :ensure t
+  :commands vterm
+  :config
+  (setq vterm-max-scrollback 10000))
 
 (use-package vterm-toggle
   :ensure t)
@@ -459,55 +450,69 @@
                           (plain-list-item . nil)))
 (setq org-cycle-separator-lines 1)
 (setq org-adapt-indentation nil)
+(setq-default initial-major-mode 'emacs-lisp-mode)
 
-;; Add spell checking when using text mode.
-;; (customize-set-variable 'ispell-program-name "aspell")
-;; (customize-set-variable 'ispell-extra-args '("--sug-mode=ultra"))
-;; (add-hook 'text-mode-hook 'flyspell-mode)
+(defun nro/org-font-setup()
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-;; Setup some org-mode configuration.
-(setq org-modules '(org-habit))
-(eval-after-load 'org
-  '(org-load-modules-maybe t))
-(setq org-default-notes-file "~/docs/org/notes.org")
-(setq org-habit-graph-column 80)
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
 
-(defun org-mode-setup ()
+  (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+  (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
+
+(defun nro/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
-  (auto-fill-mode 0)
-  (visual-line-mode 1)
-  (setq evil-auto-indent nil)
-  (setq org-hide-emphasis-markers t))
-
-(font-lock-add-keywords 'org-mode
-                        '(("^ *\\([-]\\) "
-                          (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (visual-line-mode 1))
 
 (use-package org-superstar
   :ensure t)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
 (use-package org
-  :hook (org-mode . org-mode-setup))
+  :hook (org-mode . nro/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
 
-(setq org-directory "~/docs/org")
-(setq org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-use-fast-todo-selection t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  (setq org-agenda-files
+        '("~/docs/org/habits.org"
+          "~/docs/org/todo.org"))
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-graph-column 60)
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
-(add-hook 'org-mode-hook 'variable-pitch-mode)
-(add-hook 'org-mode-hook 'visual-line-mode)
+   (setq org-todo-keywords
+    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+      (sequence "PLAN(p)" "READY(r)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+  (define-key global-map (kbd "C-c j")
+    (lambda () (interactive) (org-capture nil "jj")))
 
-;; Add more TODO keywords.
-(setq org-todo-keywords
-      (quote ((sequence "TODO(t)"
-                        "IN_PROGRESS(i!)"
-                        "DONE(d!)"
-                        "CANCELLED(c!)"
-                        "POSTPONED(p!)"
-                        ))))
-
-;; Fast selection for todos
-(setq org-use-fast-todo-selection t)
+  (nro/org-font-setup))
 
 ;; Use evil mode in org-mode
 (use-package evil-org
@@ -522,9 +527,10 @@
   (evil-org-agenda-set-keys))
 
 
-;; Custom key bindings
-(global-set-key (kbd "C-/") 'comment-line)
-(global-set-key (kbd "C-?") 'comment-or-uncomment-region)
+;; Custom
+(use-package evil-nerd-commenter
+  :ensure t
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 ;; I have this bad habit of pressing this key combination, and if it doesn't exist it opens a
 ;; mail window
@@ -541,12 +547,23 @@
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
 ;; Dired configuration
-(require 'dired-x)
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom ((dired-listing-switches "-agho --group-directories-first")))
 
-(setq-default dired-listing-switches "-alh")
-(setq dired-recursive-copies 'always)
-(setq dired-recursive-deletes 'always)
-(setq dired-ls-F-marks-symlinks t)
+(use-package dired-single)
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dired-open
+  :config
+  ;; Doesn't work as expected!
+  ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+  (setq dired-open-extensions '(("png" . "feh")
+                                ("mkv" . "mpv"))))
 
 ;; Increase/decrease text size in all buffers.
 (use-package default-text-scale
@@ -595,7 +612,11 @@
   :ensure t)
 (modern-c++-font-lock-global-mode t)
 
-;; Custom functions ------------------------
+(use-package doom-modeline
+  :defer t
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-height 15)))
+
 (defun code-compile ()
   "Compiles c++ and c code."
   (interactive)
@@ -655,6 +676,23 @@
       (unless (file-exists-p dir)
         (make-directory dir :make-parents)))))
 
+(defun nro/open-in-file-browser (&optional file)
+  "Open FILE or dired marked file in external app."
+  (interactive)
+  (let ((file-list (if file
+                       (list file)
+                     (if (equal major-mode "dired-mode")
+                         (dired-get-marked-files)
+                       (list (buffer-file-name)))))
+        (do-it-p   (if (<= (length file-list) 5)
+                       t
+                     (y-or-n-p "Open more than 5 files? "))))
+    (when do-it-p
+      (mapc (lambda (file-path)
+              (let ((process-connection-type nil))
+                (start-process "" nil "xdg-open" file-path)))
+            file-list))))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -708,7 +746,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(tao-theme faff-theme nimbus-theme yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo helm-projectile go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord doom-themes doom-modeline dockerfile-mode docker dired-subtree dired-narrow default-text-scale dashboard cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
+   '(clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo helm-projectile go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-background-mode nil)
