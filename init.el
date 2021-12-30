@@ -56,7 +56,7 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 (defvar nro/default-font-size 125)
-(defvar nro/default-font "Liberation Mono")
+(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -612,10 +612,8 @@
   :ensure t)
 (modern-c++-font-lock-global-mode t)
 
-(use-package doom-modeline
-  :defer t
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 15)))
+(use-package simple-modeline
+  :hook (after-init . simple-modeline-mode))
 
 (defun code-compile ()
   "Compiles c++ and c code."
@@ -733,7 +731,7 @@
      ("REVIEW" . "#6ae4b9")
      ("DEPRECATED" . "#bfd9ff")))
  '(iackage-selected-packages
-   '(doom-modeline plan9-theme anti-zenburn-theme smart-mode-line-powerline-theme yaml-mode smart-mode-line prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+   '(yaml-mode prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(ibuffer-deletion-face 'modus-themes-mark-del)
  '(ibuffer-filter-group-name-face 'modus-themes-mark-symbol)
  '(ibuffer-marked-face 'modus-themes-mark-sel)
@@ -746,7 +744,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo helm-projectile go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
+   '(simple-modeline clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo helm-projectile go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-background-mode nil)
