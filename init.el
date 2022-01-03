@@ -55,8 +55,8 @@
   (lambda ()
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
-(defvar nro/default-font-size 125)
-(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
+(defvar nro/default-font-size 135)
+(defvar nro/default-font "Iosevka")
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -164,22 +164,39 @@
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq-default sentence-end-double-space nil)
 
-(use-package helm
+(use-package ivy
   :ensure t
+  :diminish
+  :bind (("C-s" . swiper)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
   :config
-  (helm-mode 1)
-  (setq helm-autoresize-mode t)
-  (setq helm-buffer-max-length 40)
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (define-key helm-map (kbd "S-SPC") 'helm-toggle-visible-mark)
-  (define-key helm-find-files-map (kbd "C-k") 'helm-find-files-up-one-level))
+  (ivy-mode 1))
 
-;; helm-projectile configuration
-(use-package helm-projectile
-  :bind (("C-S-P" . helm-projectile-switch-project)
-     :map evil-normal-state-map
-     ("C-p" . helm-projectile))
-  :ensure t)
+(use-package ivy-rich
+  :ensure t
+  :init
+  (ivy-rich-mode 1))
+
+(use-package counsel
+  :ensure t
+  :bind (("C-M-j" . 'counsel-switch-buffer)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history))
+  :custom
+  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+  :config
+  (counsel-mode 1))
 
 ;; Enable rich presense on discord and some configuration for it.
 (use-package elcord
@@ -210,7 +227,11 @@
 ;; Navigation in camel case words.
 (global-subword-mode)
 
-(load-theme 'base16-black-metal-immortal t)
+;; (load-theme 'base16-black-metal-immortal t)
+(use-package inkpot-theme
+  :ensure t
+  :config
+  (load-theme 'inkpot t))
 
 ;; Stop saving backups since they're quite useless
 (setq make-backup-files nil)
@@ -266,15 +287,20 @@
 
 ;; Projectile configuration
 (use-package projectile
+  :diminish projectile-mode
   :ensure t
+  :custom ((projectile-completion-system 'ivy))
   :config
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
-  (when (file-directory-p "~/dev")
-    (setq projectile-project-search-path '("~/dev")))
   (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :ensure t
+  :config (counsel-projectile-mode)
+  :bind ( :map evil-normal-state-map
+     ("C-p" . counsel-projectile)))
 
 ;; Company configuration
 (use-package company
@@ -359,7 +385,12 @@
 (add-hook 'go-mode-hook #'lsp-deferred)
 
 ;; For C++ LSP support
-(which-key-mode)
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
 
@@ -674,6 +705,7 @@
       (unless (file-exists-p dir)
         (make-directory dir :make-parents)))))
 
+
 (defun nro/open-in-file-browser (&optional file)
   "Open FILE or dired marked file in external app."
   (interactive)
@@ -744,7 +776,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(simple-modeline clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo helm-projectile go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
+   '(simple-modeline clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-background-mode nil)
