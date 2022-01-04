@@ -55,8 +55,8 @@
   (lambda ()
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
-(defvar nro/default-font-size 135)
-(defvar nro/default-font "Iosevka")
+(defvar nro/default-font-size 130)
+(defvar nro/default-font "DejaVu Sans Mono")
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -189,6 +189,7 @@
   (ivy-rich-mode 1))
 
 (use-package counsel
+  :diminish counsel-mode
   :ensure t
   :bind (("C-M-j" . 'counsel-switch-buffer)
          :map minibuffer-local-map
@@ -304,6 +305,7 @@
 
 ;; Company configuration
 (use-package company
+  :diminish company-mode
   :ensure t
   :config
   (global-company-mode)
@@ -314,6 +316,10 @@
   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 
 (global-set-key (kbd "TAB") #'company-indent-or-complete-common)
+
+(use-package company-box
+  :diminish
+  :hook (company-mode . company-box-mode))
 
 (defun nro/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
@@ -351,6 +357,7 @@
   :hook (after-init . global-eldoc-mode))
 
 (use-package yasnippet
+  :diminish yas-minor-mode
   :ensure t
   :config
   (yas-global-mode 1))
@@ -373,8 +380,7 @@
         lsp-ui-flycheck-enable nil
     lsp-ui-sideline-enable t
         lsp-ui-imenu-enable t
-        lsp-ui-sideline-ignore-duplicate t)
-  (lsp-ui-doc-position 'bottom))
+        lsp-ui-sideline-ignore-duplicate t))
 
 
 ;; Configuration for Go LSP support
@@ -572,6 +578,12 @@
 
 (define-key global-map "\C-ca" 'org-agenda)
 
+;; Resize windows with better bindings
+(global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "s-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "s-C-<down>") 'shrink-window)
+(global-set-key (kbd "s-C-<up>") 'enlarge-window)
+
 ;; Get the other file
 (add-hook 'c-mode-common-hook
   (lambda()
@@ -643,8 +655,14 @@
   :ensure t)
 (modern-c++-font-lock-global-mode t)
 
+;; A minimal modeline without too much flash.
 (use-package simple-modeline
   :hook (after-init . simple-modeline-mode))
+(display-time-mode 1)
+
+;; A package which hides unnecessary minor-modes from the modeline.
+(use-package diminish
+  :ensure t)
 
 (defun code-compile ()
   "Compiles c++ and c code."
@@ -723,6 +741,20 @@
                 (start-process "" nil "xdg-open" file-path)))
             file-list))))
 
+(defun nro/magit-stage-all-and-commit (message)
+  "Stage every change, commit with MESSAGE, and push it."
+  (interactive (list (progn (magit-diff-unstaged) (read-string "Commit Message: "))))
+  (magit-stage-modified)
+  (magit-commit-create (list "-m" message))
+  (call-interactively #'magit-push-current-to-pushremote))
+
+(defun nro/reload-config ()
+  "Reloads configuration."
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
+
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -776,7 +808,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(simple-modeline clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
+   '(diminish company-box simple-modeline clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-background-mode nil)
