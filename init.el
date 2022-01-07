@@ -230,9 +230,12 @@
 
 ;; (load-theme 'base16-black-metal-immortal t)
 (use-package inkpot-theme
+  :ensure t)
+
+(use-package tok-theme
   :ensure t
   :config
-  (load-theme 'inkpot t))
+  (load-theme 'tok-dark t))
 
 ;; Stop saving backups since they're quite useless
 (setq make-backup-files nil)
@@ -808,7 +811,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(diminish company-box simple-modeline clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
+   '(tok-theme diminish company-box simple-modeline clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-background-mode nil)
