@@ -22,15 +22,17 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
-;; Some performance boosters.
+;; Increase performance especially for LSP-mode.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
       gc-cons-percentage 0.6)
 
+;; Change the garbage collector on startup
 (add-hook 'emacs-startup-hook
   (lambda ()
     (setq gc-cons-threshold 31457280 ; 32mb
           gc-cons-percentage 0.1)))
+
 
 (defun nro/defer-garbage-collection-h ()
   "Set the garbage collection threshold to 'most-positive-fixnum'."
@@ -56,16 +58,19 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 (defvar nro/default-font-size 130)
-(defvar nro/default-font "DejaVu Sans Mono")
+(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
 
 ;; Vim keybindings in emacs.
 (use-package evil
   :init
   (evil-mode 1)
   :config
+  ;; Set leader key to space
+  (evil-set-leader 'normal (kbd "SPC"))
+
+  ;; Define different splits
   (setq evil-vsplit-window-right t)
   (setq evil-split-window-below t)
-  (evil-set-leader 'normal (kbd "SPC"))
   (setq evil-vsplit-window-right t)
   (setq evil-split-window-below t)
 
@@ -96,12 +101,13 @@
   (evil-set-initial-state 'dashboard-mode 'normal))
   ;; (setq evil-insert-state-cursor 'hbar))
 
-
+;; Add support for cmake files
 (use-package cmake-mode
   :ensure t
   :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
+;; Add colored delimiters based on the depth of the delimiters.
 (use-package rainbow-delimiters
   :ensure t
   :init
@@ -119,18 +125,9 @@
 (setq-default standard-indent 2)
 (setq-default electric-indent-inhibit t)
 (setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
-
-;; Enable copypasting outside of emacs
-(setq select-enable-clipboard t)
-
-;; Disable ring-bell
-(setq ring-bell-function 'ignore)
-
-;; Show matching parenthesies
-(show-paren-mode 1)
-
-;; Prettify symbols
-(global-prettify-symbols-mode t)
+(setq select-enable-clipboard t) ;; Copy paste outside of emacs
+(setq ring-bell-function 'ignore) ;; Disable ring-bell
+(show-paren-mode 1) ;; Show matching parenthesies
 
 ;; Use UTF-8
 (set-language-environment "UTF-8")
@@ -138,14 +135,9 @@
 (set-terminal-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
-;; Disable fringes
-(set-fringe-mode 0)
-
-;; Set a warning when opening files larger than 100mb
-(setq large-file-warning-threshold 100000000)
-
-;; Disable cursor blinking
-(blink-cursor-mode 0)
+(set-fringe-mode 0) ;; Disable fringes
+(setq large-file-warning-threshold 100000000) ;; Change large file warning threshold
+(blink-cursor-mode 0) ;; Disable cursor blinking
 
 ;; Better scrolling
 (setq scroll-margin 0
@@ -164,6 +156,7 @@
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq-default sentence-end-double-space nil)
 
+;; A completion system for M-x and C-p
 (use-package ivy
   :ensure t
   :diminish
@@ -207,85 +200,47 @@
   (setq elcord-use-major-mode-as-main-icon t)
   (setq elcord-quiet t))
 
-;; Disable the menubar
-(menu-bar-mode -1)
+(menu-bar-mode -1) ;; Disable menubar
+(scroll-bar-mode -1) ;; Disable scroll bar
+(tool-bar-mode -1) ;; Disable toolbar
+(tooltip-mode -1) ;; Disable tooltips
+(global-hl-line-mode 1) ;; Highlight the line where the cursor is
+(fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
+(global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
-;; Disable the scroll bar
-(scroll-bar-mode -1)
-
-;; Disable the toolbar
-(tool-bar-mode -1)
-
-;; Disable tooltips
-(tooltip-mode -1)
-
-;; Add special highlighting for the current line
-(global-hl-line-mode 1)
-
-;; y or n instead of yes-or-no
-(fset 'yes-or-no-p 'y-or-n-p)
-
-;; Navigation in camel case words.
-(global-subword-mode)
-
-;; (load-theme 'base16-black-metal-immortal t)
-(use-package inkpot-theme
-  :ensure t)
-
+;; A nice a simple theme
 (use-package tok-theme
   :ensure t
   :config
   (load-theme 'tok-dark t))
 
-;; Stop saving backups since they're quite useless
-(setq make-backup-files nil)
-
-;; Stop auto saving files, since they're not needed
-(setq auto-save-default nil)
-
-;; Make the cursor the size of the underlying character.
-(setq x-stretch-cursor t)
+(setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
+(setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
+(setq x-stretch-cursor t) ;; Make the cursor the size of the underlying character.
 
 ;; Enable the usage of the system clipboard.
 (setq select-enable-clipboard t)
 (setq x-select-enable-clipboard t)
+(setq fill-column 80) ;; Make the max width of a line to be 80 characters.
+(setq frame-resize-pixelwise t) ;; Fix the window not being fullscreen and leaving a gap
+(setq frame-title-format "%b - emacs") ;; Change hostname
 
-;; Make the max width of a line to be 80 characters.
-(setq fill-column 80)
-
-;; Fix the window not being fullscreen and leaving a gap
-(setq frame-resize-pixelwise t)
-
-;; Set the title to be something other than emacs@hostname
-(setq frame-title-format "%b - emacs")
-
-;; When opening a file, always follow symlinks
-(setq vc-follow-symlinks t)
-
-;; Speed up line movement
-(setq auto-window-vscroll nil)
-
-;; Revert buffers automatically when underlying files are changed externally
-(global-auto-revert-mode t)
-
-;; Increase undo limit
-(setq undo-limit 100000000)
+(setq vc-follow-symlinks t) ;; When opening a file, always follow symlinks
+(setq auto-window-vscroll nil) ;; Speed up line movement
+(global-auto-revert-mode t) ;; Revert buffers automatically when underlying files are changed externally
+(setq undo-limit 100000000) ;; Increase undo limit
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
+;; Make numbers relative such that evil navigation is easier
 (setq display-line-numbers-type 'relative)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
+(global-visual-line-mode 1) ;; Add line wrapping
+(setq inhibit-startup-message t) ;; Remove startup message
 
-;; Add line wrapping
-(global-visual-line-mode 1)
-
-;; Remove the startup message
-(setq inhibit-startup-message t)
-(set-fringe-mode 10)
-
-;; Set font
+;; Set fonts
 (set-face-attribute 'default nil :font nro/default-font :height nro/default-font-size)
 (set-face-attribute 'variable-pitch nil :font nro/default-font :height nro/default-font-size)
 
@@ -324,9 +279,10 @@
   :diminish
   :hook (company-mode . company-box-mode))
 
+;; Disable some lsp visuals
 (defun nro/lsp-mode-setup ()
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
+  (setq lsp-lens-enable nil)
+  (setq lsp-headerline-breadcrumb-enable nil))
 
 (use-package lsp-mode
   :hook (lsp-mode . nro/lsp-mode-setup)
@@ -336,8 +292,7 @@
 
 (add-hook 'go-mode-hook #'lsp-deferred)
 
-;; Since clangd in quite fast
-(setq lsp-idle-delay 0.1)
+(setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
 (setq lsp-log-io nil)
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
@@ -359,6 +314,7 @@
   :diminish
   :hook (after-init . global-eldoc-mode))
 
+;; Different snippets to help with coding faster
 (use-package yasnippet
   :diminish yas-minor-mode
   :ensure t
@@ -424,12 +380,14 @@
   (setq web-mode-code-indent-offset 2)   ; JS/JSX/TS/TSX
   (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
 
+;; Support for typescript
 (use-package typescript-mode
   :mode "\\.tsx?\\'"
   :hook (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
 
+;; Support for python
 (use-package python-mode
   :ensure t
   :hook (python-mode . lsp-deferred)
@@ -447,16 +405,12 @@
               (append flycheck-disabled-checkers
                       '(javascript-jshint json-jsonlist)))
 
-(use-package typescript-mode
-  :ensure t
-  :config
-  (setq typescript-indent-level 2)
-  (add-hook 'typescript-mode #'subword-mode))
-
+;; Support for json
 (use-package json-mode
   :ensure t
   :mode (("\\.json\\'" . json-mode)))
 
+;; The best terminal for emacs
 (use-package vterm
   :ensure t
   :commands vterm
@@ -492,6 +446,7 @@
 (setq org-adapt-indentation nil)
 (setq-default initial-major-mode 'emacs-lisp-mode)
 
+;; Setup different fonts for org-mode
 (defun nro/org-font-setup()
   (font-lock-add-keywords 'org-mode
                           '(("^ *\\([-]\\) "
@@ -520,6 +475,7 @@
   (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
   (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
 
+;; Run different commands related to setting up org-mode
 (defun nro/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
@@ -622,6 +578,8 @@
 (setq auto-save-file-name-transforms
       `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
+
+;; Highlight some important keywords
 (use-package hl-todo
   :ensure t
   :hook (prog-mode . hl-todo-mode)
@@ -632,11 +590,13 @@
       ("DONE" org-done)
       ("NOTE" bold))))
 
+;; Add support for the yaml configuration file
 (use-package yaml-mode
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
   :ensure yaml-mode
   :defer t)
 
+;; Help with some css and html stuff to make programming in those languages easier.
 (use-package emmet-mode
   :custom
   (emmet-move-cursor-between-quotes t)
@@ -646,14 +606,17 @@
   (web-mode . emmet-mode)
   (css-mode . emmet-mode))
 
+;; A package to manage docker containers from emacs
 (use-package docker
   :ensure t
   :bind ("C-c d" . docker))
 
+;; Add support to Dockerfiles, such that they have syntax highlighting
 (use-package dockerfile-mode
   :ensure t)
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
+;; Syntax highlighting support for modern C++ syntax.
 (use-package modern-cpp-font-lock
   :ensure t)
 (modern-c++-font-lock-global-mode t)
@@ -661,12 +624,13 @@
 ;; A minimal modeline without too much flash.
 (use-package simple-modeline
   :hook (after-init . simple-modeline-mode))
-(display-time-mode 1)
+(display-time-mode 1) ;; Display the time in the modeline
 
 ;; A package which hides unnecessary minor-modes from the modeline.
 (use-package diminish
   :ensure t)
 
+;; Compile C++ and C code
 (defun code-compile ()
   "Compiles c++ and c code."
   (interactive)
@@ -680,6 +644,7 @@
     (compile compile-command)))
 (global-set-key [f9] 'code-compile)
 
+;; Easily switch themes
 (defun nro/switch-theme (theme)
   "Disable active themes and load THEME."
   (interactive (list (intern (completing-read "Theme: "
@@ -688,11 +653,13 @@
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme theme 'no-confirm))
 
+;; Kill every other buffer other than the sellected one.
 (defun kill-other-buffers ()
   "Kill all other buffers."
   (interactive)
   (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
 
+;; Kills all dired buffers.
 (defun kill-dired-buffers ()
   "Kill all open dired buffers."
   (interactive)
@@ -726,7 +693,7 @@
       (unless (file-exists-p dir)
         (make-directory dir :make-parents)))))
 
-
+;; Open current buffer file in the default browser.
 (defun nro/open-in-file-browser (&optional file)
   "Open FILE or dired marked file in external app."
   (interactive)
@@ -744,6 +711,7 @@
                 (start-process "" nil "xdg-open" file-path)))
             file-list))))
 
+;; Stage all changes made in git repository and commit those changes.
 (defun nro/magit-stage-all-and-commit (message)
   "Stage every change, commit with MESSAGE, and push it."
   (interactive (list (progn (magit-diff-unstaged) (read-string "Commit Message: "))))
@@ -751,12 +719,11 @@
   (magit-commit-create (list "-m" message))
   (call-interactively #'magit-push-current-to-pushremote))
 
+;; Reload emacs config
 (defun nro/reload-config ()
   "Reloads configuration."
   (interactive)
   (load-file "~/.emacs.d/init.el"))
-
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -811,7 +778,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(tok-theme diminish company-box simple-modeline clues-theme inkpot-theme doom-modeline doom-themes punpun-theme dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-mode rainbow-delimiters prettier-js pfuture persp-mode pdf-tools page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs base16-theme all-the-icons-dired ace-window))
+   '(solarized-theme tok-theme diminish company-box simple-modeline dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-background-mode nil)
