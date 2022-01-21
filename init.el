@@ -33,7 +33,6 @@
     (setq gc-cons-threshold 31457280 ; 32mb
           gc-cons-percentage 0.1)))
 
-
 (defun nro/defer-garbage-collection-h ()
   "Set the garbage collection threshold to 'most-positive-fixnum'."
   (setq gc-cons-threshold most-positive-fixnum))
@@ -57,14 +56,16 @@
   (lambda ()
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
+;; Visual settings
 (defvar nro/default-font-size 130)
-(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
+(defvar nro/default-font "Meslo LG S Nerd Font")
 
 ;; Vim keybindings in emacs.
 (use-package evil
   :init
   (evil-mode 1)
   :config
+
   ;; Set leader key to space
   (evil-set-leader 'normal (kbd "SPC"))
 
@@ -98,8 +99,8 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-  ;; (setq evil-insert-state-cursor 'hbar))
+  (evil-set-initial-state 'dashboard-mode 'normal)
+  (setq evil-insert-state-cursor 'block))
 
 ;; Add support for cmake files
 (use-package cmake-mode
@@ -210,9 +211,21 @@
 
 ;; A nice a simple theme
 (use-package tok-theme
+  :ensure t)
+
+;; Another simple nice theme which has support for many different packages.
+(use-package modus-themes
   :ensure t
+  :init
+  (setq modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend)
+        modus-themes-syntax 'yellow-comments)
+
+  (modus-themes-load-themes)
   :config
-  (load-theme 'tok-dark t))
+  (modus-themes-load-vivendi)
+  :bind ("<f5>" . modus-themes-toggle))
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
@@ -356,6 +369,7 @@
   :config
   (setq which-key-idle-delay 1))
 
+;; Add LSP to C and C++ modes
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
 
@@ -523,7 +537,7 @@
   (evil-org-agenda-set-keys))
 
 
-;; Custom
+;; Add easy commenting for lots of different languages
 (use-package evil-nerd-commenter
   :ensure t
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
@@ -577,7 +591,6 @@
 
 (setq auto-save-file-name-transforms
       `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-
 
 ;; Highlight some important keywords
 (use-package hl-todo
@@ -778,7 +791,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(solarized-theme tok-theme diminish company-box simple-modeline dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
+   '(doom-themes faff-theme solarized-theme tok-theme diminish company-box simple-modeline dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-background-mode nil)
