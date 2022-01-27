@@ -59,6 +59,8 @@
 ;; Visual settings
 (defvar nro/default-font-size 130)
 (defvar nro/default-font "Meslo LG S Nerd Font")
+(set-face-attribute 'mode-line nil :box nil)
+
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -126,8 +128,6 @@
 (setq-default standard-indent 2)
 (setq-default electric-indent-inhibit t)
 (setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
-(setq select-enable-clipboard t) ;; Copy paste outside of emacs
-(setq ring-bell-function 'ignore) ;; Disable ring-bell
 (show-paren-mode 1) ;; Show matching parenthesies
 
 ;; Use UTF-8
@@ -137,21 +137,20 @@
 (prefer-coding-system 'utf-8)
 
 (set-fringe-mode 0) ;; Disable fringes
-(setq large-file-warning-threshold 100000000) ;; Change large file warning threshold
 (blink-cursor-mode 0) ;; Disable cursor blinking
 
-;; Better scrolling
+;; Custom settings
 (setq scroll-margin 0
       scroll-conservatively 100000
       scroll-preserve-screen-position 1
       scroll-down-aggressively 0.01
-      scroll-up-aggressively 0.01)
-
-(setq echo-keystrokes 0.1)
-(setq require-final-newline t)
-
-;; Show empty scratch buffer and make the mode org mode
-(setq initial-scratch-message nil)
+      scroll-up-aggressively 0.01
+      echo-keystrokes 0.1
+      require-final-newline t
+      initial-scratch-message nil
+      select-enable-clipboard t
+      ring-bell-function 'ignore
+      large-file-warning-threshold 100000000)
 
 ;; Cleanup whitespaces
 (add-hook 'before-save-hook 'whitespace-cleanup)
@@ -205,27 +204,25 @@
 (scroll-bar-mode -1) ;; Disable scroll bar
 (tool-bar-mode -1) ;; Disable toolbar
 (tooltip-mode -1) ;; Disable tooltips
-(global-hl-line-mode 1) ;; Highlight the line where the cursor is
+;; (global-hl-line-mode 1) ;; Highlight the line where the cursor is
 (fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
-;; A nice a simple theme
-(use-package tok-theme
-  :ensure t)
-
 ;; Another simple nice theme which has support for many different packages.
-(use-package modus-themes
-  :ensure t
-  :init
-  (setq modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend)
-        modus-themes-syntax 'yellow-comments)
+;; (use-package modus-themes
+;;   :ensure t
+;;   :init
+;;   (setq modus-themes-italic-constructs nil
+;;         modus-themes-bold-constructs nil
+;;         modus-themes-region '(bg-only no-extend)
+;;         modus-themes-syntax 'yellow-comments)
+;;   :config
+;;   :bind ("<f5>" . modus-themes-toggle))
 
-  (modus-themes-load-themes)
+(use-package gruber-darker-theme
+  :ensure t
   :config
-  (modus-themes-load-vivendi)
-  :bind ("<f5>" . modus-themes-toggle))
+  (load-theme 'gruber-darker t))
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
@@ -335,7 +332,6 @@
   (yas-global-mode 1))
 
 (define-key yas-keymap (kbd "<return>") 'yas/exit-all-snippets)
-
 (use-package flycheck
   :ensure t
   :config
@@ -570,7 +566,6 @@
   :custom ((dired-listing-switches "-agho --group-directories-first")))
 
 (use-package dired-single)
-
 (use-package all-the-icons-dired
   :hook (dired-mode . all-the-icons-dired-mode))
 
@@ -634,11 +629,6 @@
   :ensure t)
 (modern-c++-font-lock-global-mode t)
 
-;; A minimal modeline without too much flash.
-(use-package simple-modeline
-  :hook (after-init . simple-modeline-mode))
-(display-time-mode 1) ;; Display the time in the modeline
-
 ;; A package which hides unnecessary minor-modes from the modeline.
 (use-package diminish
   :ensure t)
@@ -694,7 +684,7 @@
   "Write this file to a new location, and delete the old one."
   (interactive)
   (let ((old-location (buffer-file-name)))
-    (call-interactively #'write-file)
+   (call-interactively #'write-file)
     (when old-location
       (delete-file old-location))))
 
@@ -743,82 +733,17 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default bold shadow italic underline success warning error])
- '(ansi-color-names-vector
-   ["#181818" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
- '(awesome-tray-mode-line-active-color "#2fafff")
- '(awesome-tray-mode-line-inactive-color "#323232")
- '(company-quickhelp-color-background "#4F4F4F")
- '(company-quickhelp-color-foreground "#DCDCCC")
+ '(compilation-message-face 'default)
  '(custom-safe-themes '(default))
- '(exwm-floating-border-color "#646464")
- '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
- '(flymake-note-bitmap '(exclamation-mark modus-themes-fringe-cyan))
- '(flymake-warning-bitmap '(exclamation-mark modus-themes-fringe-yellow))
- '(helm-minibuffer-history-key "M-p")
- '(highlight-tail-colors '(("#2f4a00" . 0) ("#00415e" . 20)))
- '(hl-todo-keyword-faces
-   '(("HOLD" . "#c4d030")
-     ("TODO" . "#feacd0")
-     ("NEXT" . "#b6a0ff")
-     ("THEM" . "#f78fe7")
-     ("PROG" . "#00d3d0")
-     ("OKAY" . "#4ae2f0")
-     ("DONT" . "#70b900")
-     ("FAIL" . "#ff8059")
-     ("BUG" . "#ff8059")
-     ("DONE" . "#44bc44")
-     ("NOTE" . "#e3c55f")
-     ("KLUDGE" . "#e0cc00")
-     ("HACK" . "#e0cc00")
-     ("TEMP" . "#ffcccc")
-     ("FIXME" . "#ff9077")
-     ("XXX+" . "#ef8b50")
-     ("REVIEW" . "#6ae4b9")
-     ("DEPRECATED" . "#bfd9ff")))
  '(iackage-selected-packages
-   '(yaml-mode prettier-js doom-themes yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode writegood-mode flycheck rustic spaceline dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
- '(ibuffer-deletion-face 'modus-themes-mark-del)
- '(ibuffer-filter-group-name-face 'modus-themes-mark-symbol)
- '(ibuffer-marked-face 'modus-themes-mark-sel)
- '(ibuffer-title-face 'modus-themes-pseudo-header)
+   '(yaml-mode prettier-js yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode flycheck rustic dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(ispell-extra-args '("--sug-mode=ultra"))
  '(ispell-program-name "aspell")
- '(nrepl-message-colors
-   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
- '(org-agenda-files '("~/docs/org/todo.org" "~/docs/org/habits.org"))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(doom-themes faff-theme solarized-theme tok-theme diminish company-box simple-modeline dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
- '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
- '(vc-annotate-background "#2B2B2B")
- '(vc-annotate-background-mode nil)
- '(vc-annotate-color-map
-   '((20 . "#BC8383")
-     (40 . "#CC9393")
-     (60 . "#DFAF8F")
-     (80 . "#D0BF8F")
-     (100 . "#E0CF9F")
-     (120 . "#F0DFAF")
-     (140 . "#5F7F5F")
-     (160 . "#7F9F7F")
-     (180 . "#8FB28F")
-     (200 . "#9FC59F")
-     (220 . "#AFD8AF")
-     (240 . "#BFEBBF")
-     (260 . "#93E0E3")
-     (280 . "#6CA0A3")
-     (300 . "#7CB8BB")
-     (320 . "#8CD0D3")
-     (340 . "#94BFF3")
-     (360 . "#DC8CC3")))
- '(vc-annotate-very-old-color "#DC8CC3")
- '(xterm-color-names
-   ["black" "#ff8059" "#44bc44" "#e0cc00" "#2fafff" "#feacd0" "#00d3d0" "gray65"])
- '(xterm-color-names-bright
-   ["gray35" "#ef8b50" "#70b900" "#c4d030" "#79a8ff" "#f78fe7" "#4ae2f0" "white"]))
+   '(gruber-darker-theme diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window)))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
