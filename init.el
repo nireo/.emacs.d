@@ -21,7 +21,6 @@
                    (time-subtract after-init-time before-init-time)))
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
-
 ;; Increase performance especially for LSP-mode.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
@@ -57,10 +56,8 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
-(defvar nro/default-font-size 130)
-(defvar nro/default-font "Meslo LG S Nerd Font")
-(set-face-attribute 'mode-line nil :box nil)
-
+(defvar nro/default-font-size 125)
+(defvar nro/default-font "JetBrains Mono Nerd Font")
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -208,21 +205,26 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
-;; Another simple nice theme which has support for many different packages.
-;; (use-package modus-themes
-;;   :ensure t
-;;   :init
-;;   (setq modus-themes-italic-constructs nil
-;;         modus-themes-bold-constructs nil
-;;         modus-themes-region '(bg-only no-extend)
-;;         modus-themes-syntax 'yellow-comments)
-;;   :config
-;;   :bind ("<f5>" . modus-themes-toggle))
-
 (use-package gruber-darker-theme
   :ensure t
+  :config)
+
+(use-package modus-themes
+  :ensure
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend)
+        modus-themes-syntax '(yellow-comments))
+  ;; (modus-themes-load-themes)
   :config
-  (load-theme 'gruber-darker t))
+  :bind ("<f5>" . modus-themes-toggle))
+
+(use-package tok-theme
+  :ensure t
+  :config
+  (load-theme 'tok t))
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
@@ -737,13 +739,8 @@
  '(custom-safe-themes '(default))
  '(iackage-selected-packages
    '(yaml-mode prettier-js yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode flycheck rustic dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
- '(ispell-extra-args '("--sug-mode=ultra"))
- '(ispell-program-name "aspell")
- '(org-blank-before-new-entry '((heading) (plain-list-item)))
- '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(gruber-darker-theme diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window)))
-
+   '(leuven-theme modus-themes tok-theme gruber-darker-theme diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
