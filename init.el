@@ -21,6 +21,7 @@
                    (time-subtract after-init-time before-init-time)))
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
+
 ;; Increase performance especially for LSP-mode.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
@@ -56,8 +57,8 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
-(defvar nro/default-font-size 125)
-(defvar nro/default-font "JetBrains Mono Nerd Font")
+(defvar nro/default-font-size 122)
+(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -85,7 +86,7 @@
   (evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
 
   ;; Other leader keybindings
-  (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
+  (evil-define-key 'normal 'global (kbd "<leader>p") 'find-file)
   (evil-define-key 'normal 'global (kbd "<leader>fb") 'lsp-format-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
@@ -99,7 +100,7 @@
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal)
-  (setq evil-insert-state-cursor 'block))
+  (setq evil-insert-state-cursor 'hbar))
 
 ;; Add support for cmake files
 (use-package cmake-mode
@@ -206,8 +207,15 @@
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
 (use-package gruber-darker-theme
+  :ensure t)
+
+(use-package quasi-monochrome-theme
   :ensure t
-  :config)
+  :config
+  (load-theme 'quasi-monochrome t))
+
+(set-face-attribute 'mode-line nil
+                    :box '(:line-width 6))
 
 (use-package modus-themes
   :ensure
@@ -220,11 +228,6 @@
   ;; (modus-themes-load-themes)
   :config
   :bind ("<f5>" . modus-themes-toggle))
-
-(use-package tok-theme
-  :ensure t
-  :config
-  (load-theme 'tok t))
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
@@ -263,13 +266,22 @@
   :custom ((projectile-completion-system 'ivy))
   :config
   (projectile-mode +1)
+
+  ;; ignore some useless directories in cmake projects.
+  (add-to-list 'projectile-globally-ignored-directories "build")
+  (add-to-list 'projectile-globally-ignored-directories ".cache")
+  (add-to-list 'projectile-globally-ignored-directories "cache")
+  (add-to-list 'projectile-globally-ignored-directories "*clangd")
+
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
   :ensure t
-  :config (counsel-projectile-mode)
+  :config
+  (counsel-projectile-mode)
+  (setq counsel-find-file-ignore-regexp "\.|build")
   :bind ( :map evil-normal-state-map
      ("C-p" . counsel-projectile)))
 
@@ -730,6 +742,13 @@
   (interactive)
   (load-file "~/.emacs.d/init.el"))
 
+(defun nro/quit-emacs (arg)
+  "Kill emacs."
+  (interactive "P")
+  (save-some-buffers (when (consp arg) t) t)
+  (kill-emacs))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -737,10 +756,14 @@
  ;; If there is more than one, they won't work right.
  '(compilation-message-face 'default)
  '(custom-safe-themes '(default))
+ '(frame-brackground-mode 'dark)
  '(iackage-selected-packages
    '(yaml-mode prettier-js yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode flycheck rustic dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
+ '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(leuven-theme modus-themes tok-theme gruber-darker-theme diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window)))
+   '(quasi-monochrome-theme reykjavik-theme punpun-theme purp-theme stimmung-themes kaolin-themes vs-dark-theme modus-themes tok-theme gruber-darker-theme diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
+ '(pos-tip-background-color "#222225")
+ '(pos-tip-foreground-color "#c8c8d0"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
