@@ -57,7 +57,7 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
-(defvar nro/default-font-size 122)
+(defvar nro/default-font-size 125)
 (defvar nro/default-font "DejaVu Sans Mono Nerd Font")
 
 ;; Vim keybindings in emacs.
@@ -77,7 +77,7 @@
 
   ;; Such that there is no need to use the ESC-key.
   (define-key evil-insert-state-map (kbd "C-j") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-f") 'evil-delete-backward-char-and-join)
+  (define-key evil-insert-state-map (kbd "C-f") 'evil-normal-state)
 
   ;; Some keybindings for better window navigation
   (evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
@@ -91,6 +91,8 @@
   (evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
 
+  (evil-define-key 'normal 'global (kbd "<leader>o") 'centaur-tabs-forward)
+  (evil-define-key 'normal 'global (kbd "<leader>i") 'centaur-tabs-backward)
   ;; Save a file.
   (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
 
@@ -99,14 +101,27 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal)
-  (setq evil-insert-state-cursor 'hbar))
+  (evil-set-initial-state 'dashboard-mode 'normal))
+
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (centaur-tabs-mode t))
 
 ;; Add support for cmake files
 (use-package cmake-mode
   :ensure t
   :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
+
+;; Nicer buffer name buffers with same name
+(use-package uniquify
+  :defer 5
+  :config
+  (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
+  (setq uniquify-buffer-name-style 'forward)
+  (setq uniquify-separator "/"))
 
 ;; Add colored delimiters based on the depth of the delimiters.
 (use-package rainbow-delimiters
@@ -210,12 +225,8 @@
   :ensure t)
 
 (use-package quasi-monochrome-theme
-  :ensure t
-  :config
-  (load-theme 'quasi-monochrome t))
+  :ensure t)
 
-(set-face-attribute 'mode-line nil
-                    :box '(:line-width 6))
 
 (use-package modus-themes
   :ensure
@@ -225,7 +236,8 @@
         modus-themes-bold-constructs nil
         modus-themes-region '(bg-only no-extend)
         modus-themes-syntax '(yellow-comments))
-  ;; (modus-themes-load-themes)
+        (modus-themes-load-themes)
+        (modus-themes-load-vivendi)
   :config
   :bind ("<f5>" . modus-themes-toggle))
 
@@ -509,6 +521,9 @@
   :ensure t)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
+(use-package haskell-mode
+  :ensure t)
+
 (use-package org
   :hook (org-mode . nro/org-mode-setup)
   :config
@@ -748,7 +763,6 @@
   (save-some-buffers (when (consp arg) t) t)
   (kill-emacs))
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -761,7 +775,7 @@
    '(yaml-mode prettier-js yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode flycheck rustic dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(quasi-monochrome-theme reykjavik-theme punpun-theme purp-theme stimmung-themes kaolin-themes vs-dark-theme modus-themes tok-theme gruber-darker-theme diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
+   '(centaur-tabs haskell-mode quasi-monochrome-theme modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0"))
 (custom-set-faces
