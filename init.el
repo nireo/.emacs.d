@@ -57,7 +57,7 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
-(defvar nro/default-font-size 125)
+(defvar nro/default-font-size 135)
 (defvar nro/default-font "DejaVu Sans Mono Nerd Font")
 
 ;; Vim keybindings in emacs.
