@@ -2,6 +2,8 @@
 ;; Enable the package manager
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+
 (package-initialize)
 
 ;; Use-package
@@ -57,8 +59,14 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
-(defvar nro/default-font-size 135)
+(defvar nro/default-font-size 130)
 (defvar nro/default-font "DejaVu Sans Mono Nerd Font")
+
+(set-face-attribute 'default nil
+                    :family nro/default-font
+                    :height nro/default-font-size
+                    :weight 'normal
+                    :width 'normal)
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -91,8 +99,6 @@
   (evil-define-key 'normal 'global (kbd "<leader>di") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>kb") 'kill-this-buffer)
 
-  (evil-define-key 'normal 'global (kbd "<leader>o") 'centaur-tabs-forward)
-  (evil-define-key 'normal 'global (kbd "<leader>i") 'centaur-tabs-backward)
   ;; Save a file.
   (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
 
@@ -103,11 +109,11 @@
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
 
-(use-package centaur-tabs
-  :ensure t
-  :demand
-  :config
-  (centaur-tabs-mode t))
+;; (use-package centaur-tabs
+;;   :ensure t
+;;   :demand
+;;   :config
+;;   (centaur-tabs-mode t))
 
 ;; Add support for cmake files
 (use-package cmake-mode
@@ -128,6 +134,9 @@
   :ensure t
   :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package rainbow-mode
+  :hook (prog . rainbow-mode))
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -221,25 +230,19 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
-(use-package gruber-darker-theme
-  :ensure t)
 
-(use-package quasi-monochrome-theme
-  :ensure t)
-
-
-(use-package modus-themes
-  :ensure
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend)
-        modus-themes-syntax '(yellow-comments))
-        (modus-themes-load-themes)
-        (modus-themes-load-vivendi)
-  :config
-  :bind ("<f5>" . modus-themes-toggle))
+;; (use-package modus-themes
+;;   :ensure
+;;   :init
+;;   ;; Add all your customizations prior to loading the themes
+;;   (setq modus-themes-italic-constructs nil
+;;         modus-themes-bold-constructs nil
+;;         modus-themes-region '(bg-only no-extend)
+;;         modus-themes-syntax '(yellow-comments))
+;;         (modus-themes-load-themes)
+;;         (modus-themes-load-vivendi)
+;;   :config
+;;   :bind ("<f5>" . modus-themes-toggle))
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
@@ -266,10 +269,6 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
 (setq inhibit-startup-message t) ;; Remove startup message
-
-;; Set fonts
-(set-face-attribute 'default nil :font nro/default-font :height nro/default-font-size)
-(set-face-attribute 'variable-pitch nil :font nro/default-font :height nro/default-font-size)
 
 ;; Projectile configuration
 (use-package projectile
@@ -763,6 +762,8 @@
   (save-some-buffers (when (consp arg) t) t)
   (kill-emacs))
 
+(load-theme 'lain t)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -775,7 +776,7 @@
    '(yaml-mode prettier-js yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode flycheck rustic dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(centaur-tabs haskell-mode quasi-monochrome-theme modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
+   '(rainbow-mode simplicity-theme centaur-tabs haskell-mode quasi-monochrome-theme modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0"))
 (custom-set-faces
@@ -783,4 +784,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil))))
  '(emmet-preview-input ((t (:inherit lazy-highlight)))))
