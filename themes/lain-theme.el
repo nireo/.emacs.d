@@ -24,7 +24,7 @@ defining them in this alist."
   (defvar lain-default-colors-alist
     '(("lain-foreground"    . "#eeeeee")
       ("lain-background"    . "#000000")
-      ("lain-comment"       . "#b45454")
+      ("lain-comment"       . "#4a5791")
       ("lain-string"        . "#b4a7d6")
       ("lain-white"         . "#ffffff")
       ("lain-grey-1"        . "#dddddd")
@@ -41,7 +41,8 @@ defining them in this alist."
       ("lain-cyan+1"        . "#4a5791")
       ("lain-purple"        . "#420dab")
       ("lain-blue"          . "#aaddd2")
-      ("lain-navy"          . "#010029"))
+      ("lain-navy"          . "#010029")
+      ("lain-magenta-1"     . "#a764e9"))
     "List of Simplicity colors."))
 
 (defmacro lain-with-color-variables (&rest body)
@@ -142,7 +143,7 @@ defining them in this alist."
 ;;;;; Line number
    `(line-number
      ((t (:background nil
-          :foreground ,lain-grey))))
+          :foreground ,lain-white))))
    `(line-number-current-line
      ((t (:background nil
           :foreground ,lain-white :weight bold))))
@@ -157,12 +158,13 @@ defining them in this alist."
      ((t (:foreground ,lain-foreground))))
 ;;;;; Constants
    `(font-lock-constant-face
-     ((t (:foreground ,lain-foreground))))
+     ((t (:foreground ,lain-white))))
+   `(highlight-numbers-number ((t (:foreground lain-magenta-1))))
 ;;;;; Comments
    `(font-lock-comment-face
-     ((t (:foreground ,lain-comment :weight bold))))
+     ((t (:foreground ,lain-comment))))
    `(font-lock-doc-face
-     ((t (:foreground ,lain-comment :weight bold))))
+     ((t (:foreground ,lain-comment))))
 ;;;;; Function names
    `(font-lock-function-name-face
      ((t (:foreground ,lain-foreground))))
@@ -190,9 +192,6 @@ defining them in this alist."
           :foreground ,lain-foreground
           :underline (:color ,lain-red)
           :weight bold))))
-;;;;; sh
-   `(sh-quoted-exec
-     ((t (:foreground ,lain-yellow-1 :weight bold))))
 ;;;;; Ivy
    `(ivy-current-match
      ((t (:background ,lain-background
@@ -233,13 +232,6 @@ defining them in this alist."
      ((t (:background ,lain-navy
           :foreground ,lain-foreground
           :weight bold))))
-;;;;; Eshell
-   `(eshell-syntax-highlighting-alias-face
-     ((t (:background ,lain-background
-          :foreground ,lain-cyan))))
-   `(eshell-syntax-highlighting-command-face
-     ((t (:background ,lain-background
-          :foreground ,lain-green))))
 ;;;;; Flycheck
    `(flycheck-error
      ((((supports :underline (:style wave)))
@@ -373,6 +365,7 @@ defining them in this alist."
      ((t (:inherit term-color-white))))
    `(term-default-bg-color
      ((t (:inherit term-color-black))))
+
 ;;;;; rainbow-delimiters
    `(rainbow-delimiters-depth-1-face
      ((t (:foreground ,lain-blue))))
@@ -398,13 +391,13 @@ defining them in this alist."
      ((t (:inherit show-paren-mismatch))))
 ;;;;; dired
    `(dired-directory
-     ((t (:foreground ,lain-orange))))
+     ((t (:foreground ,lain-cyan+1))))
    `(dired-flagged
      ((t (:background ,lain-background
           :foreground ,lain-magenta))))
    `(dired-header
      ((t (:background ,lain-background
-          :foreground ,lain-yellow))))
+          :foreground ,lain-comment))))
 ;;;;; diredfl
    `(diredfl-dir-name
      ((t (:inherit dired-directory))))

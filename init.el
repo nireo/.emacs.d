@@ -59,8 +59,8 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
-(defvar nro/default-font-size 130)
-(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
+(defvar nro/default-font-size 125)
+(defvar nro/default-font "Meslo LG S Nerd Font")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
