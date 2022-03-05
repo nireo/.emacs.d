@@ -59,8 +59,8 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
-(defvar nro/default-font-size 125)
-(defvar nro/default-font "Meslo LG S Nerd Font")
+(defvar nro/default-font-size 135)
+(defvar nro/default-font "Iosevka")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -231,18 +231,18 @@
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
 
-;; (use-package modus-themes
-;;   :ensure
-;;   :init
-;;   ;; Add all your customizations prior to loading the themes
-;;   (setq modus-themes-italic-constructs nil
-;;         modus-themes-bold-constructs nil
-;;         modus-themes-region '(bg-only no-extend)
-;;         modus-themes-syntax '(yellow-comments))
-;;         (modus-themes-load-themes)
-;;         (modus-themes-load-vivendi)
-;;   :config
-;;   :bind ("<f5>" . modus-themes-toggle))
+(use-package modus-themes
+  :ensure
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-italic-constructs nil
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend)
+        modus-themes-syntax '(yellow-comments))
+        (modus-themes-load-themes)
+        (modus-themes-load-vivendi)
+  :config
+  :bind ("<f5>" . modus-themes-toggle))
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
@@ -762,8 +762,6 @@
   (save-some-buffers (when (consp arg) t) t)
   (kill-emacs))
 
-(load-theme 'lain t)
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -776,7 +774,7 @@
    '(yaml-mode prettier-js yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode flycheck rustic dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(rainbow-mode simplicity-theme centaur-tabs haskell-mode quasi-monochrome-theme modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
+   '(nofrils-acme-theme acme-theme inverse-acme-theme srcery-theme alect-themes xresources-theme rainbow-mode simplicity-theme centaur-tabs haskell-mode quasi-monochrome-theme modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0"))
 (custom-set-faces
