@@ -59,8 +59,8 @@
     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
-(defvar nro/default-font-size 135)
-(defvar nro/default-font "Iosevka")
+(defvar nro/default-font-size 130)
+(defvar nro/default-font "Meslo LG S Nerd Font")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -108,12 +108,6 @@
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
-
-;; (use-package centaur-tabs
-;;   :ensure t
-;;   :demand
-;;   :config
-;;   (centaur-tabs-mode t))
 
 ;; Add support for cmake files
 (use-package cmake-mode
@@ -230,7 +224,7 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
-
+;; Good looking and extensive themes for many different minor-modes.
 (use-package modus-themes
   :ensure
   :init
@@ -240,7 +234,7 @@
         modus-themes-region '(bg-only no-extend)
         modus-themes-syntax '(yellow-comments))
         (modus-themes-load-themes)
-        (modus-themes-load-vivendi)
+        (modus-themes-load-vivendi) ;; Dark theme
   :config
   :bind ("<f5>" . modus-themes-toggle))
 
@@ -756,11 +750,22 @@
   (interactive)
   (load-file "~/.emacs.d/init.el"))
 
+(defun nro/find-file-as-sudo ()
+  "Find file as sudo."
+  (interactive)
+  (let ((file-name (buffer-file-name)))
+    (when file-name
+      (find-alternate-file (concat "/sudo::" file-name)))))
+
 (defun nro/quit-emacs (arg)
   "Kill emacs."
   (interactive "P")
   (save-some-buffers (when (consp arg) t) t)
   (kill-emacs))
+
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+  "Prevent annoying \"Active processes exist\" query when you quit Emacs."
+  (flet ((process-list ())) ad-do-it))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -774,7 +779,7 @@
    '(yaml-mode prettier-js yasnippet-snippets cmake-mode rainbow-delimiters default-text-scale wc-mode flycheck rustic dired-subtree all-the-icons-dired toml-mode org-superstar modus-themes elcord smartparens magit which-key helm-projectile projectile company lsp-ui lsp-mode go-mode use-package evil))
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(package-selected-packages
-   '(nofrils-acme-theme acme-theme inverse-acme-theme srcery-theme alect-themes xresources-theme rainbow-mode simplicity-theme centaur-tabs haskell-mode quasi-monochrome-theme modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
+   '(doom-themes poet-theme punpun-theme nofrils-acme-theme acme-theme inverse-acme-theme srcery-theme alect-themes xresources-theme rainbow-mode simplicity-theme centaur-tabs haskell-mode quasi-monochrome-theme modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0"))
 (custom-set-faces
