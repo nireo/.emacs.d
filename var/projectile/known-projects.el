@@ -1,1 +1,1 @@
-("~/.emacs.d/" "~/dev/asmlai/" "~/dev/ewm/" "~/dev/karu/" "~/dev/json/")
+("~/.emacs.d/" "~/dev/asmlai/" "~/dev/karu/" "~/dev/aani/" "~/dev/ewm/" "~/dev/json/")
