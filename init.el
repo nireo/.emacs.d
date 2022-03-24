@@ -769,45 +769,57 @@
   (save-some-buffers (when (consp arg) t) t)
   (kill-emacs))
 
-(defun cycle-themes ()
-  "Returns a function that lets you cycle your themes."
-  (let ((themes '#1=(modus-vivendi lain acme nofrils-dark . #1#)))
-    (lambda ()
-      (interactive)
-      ;; Rotates the thme cycle and changes the current theme.
-      (load-theme (car (setq themes (cdr themes))) t)
-      (message (concat "Switched to " (symbol-name (car themes)))))))
+(defvar xah-font-list nil "A list of fonts for `xah-cycle-font' to cycle from.")
+(setq xah-font-list
+      (cond
+       ((string-equal system-type "windows-nt")
+        '(
+          "Courier-10"
+          "Lucida Console-10"
+          "Segoe UI Symbol-12"
+          "Lucida Sans Unicode-10"
+          ))
+       ((string-equal system-type "gnu/linux")
+        '(
+          "DejaVu Sans Mono Nerd Font-10"
+          "DejaVu Sans-10"
+          "Symbola-13"
+          ))
+       ((string-equal system-type "darwin") ; Mac
+        '("Courier-14"
+          "Menlo-14")))
 
-; http://xahlee.blogspot.com/2010/07/how-to-quickly-switch-fonts-in-emacs.html
-(defun cycle-font (num)
+(defun xah-cycle-font (@n)
   "Change font in current frame.
-Each time this is called, font cycles thru a predefined set of fonts.
-If NUM is 1, cycle forward.
-If NUM is -1, cycle backward."
+Each time this is called, font cycles thru a predefined list of fonts in the variable `xah-font-list' .
+If @n is 1, cycle forward.
+If @n is -1, cycle backward.
+See also `xah-cycle-font-next', `xah-cycle-font-previous'.
+
+URL `http://xahlee.info/emacs/emacs/emacs_switching_fonts.html'
+Version 2015-09-21"
   (interactive "p")
+  ;; this function sets a property “state”. It is a integer. Possible values are any index to the fontList.
+  (let ($fontToUse $stateBefore $stateAfter )
+    (setq $stateBefore (if (get 'xah-cycle-font 'state) (get 'xah-cycle-font 'state) 0))
+    (setq $stateAfter (% (+ $stateBefore (length xah-font-list) @n) (length xah-font-list)))
+    (setq $fontToUse (nth $stateAfter xah-font-list))
+    (set-frame-font $fontToUse t)
+    ;; (set-frame-parameter nil 'font $fontToUse)
+    (message "Current font is: %s" $fontToUse )
+    (put 'xah-cycle-font 'state $stateAfter)))
 
-  ;; this function sets a property “state”. It is a integer. Possible values are any index to the font-list.
-  (let (font-list font-to-use current-state next-state)
-    (setq font-list     (get-font-list))
-    (setq current-state (if (get 'cycle-font 'state) (get 'cycle-font 'state) 0))
-    (setq next-state    (% (+ current-state (length font-list) num) (length font-list)))
-    (setq font-to-use   (nth next-state font-list))
-    (set-frame-parameter nil 'font font-to-use)
-    (redraw-frame (selected-frame))
-    (message "Current font is: %s" font-to-use)
-    (put 'cycle-font 'state next-state)))
-
-(defun cycle-font-forward ()
-  "Switch to the next font, in the current frame.
-See `cycle-font'."
+(defun xah-cycle-font-next ()
+  "Switch to the next font, in current window.
+See `xah-cycle-font'."
   (interactive)
-  (cycle-font 1))
+  (xah-cycle-font 1))
 
-(defun cycle-font-backward ()
-  "Switch to the previous font, in the current frame.
-See `cycle-font'."
+(defun xah-cycle-font-previous ()
+  "Switch to the previous font, in current window.
+See `xah-cycle-font'."
   (interactive)
-  (cycle-font -1))
+  (xah-cycle-font -1))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -855,7 +867,7 @@ See `cycle-font'."
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(naysayer-theme kuronami-theme doom-themes poet-theme punpun-theme nofrils-acme-theme acme-theme inverse-acme-theme srcery-theme alect-themes xresources-theme rainbow-mode simplicity-theme centaur-tabs haskell-mode quasi-monochrome-theme modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
+   '(naysayer-theme doom-themes punpun-theme nofrils-acme-theme acme-theme alect-themes xresources-theme rainbow-mode simplicity-theme centaur-tabs haskell-mode modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#ffffff" . "#100f10"))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0")
