@@ -155,6 +155,11 @@
 (set-fringe-mode 0) ;; Disable fringes
 (blink-cursor-mode 0) ;; Disable cursor blinking
 
+(setq idle-update-delay 1.0)
+(setq-default cursor-in-non-selected-windows nil)
+(setq highlight-nonselected-windows nil)
+(setq fast-but-imprecise-scrolling t)
+
 ;; Custom settings
 (setq scroll-margin 0
       scroll-conservatively 100000
@@ -234,7 +239,7 @@
         modus-themes-region '(bg-only no-extend)
         modus-themes-syntax '(yellow-comments))
         (modus-themes-load-themes)
-        (modus-themes-load-vivendi) ;; Dark theme
+        (modus-themes-load-operandi) ;; Dark theme
   :config
   :bind ("<f5>" . modus-themes-toggle))
 
@@ -560,6 +565,11 @@
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 
+(use-package elixir-mode
+  :config
+  (use-package alchemist
+    :hook ((elixir-mode . alchemist-mode)
+           (elixir-mode . alchemist-phoenix-mode))))
 
 ;; Add easy commenting for lots of different languages
 (use-package evil-nerd-commenter
@@ -769,6 +779,19 @@
   (save-some-buffers (when (consp arg) t) t)
   (kill-emacs))
 
+(defun rename-this-file (new-name)
+  "Renames both current buffer and file it's visiting to NEW-NAME."
+  (interactive "sNew name: ")
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (unless filename
+      (error "Buffer '%s' is not visiting a file!" name))
+    (progn
+      (when (file-exists-p filename)
+        (rename-file filename new-name 1))
+      (set-visited-file-name new-name)
+      (rename-buffer new-name))))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -776,13 +799,11 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default bold shadow italic underline success warning error])
- '(ansi-color-names-vector
-   ["gray35" "#ff8059" "#44bc44" "#d0bc00" "#2fafff" "#feacd0" "#00d3d0" "gray65"])
  '(awesome-tray-mode-line-active-color "#2fafff")
  '(awesome-tray-mode-line-inactive-color "#323232")
  '(compilation-message-face 'default)
  '(custom-safe-themes '(default))
- '(exwm-floating-border-color "#646464")
+ '(exwm-floating-border-color "#888888")
  '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
  '(flymake-note-bitmap '(exclamation-mark modus-themes-fringe-cyan))
  '(flymake-warning-bitmap '(exclamation-mark modus-themes-fringe-yellow))
@@ -815,31 +836,31 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(naysayer-theme doom-themes punpun-theme nofrils-acme-theme acme-theme alect-themes xresources-theme rainbow-mode simplicity-theme centaur-tabs haskell-mode modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
- '(pdf-view-midnight-colors '("#ffffff" . "#100f10"))
+   '(alchemist elixir-mode inkpot-theme tao-theme naysayer-theme doom-themes punpun-theme nofrils-acme-theme acme-theme alect-themes xresources-theme rainbow-mode simplicity-theme centaur-tabs haskell-mode modus-themes diminish company-box dired-open dired-single yasnippet-snippets yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 elcord dockerfile-mode docker dired-subtree dired-narrow default-text-scale cmake-mode cfrs all-the-icons-dired ace-window))
+ '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0")
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
-   '((20 . "#ff8059")
-     (40 . "#feacd0")
-     (60 . "#f78fe7")
-     (80 . "#ef8b50")
-     (100 . "#d0bc00")
-     (120 . "#c0c530")
-     (140 . "#f8dec0")
-     (160 . "#bfebe0")
-     (180 . "#44bc44")
-     (200 . "#70b900")
-     (220 . "#6ae4b9")
-     (240 . "#4ae2f0")
-     (260 . "#00d3d0")
-     (280 . "#c6eaff")
-     (300 . "#2fafff")
-     (320 . "#79a8ff")
-     (340 . "#00bcff")
-     (360 . "#b6a0ff")))
+   '((20 . "#a60000")
+     (40 . "#721045")
+     (60 . "#8f0075")
+     (80 . "#972500")
+     (100 . "#813e00")
+     (120 . "#70480f")
+     (140 . "#5d3026")
+     (160 . "#184034")
+     (180 . "#005e00")
+     (200 . "#315b00")
+     (220 . "#005a5f")
+     (240 . "#30517f")
+     (260 . "#00538b")
+     (280 . "#093060")
+     (300 . "#0031a9")
+     (320 . "#2544bb")
+     (340 . "#0000c0")
+     (360 . "#5317ac")))
  '(vc-annotate-very-old-color nil)
  '(widget-link-prefix " ")
  '(widget-link-suffix " ")
