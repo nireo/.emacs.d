@@ -148,10 +148,22 @@
 (show-paren-mode 1) ;; Show matching parenthesies
 
 ;; Use UTF-8
-(set-language-environment "UTF-8")
+(when (fboundp 'set-charset-priority)
+  (set-charset-priority 'unicode))
+
+(prefer-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8)
+
+(set-language-environment 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
+(set-file-name-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(modify-coding-system-alist 'process "*" 'utf-8)
+
 
 (set-fringe-mode 0) ;; Disable fringes
 (blink-cursor-mode 0) ;; Disable cursor blinking
@@ -672,8 +684,9 @@
 
 ;; Syntax highlighting support for modern C++ syntax.
 (use-package modern-cpp-font-lock
-  :ensure t)
-(modern-c++-font-lock-global-mode t)
+  :diminish
+  :ensure t
+  :init (modern-c++-font-lock-global-mode t))
 
 ;; A package which hides unnecessary minor-modes from the modeline.
 (use-package diminish
@@ -799,6 +812,44 @@
         (rename-file filename new-name 1))
       (set-visited-file-name new-name)
       (rename-buffer new-name))))
+
+(defun delete-this-file ()
+  "Delete the current file, and kill the buffer."
+  (interactive)
+  (unless (buffer-file-name)
+    (error "No file is currently being edited"))
+  (when (yes-or-no-p (format "Really delete '%s'?"
+                             (file-name-nondirectory buffer-file-name)))
+    (delete-file (buffer-file-name))
+    (kill-this-buffer)))
+
+(defvar go--tools '("golang.org/x/tools/gopls"
+                    "golang.org/x/tools/cmd/goimports"
+                    "honnef.co/go/tools/cmd/staticcheck"
+                    "github.com/go-delve/delve/cmd/dlv"
+                    "github.com/zmb3/gogetdoc"
+                    "github.com/josharian/impl"
+                    "github.com/cweill/gotests/..."
+                    "github.com/fatih/gomodifytags"
+                    "github.com/davidrjenni/reftools/cmd/fillstruct")
+    "All necessary go tools.")
+
+(defun go-update-tools ()
+  "Install or update go tools."
+  (interactive)
+  (unless (executable-find "go")
+    (user-error "Unable to find `go' in `exec-path'!"))
+
+  (message "Installing go tools...")
+  (dolist (pkg go--tools)
+    (set-process-sentinel
+     (start-process "go-tools" "*Go Tools*" "go" "install" "-v" "-x" (concat pkg "@latest"))
+     (lambda (proc _)
+       (let ((status (process-exit-status proc)))
+         (if (= 0 status)
+             (message "Installed %s" pkg)
+           (message "Failed to install %s: %d" pkg status)))))))
+
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file t)
