@@ -850,6 +850,21 @@
              (message "Installed %s" pkg)
            (message "Failed to install %s: %d" pkg status)))))))
 
+(use-package treemacs
+  :ensure t
+  :defer t)
+
+(use-package treemacs-evil
+  :after (treemacs evil)
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :ensure t)
+
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :ensure t)
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file t)
