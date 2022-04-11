@@ -46,12 +46,12 @@
 
 ;; Emacs checks if a special handler is needed to read a certain file. But that is not needed
 ;; during startup. So we can temporarily disable it.
-(defvar nro--file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
+;; (defvar nro--file-name-handler-alist file-name-handler-alist)
+;; (setq file-name-handler-alist nil)
 
-(add-hook 'emacs-startup-hook
-  (lambda ()
-    (setq file-name-handler-alist nro--file-name-handler-alist)))
+;; (add-hook 'emacs-startup-hook
+;;   (lambda ()
+;;     (setq file-name-handler-alist nro--file-name-handler-alist)))
 
 ;; Visual settings
 (defvar nro/default-font-size 130)
@@ -141,26 +141,16 @@
 (setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
 (show-paren-mode 1) ;; Show matching parenthesies
 
+
 ;; Use UTF-8
 (when (fboundp 'set-charset-priority)
   (set-charset-priority 'unicode))
 
-(prefer-coding-system 'utf-8)
-(setq locale-coding-system 'utf-8)
-
-(set-language-environment 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-buffer-file-coding-system 'utf-8)
-(set-clipboard-coding-system 'utf-8)
-(set-file-name-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
 (modify-coding-system-alist 'process "*" 'utf-8)
 
 
 (set-fringe-mode 0) ;; Disable fringes
-(blink-cursor-mode 0) ;; Disable cursor blinking
+(blink-cursor-mode -1) ;; Disable cursor blinking
 
 (setq idle-update-delay 1.0)
 (setq-default cursor-in-non-selected-windows nil)
@@ -169,11 +159,11 @@
 
 ;; Custom settings
 (setq scroll-margin 0
-      scroll-conservatively 100000
-      scroll-preserve-screen-position 1
+      scroll-conservatively 101
+      scroll-preserve-screen-position t
       scroll-down-aggressively 0.01
       scroll-up-aggressively 0.01
-      echo-keystrokes 0.1
+      echo-keystrokes 0.02
       require-final-newline t
       initial-scratch-message nil
       select-enable-clipboard t
@@ -236,33 +226,17 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
-;; Good looking and extensive themes for many different minor-modes.
-(use-package modus-themes
-  :ensure
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs nil
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend)
-        modus-themes-syntax '(yellow-comments))
-        ;; (modus-themes-load-themes)
-        ;; (modus-themes-load-vivendi) ;; Dark theme
-  :config
-  :bind ("<f5>" . modus-themes-toggle))
-
 (setq-default prettify-symbols-alist '(("lambda" . ?λ)
                                        ("delta" . ?Δ)
                                        ("gamma" . ?Γ)
                                        ("phi" . ?φ)
                                        ("psi" . ?ψ)))
 
-
-(use-package sublime-themes
-  :ensure t)
-
 (load-theme 'simplicity t)
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
+(setq create-lockfiles nil) ;; Don't create lock files.
+(setq delete-old-versions t)
 (setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
 (setq x-stretch-cursor t) ;; Make the cursor the size of the underlying character.
 
@@ -276,6 +250,8 @@
 
 (setq vc-follow-symlinks t) ;; When opening a file, always follow symlinks
 (setq auto-window-vscroll nil) ;; Speed up line movement
+(setq blink-matching-paren nil)
+(setq use-dialog-box nil)
 (global-auto-revert-mode t) ;; Revert buffers automatically when underlying files are changed externally
 (setq undo-limit 100000000) ;; Increase undo limit
 
@@ -285,6 +261,8 @@
 
 ;; Make numbers relative such that evil navigation is easier
 (setq display-line-numbers-type 'relative)
+(setq-default display-line-numbers-width 3)
+(setq-default display-line-numbers-widen t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
 (setq inhibit-startup-message t) ;; Remove startup message
@@ -538,9 +516,6 @@
 (use-package org-superstar
   :ensure t)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
-
-(use-package haskell-mode
-  :ensure t)
 
 (use-package org
   :hook (org-mode . nro/org-mode-setup)

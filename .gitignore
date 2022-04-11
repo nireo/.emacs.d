@@ -1,9 +1,25 @@
-projectile.cache
-.lsp-session-v1
-projectile-bookmarks.eld
-recentf
-transient/
-elpa/
-.cache/
+# emacs tempfiles that shouldn't be there
+.dap-breakpoints
+.org-id-locations
+.tern-port
+.yas-compiled-snippets.el
 auto-save-list/
-org-roam.db
+cask/
+ede-projects.el
+elpa/
+eln-cache/
+network-security.data
+places
+semanticdb
+server/
+smex-items
+tramp
+transient/
+var/
+
+# compiled files
+*.elc
+*.lib
+*.fas
+*.dat
+*.eld
