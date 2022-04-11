@@ -11,10 +11,6 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(set-frame-parameter (selected-frame) 'alpha '(100 . 50))
-(add-to-list 'default-frame-alist '(alpha . (100 . 50)))
-
-
 ;; Display the time it took when starting up emacs.
 (defun display-startup-time ()
   "Display startup time when opening Emacs."
@@ -27,8 +23,6 @@
 
 ;; Increase performance especially for LSP-mode.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
-(setq gc-cons-threshold most-positive-fixnum ; 2^61 bytes
-      gc-cons-percentage 0.6)
 
 ;; Change the garbage collector on startup
 (add-hook 'emacs-startup-hook
@@ -227,12 +221,12 @@
   (counsel-mode 1))
 
 ;; Enable rich presense on discord and some configuration for it.
-(use-package elcord
-  :ensure t
-  :config
-  (elcord-mode)
-  (setq elcord-use-major-mode-as-main-icon t)
-  (setq elcord-quiet t))
+;; (use-package elcord
+;;  :ensure t
+;;  :config
+;;  (elcord-mode)
+;;  (setq elcord-use-major-mode-as-main-icon t)
+;;  (setq elcord-quiet t))
 
 (menu-bar-mode -1) ;; Disable menubar
 (scroll-bar-mode -1) ;; Disable scroll bar
