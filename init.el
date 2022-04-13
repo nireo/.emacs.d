@@ -44,15 +44,6 @@
 (add-hook 'minibuffer-setup-hook #'nro/defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
-;; Emacs checks if a special handler is needed to read a certain file. But that is not needed
-;; during startup. So we can temporarily disable it.
-;; (defvar nro--file-name-handler-alist file-name-handler-alist)
-;; (setq file-name-handler-alist nil)
-
-;; (add-hook 'emacs-startup-hook
-;;   (lambda ()
-;;     (setq file-name-handler-alist nro--file-name-handler-alist)))
-
 ;; Visual settings
 (defvar nro/default-font-size 130)
 (defvar nro/default-font "DejaVu Sans Mono Nerd Font")
@@ -66,6 +57,8 @@
 ;; Vim keybindings in emacs.
 (use-package evil
   :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
   (evil-mode 1)
   :config
 
@@ -103,6 +96,12 @@
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
 
 ;; Add support for cmake files
 (use-package cmake-mode
@@ -209,14 +208,6 @@
   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
   (counsel-mode 1))
-
-;; Enable rich presense on discord and some configuration for it.
-;; (use-package elcord
-;;  :ensure t
-;;  :config
-;;  (elcord-mode)
-;;  (setq elcord-use-major-mode-as-main-icon t)
-;;  (setq elcord-quiet t))
 
 (menu-bar-mode -1) ;; Disable menubar
 (scroll-bar-mode -1) ;; Disable scroll bar
@@ -329,11 +320,6 @@
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-
 ;; Add support for rust
 (use-package rustic
   :ensure t
@@ -541,18 +527,6 @@
     (lambda () (interactive) (org-capture nil "jj")))
 
   (nro/org-font-setup))
-
-;; Use evil mode in org-mode
-(use-package evil-org
-  :ensure t
-  :after (evil org)
-  :config
-  (add-hook 'org-mode-hook 'evil-org-mode)
-  (add-hook 'evil-org-mode-hook
-            (lambda ()
-              (evil-org-set-key-theme '(navigation insert textobjects additional calendar))))
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
 
 (use-package elixir-mode
   :config
@@ -834,6 +808,13 @@
 (use-package treemacs-magit
   :after (treemacs magit)
   :ensure t)
+
+(defun cp-fullpath-of-current-buffer ()
+  "Copy full path into the yank ring and OS clipboard."
+  (interactive)
+  (when buffer-file-name
+    (copy-yank-str (file-truename buffer-file-name))
+    (message "file full path => clipboard & yank ring")))
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file t)
