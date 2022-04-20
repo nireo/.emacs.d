@@ -45,7 +45,7 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Visual settings
-(defvar nro/default-font-size 130)
+(defvar nro/default-font-size 135)
 (defvar nro/default-font "DejaVu Sans Mono Nerd Font")
 
 (set-face-attribute 'default nil
@@ -223,7 +223,7 @@
                                        ("phi" . ?φ)
                                        ("psi" . ?ψ)))
 
-(load-theme 'simplicity t)
+(load-theme 'manoj-dark t)
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq create-lockfiles nil) ;; Don't create lock files.
@@ -766,33 +766,6 @@
     (delete-file (buffer-file-name))
     (kill-this-buffer)))
 
-(defvar go--tools '("golang.org/x/tools/gopls"
-                    "golang.org/x/tools/cmd/goimports"
-                    "honnef.co/go/tools/cmd/staticcheck"
-                    "github.com/go-delve/delve/cmd/dlv"
-                    "github.com/zmb3/gogetdoc"
-                    "github.com/josharian/impl"
-                    "github.com/cweill/gotests/..."
-                    "github.com/fatih/gomodifytags"
-                    "github.com/davidrjenni/reftools/cmd/fillstruct")
-    "All necessary go tools.")
-
-(defun go-update-tools ()
-  "Install or update go tools."
-  (interactive)
-  (unless (executable-find "go")
-    (user-error "Unable to find `go' in `exec-path'!"))
-
-  (message "Installing go tools...")
-  (dolist (pkg go--tools)
-    (set-process-sentinel
-     (start-process "go-tools" "*Go Tools*" "go" "install" "-v" "-x" (concat pkg "@latest"))
-     (lambda (proc _)
-       (let ((status (process-exit-status proc)))
-         (if (= 0 status)
-             (message "Installed %s" pkg)
-           (message "Failed to install %s: %d" pkg status)))))))
-
 (use-package treemacs
   :ensure t
   :defer t)
@@ -809,14 +782,28 @@
   :after (treemacs magit)
   :ensure t)
 
-(defun cp-fullpath-of-current-buffer ()
-  "Copy full path into the yank ring and OS clipboard."
-  (interactive)
-  (when buffer-file-name
-    (copy-yank-str (file-truename buffer-file-name))
-    (message "file full path => clipboard & yank ring")))
+;; Support for ASM.
+(use-package nasm-mode
+  :defer 5
+  :ensure t)
 
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file t)
+(use-package multiple-cursors
+  :defer 5
+  :ensure t
+  :config
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+
+;; Avy configuration
+(global-set-key (kbd "C-:") 'avy-goto-char)
+(global-set-key (kbd "C-'") 'avy-goto-char-2)
+(global-set-key (kbd "M-g w") 'avy-goto-word-1)
+
+;; Load custom variables from a custom.el file, such that they don't clutter up
+;; main init.el file.
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 ;;; init.el ends here
