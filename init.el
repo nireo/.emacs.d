@@ -21,7 +21,7 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
-;; Increase performance especially for LSP-mode.
+;; Read process is set to a really low value. Setting it to a higher value increases performance especially for LSP-mode.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 
 ;; Change the garbage collector on startup
@@ -45,14 +45,12 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Visual settings
-(defvar nro/default-font-size 135)
-(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
+(defvar nro/default-font-size 130)
+(defvar nro/default-font "monospace")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
-                    :height nro/default-font-size
-                    :weight 'normal
-                    :width 'normal)
+                    :height nro/default-font-size)
 
 ;; Vim keybindings in emacs.
 (use-package evil
@@ -95,7 +93,9 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+  (evil-set-initial-state 'dashboard-mode 'normal)
+  (setq evil-insert-state-cursor 'hbar)
+  )
 
 (use-package evil-collection
   :after evil
@@ -454,49 +454,13 @@
 (use-package all-the-icons
   :ensure t)
 
-(add-hook 'text-mode-hook
-          'variable-pitch-mode)
-
-(customize-set-variable 'org-blank-before-new-entry
-                        '((heading . nil)
-                          (plain-list-item . nil)))
 (setq org-cycle-separator-lines 1)
 (setq org-adapt-indentation nil)
 (setq-default initial-major-mode 'emacs-lisp-mode)
 
-;; Setup different fonts for org-mode
-(defun nro/org-font-setup()
-  (font-lock-add-keywords 'org-mode
-                          '(("^ *\\([-]\\) "
-                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-  ;; Set faces for heading levels
-  (dolist (face '((org-level-1 . 1.2)
-                  (org-level-2 . 1.1)
-                  (org-level-3 . 1.05)
-                  (org-level-4 . 1.0)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
-
-  (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-  (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-  (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
-  (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
-  (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
-  (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch))
-
 ;; Run different commands related to setting up org-mode
 (defun nro/org-mode-setup ()
   (org-indent-mode)
-  (variable-pitch-mode 1)
   (visual-line-mode 1))
 
 (use-package org-superstar
@@ -524,9 +488,8 @@
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
       (sequence "PLAN(p)" "READY(r)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
   (define-key global-map (kbd "C-c j")
-    (lambda () (interactive) (org-capture nil "jj")))
+    (lambda () (interactive) (org-capture nil "jj"))))
 
-  (nro/org-font-setup))
 
 (use-package elixir-mode
   :config
