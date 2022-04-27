@@ -46,7 +46,7 @@
 
 ;; Visual settings
 (defvar nro/default-font-size 130)
-(defvar nro/default-font "monospace")
+(defvar nro/default-font "JetBrainsMono Nerd Font")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -94,8 +94,13 @@
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal)
-  (setq evil-insert-state-cursor 'hbar)
-  )
+  (setq evil-insert-state-cursor 'hbar))
+
+(use-package evil-snipe
+  :ensure t
+  :config
+  (evil-snipe-mode +1)
+  (evil-snipe-override-mode +1))
 
 (use-package evil-collection
   :after evil
@@ -139,7 +144,6 @@
 (setq-default electric-indent-inhibit t)
 (setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
 (show-paren-mode 1) ;; Show matching parenthesies
-
 
 ;; Use UTF-8
 (when (fboundp 'set-charset-priority)
@@ -223,7 +227,7 @@
                                        ("phi" . ?φ)
                                        ("psi" . ?ψ)))
 
-(load-theme 'manoj-dark t)
+(load-theme 'clues t)
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq create-lockfiles nil) ;; Don't create lock files.
@@ -768,5 +772,12 @@
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+(use-package simple-modeline
+  :ensure t
+  :hook (after-init . simple-modeline-mode))
+
+(use-package olivetti
+  :ensure t)
 
 ;;; init.el ends here

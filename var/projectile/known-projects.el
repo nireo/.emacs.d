@@ -1,1 +1,1 @@
-("~/.emacs.d/" "~/dev/cdns/" "~/dev/asmlai/" "~/dev/karu/" "~/dev/tuuli/" "~/dev/chibicc/" "~/dev/aani/" "~/dev/ewm/" "~/dev/json/")
+("~/go/src/github.com/nireo/dns/" "~/dev/dns/" "~/.emacs.d/" "~/dev/math-eval/" "~/dev/site/" "~/dev/site/personal-site/" "~/dev/asmlai/" "~/dev/cdns/" "~/dev/karu/" "~/dev/tuuli/" "~/dev/chibicc/" "~/dev/aani/" "~/dev/ewm/" "~/dev/json/")
