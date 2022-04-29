@@ -21,7 +21,8 @@
            gcs-done))
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
-;; Read process is set to a really low value. Setting it to a higher value increases performance especially for LSP-mode.
+;; Read process is set to a really low value.
+;; Setting it to a higher value increases performance especially for LSP-mode.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 
 ;; Change the garbage collector on startup
@@ -97,6 +98,7 @@
   (setq evil-insert-state-cursor 'hbar))
 
 (use-package evil-snipe
+  :defer t
   :ensure t
   :config
   (evil-snipe-mode +1)
@@ -110,6 +112,7 @@
 
 ;; Add support for cmake files
 (use-package cmake-mode
+  :defer t
   :ensure t
   :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
@@ -127,9 +130,6 @@
   :ensure t
   :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
-(use-package rainbow-mode
-  :hook (prog . rainbow-mode))
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -227,12 +227,13 @@
                                        ("phi" . ?φ)
                                        ("psi" . ?ψ)))
 
-(load-theme 'clues t)
+(load-theme 'gruber-darker t)
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq create-lockfiles nil) ;; Don't create lock files.
-(setq delete-old-versions t)
 (setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
+(setq delete-old-versions t)
+
 (setq x-stretch-cursor t) ;; Make the cursor the size of the underlying character.
 
 ;; Enable the usage of the system clipboard.
@@ -256,7 +257,7 @@
 
 ;; Make numbers relative such that evil navigation is easier
 (setq display-line-numbers-type 'relative)
-(setq-default display-line-numbers-width 3)
+(setq-default display-line-numbers-width 4)
 (setq-default display-line-numbers-widen t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
@@ -326,6 +327,7 @@
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
 ;; Add support for rust
 (use-package rustic
+  :defer t
   :ensure t
   :config
   (setq lsp-eldoc-hook nil)
@@ -338,12 +340,13 @@
 
 ;; Different snippets to help with coding faster
 (use-package yasnippet
+  :defer 15
   :diminish yas-minor-mode
   :ensure t
   :config
-  (yas-global-mode 1))
+  (yas-global-mode 1)
+  (define-key yas-keymap (kbd "<return>") 'yas/exit-all-snippets))
 
-(define-key yas-keymap (kbd "<return>") 'yas/exit-all-snippets)
 (use-package flycheck
   :ensure t
   :config
@@ -383,6 +386,7 @@
 
 ;; For markdown editing
 (use-package markdown-mode
+  :defer t
   :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
@@ -404,6 +408,7 @@
 
 ;; Support for typescript
 (use-package typescript-mode
+  :defer t
   :mode "\\.tsx?\\'"
   :hook (typescript-mode . lsp-deferred)
   :config
@@ -411,6 +416,7 @@
 
 ;; Support for python
 (use-package python-mode
+  :defer t
   :ensure t
   :hook (python-mode . lsp-deferred)
   :custom
@@ -429,18 +435,29 @@
 
 ;; Support for json
 (use-package json-mode
+  :defer t
   :ensure t
   :mode (("\\.json\\'" . json-mode)))
 
 ;; The best terminal for emacs
 (use-package vterm
+  :defer t
   :ensure t
   :commands vterm
   :config
-  (setq vterm-max-scrollback 10000))
+  (setq vterm-max-scrollback 10000)
+  (defun clean-vterm-window ()
+    (hl-line-mode -1))
+  :hook (vterm-mode . clean-vterm-window))
 
 (use-package vterm-toggle
-  :ensure t)
+  :defer t
+  :ensure t
+  :custom
+  (vterm-toggle-scope 'project)
+  (vterm-toggle-fullscreen-p nil "Open vterm in another window.")
+  :bind(:map vterm-mode-map
+             ("s-t" . #'vterm)))
 
 ;; Git integration
 (use-package magit
@@ -456,6 +473,7 @@
 
 ;; Better looks by adding more icons
 (use-package all-the-icons
+  :defer t
   :ensure t)
 
 (setq org-cycle-separator-lines 1)
@@ -772,10 +790,6 @@
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
-
-(use-package simple-modeline
-  :ensure t
-  :hook (after-init . simple-modeline-mode))
 
 (use-package olivetti
   :ensure t)
