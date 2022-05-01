@@ -792,5 +792,4 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-
 ;;; init.el ends here
