@@ -44,5 +44,6 @@
 (set-selection-coding-system 'utf-8)
 
 (setq default-input-method nil)
+(setq frame-inhibit-implied-resize t)
 
 ;;; early-init.el ends here

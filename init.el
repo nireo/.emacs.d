@@ -32,6 +32,7 @@
     (setq gc-cons-threshold 31457280 ; 32mb
           gc-cons-percentage 0.1)))
 
+;; This is copied from doom emacs and it increases performance.
 (defun nro/defer-garbage-collection-h ()
   "Set the garbage collection threshold to 'most-positive-fixnum'."
   (setq gc-cons-threshold most-positive-fixnum))
@@ -46,10 +47,9 @@
 (add-hook 'minibuffer-setup-hook #'nro/defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
-;; Visual settings
-(defvar nro/default-font-size 135)
-(defvar nro/default-font "JetBrainsMono Nerd Font")
-
+;; Font settings
+(defvar nro/default-font-size 128)
+(defvar nro/default-font "monospace") ;; Use the default monospace font set in fontconfig
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size)
@@ -169,7 +169,6 @@
       scroll-up-aggressively 0.01
       echo-keystrokes 0.02
       require-final-newline t
-      initial-scratch-message nil
       select-enable-clipboard t
       ring-bell-function 'ignore
       large-file-warning-threshold 100000000
@@ -245,7 +244,6 @@
 (setq x-select-enable-clipboard t)
 (setq fill-column 80) ;; Make the max width of a line to be 80 characters.
 (setq frame-resize-pixelwise t) ;; Fix the window not being fullscreen and leaving a gap
-(setq frame-inhibit-implied-resize t)
 (setq frame-title-format "%b - emacs") ;; Change hostname
 
 (setq vc-follow-symlinks t) ;; When opening a file, always follow symlinks
@@ -432,7 +430,6 @@
   (prettier-js-mode))
 
 (add-hook 'web-mode-hook  'web-mode-init-prettier-hook)
-
 (setq-default flycheck-disabled-checkers
               (append flycheck-disabled-checkers
                       '(javascript-jshint json-jsonlist)))
@@ -443,7 +440,7 @@
   :ensure t
   :mode (("\\.json\\'" . json-mode)))
 
-;; The best terminal for emacs
+;; A better terminal emulator as it isn't written in elisp :P
 (use-package vterm
   :defer t
   :ensure t
@@ -469,8 +466,9 @@
   :defer t
   :bind (("C-x g" . magit-status)))
 
-;; So I don't have to type many things twice
+;; Completes parenthesies and other punctuators.
 (use-package smartparens
+  :defer t
   :ensure t
   :init
   (smartparens-global-mode))
@@ -502,9 +500,7 @@
   (setq org-use-fast-todo-selection t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
-  (setq org-agenda-files
-        '("~/docs/org/habits.org"
-          "~/docs/org/todo.org"))
+  (setq org-agenda-files "~/org/todo.org")
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-graph-column 60)
@@ -518,13 +514,16 @@
 
 
 (use-package elixir-mode
+  :defer t
   :config
   (use-package alchemist
+    :defer t
     :hook ((elixir-mode . alchemist-mode)
            (elixir-mode . alchemist-phoenix-mode))))
 
 ;; Add easy commenting for lots of different languages
 (use-package evil-nerd-commenter
+  :defer t
   :ensure t
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
@@ -566,11 +565,7 @@
   (setq dired-open-extensions '(("png" . "feh")
                                 ("mkv" . "mpv"))))
 
-;; Increase/decrease text size in all buffers.
-(use-package default-text-scale
-  :ensure t
-  :defer t)
-
+;; Cleans up the emacs directory.
 (use-package no-littering
   :ensure t)
 
@@ -654,7 +649,6 @@
   (interactive)
   (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
 
-;; Kills all dired buffers.
 (defun kill-dired-buffers ()
   "Kill all open Dired buffers."
   (interactive)
@@ -714,7 +708,6 @@
   (magit-commit-create (list "-m" message))
   (call-interactively #'magit-push-current-to-pushremote))
 
-;; Reload emacs config
 (defun nro/reload-config ()
   "Reloads configuration."
   (interactive)
@@ -726,12 +719,6 @@
   (let ((file-name (buffer-file-name)))
     (when file-name
       (find-alternate-file (concat "/sudo::" file-name)))))
-
-(defun nro/quit-emacs (arg)
-  "Kill Emacs."
-  (interactive "P")
-  (save-some-buffers (when (consp arg) t) t)
-  (kill-emacs))
 
 (defun rename-this-file (new-name)
   "Renames both current buffer and file it's visiting to NEW-NAME."
@@ -761,6 +748,7 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
+;; Treemacs packages
 (use-package treemacs
   :ensure t
   :defer t)
@@ -782,6 +770,8 @@
   :defer 5
   :ensure t)
 
+;; A package for focused editing, which adds a margin on the left and right side
+;; of the text. Nice for writing.
 (use-package olivetti
   :defer t
   :ensure t)
@@ -792,5 +782,9 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;; It is more useful to just open up a todo file, compared to just being an empty elisp buffer.
+(let ((filename "~/org/todo.org"))
+  (when (file-exists-p filename)
+    (setq initial-buffer-choice filename)))
 
 ;;; init.el ends here
