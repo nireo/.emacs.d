@@ -48,7 +48,7 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 128)
+(defvar nro/default-font-size 130)
 (defvar nro/default-font "monospace") ;; Use the default monospace font set in fontconfig
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -94,10 +94,12 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal)
-  (setq evil-insert-state-cursor 'hbar))
+  ;; (setq evil-insert-state-cursor 'hbar)
 
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+
+;; Jump around more easily in evil normal mode.
 (use-package evil-snipe
   :defer t
   :ensure t
@@ -105,6 +107,7 @@
   (evil-snipe-mode +1)
   (evil-snipe-override-mode +1))
 
+;; Evil support for more modes.
 (use-package evil-collection
   :after evil
   :ensure t
@@ -229,8 +232,6 @@
                                        ("gamma" . ?Γ)
                                        ("phi" . ?φ)
                                        ("psi" . ?ψ)))
-
-(load-theme 'gruber-darker t)
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq create-lockfiles nil) ;; Don't create lock files.
@@ -786,5 +787,24 @@
 (let ((filename "~/org/todo.org"))
   (when (file-exists-p filename)
     (setq initial-buffer-choice filename)))
+
+;; Doom stuff
+
+;; Setup custom mode line
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (setq doom-modeline-height 15))
+
+;; Setup doom themes, since they look very nice and they support a lot of different modes.
+(use-package doom-themes
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic nil)
+  (load-theme 'doom-sourcerer t)
+  (doom-themes-treemacs-config)
+  (doom-themes-org-config))
 
 ;;; init.el ends here

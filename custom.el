@@ -10,7 +10,8 @@
  '(awesome-tray-mode-line-active-color "#2fafff")
  '(awesome-tray-mode-line-inactive-color "#323232")
  '(compilation-message-face 'default)
- '(custom-safe-themes '(default))
+ '(custom-safe-themes
+   '("9b54ba84f245a59af31f90bc78ed1240fca2f5a93f667ed54bbf6c6d71f664ac" default))
  '(exwm-floating-border-color "#888888")
  '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
  '(flymake-note-bitmap '(exclamation-mark modus-themes-fringe-cyan))
@@ -44,7 +45,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(auctex emmet-mode olivetti gruber-darker-theme apropospriate-theme diff-hl treemacs alchemist elixir-mode simplicity-theme diminish company-box dired-open dired-single yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 docker dired-subtree dired-narrow cmake-mode cfrs all-the-icons-dired ace-window))
+   '(default-text-scale doom-themes doom-modeline moe-theme jazz-theme inkpot-theme auctex emmet-mode olivetti gruber-darker-theme apropospriate-theme diff-hl treemacs alchemist elixir-mode simplicity-theme diminish company-box dired-open dired-single yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit lsp-ui json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 docker dired-subtree dired-narrow cmake-mode cfrs all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0")
