@@ -45,5 +45,6 @@
 
 (setq default-input-method nil)
 (setq frame-inhibit-implied-resize t)
+(setq inhibit-x-resources t)
 
 ;;; early-init.el ends here

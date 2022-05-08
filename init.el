@@ -48,17 +48,13 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 130)
+(defvar nro/default-font-size 133)
 (defvar nro/default-font "monospace") ;; Use the default monospace font set in fontconfig
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size)
 
-(custom-theme-set-faces
- 'user
- '(variable-pitch ((t (:family "ETBembo" :height 180 ))))
- '(fixed-pitch ((t ( :family "DejaVu Sans Mono Nerd Font" :height 160)))))
-
+(set-background-color "honeydew")
 (font-lock-add-keywords 'org-mode
  '(("^ *\\([-]\\) "
  (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
@@ -804,23 +800,21 @@
   (when (file-exists-p filename)
     (setq initial-buffer-choice filename)))
 
-;; Doom stuff
-
-;; Setup custom mode line
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode)
+(use-package scratch
+  :ensure
   :config
-  (setq doom-modeline-height 15))
-
-;; Setup doom themes, since they look very nice and they support a lot of different modes.
-(use-package doom-themes
-  :ensure t
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic nil)
-  (load-theme 'doom-sourcerer t)
-  (doom-themes-treemacs-config)
-  (doom-themes-org-config))
+  (defun nro/scratch-buffer-setup ()
+    "Add contents to `scratch' buffer and name it accordingly."
+    (let* ((mode (format "%s" major-mode))
+           (string (concat "scratch buffer for: " mode "\n\n")))
+      (when scratch-buffer
+        (save-excursion
+          (insert string)
+          (goto-char (point-min))
+          (comment-region (point-at-bol) (point-at-eol)))
+        (forward-line 2))
+      (rename-buffer (concat "*scratch for " mode "*") t)))
+  :hook (scratch-create-buffer-hook . nro/scratch-buffer-setup)
+  :bind ("C-c s" . scratch))
 
 ;;; init.el ends here
