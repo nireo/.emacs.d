@@ -83,6 +83,10 @@
   (define-key evil-insert-state-map (kbd "C-j") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-f") 'evil-normal-state)
 
+  ;; Better marking keywords using the custom functions below.
+  (evil-define-key 'normal 'global (kbd "<leader>n") 'nro/mark-word)
+  (evil-define-key 'normal 'global (kbd "<leader>m") 'nro/mark-construct-dwim)
+
   ;; Some keybindings for better window navigation
   (evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
   (evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
@@ -816,5 +820,77 @@
       (rename-buffer (concat "*scratch for " mode "*") t)))
   :hook (scratch-create-buffer-hook . nro/scratch-buffer-setup)
   :bind ("C-c s" . scratch))
+
+;; These marking functions are taken from:
+;; https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
+(use-package emacs
+  :commands (nro/mark-symbol
+             nro/mark-sexp-backward)
+  :config
+  (defmacro nro/mark (name object &optional docstring)
+    `(defun ,name (&optional arg allow-extend)
+       ,docstring
+       (interactive "P\np")
+       (let ((x (format "%s-%s" "forward" ,object)))
+         (cond ((and allow-extend
+                     (or (and (eq last-command this-command) (mark t))
+                         (region-active-p)))
+                (setq arg (if arg (prefix-numeric-value arg)
+                            (if (< (mark) (point)) -1 1)))
+                (set-mark
+                 (save-excursion
+                   (goto-char (mark))
+                   (funcall (intern x) arg)
+                   (point))))
+               (t
+                (let ((bounds (bounds-of-thing-at-point (intern ,object))))
+                  (unless (consp bounds)
+                    (error "No %s at point" ,object))
+                  (if (>= (prefix-numeric-value arg) 0)
+                      (goto-char (car bounds))
+                    (goto-char (cdr bounds)))
+                  (push-mark
+                   (save-excursion
+                     (funcall (intern x) (prefix-numeric-value arg))
+                     (point)))
+                  (activate-mark)))))))
+
+  (nro/mark
+   nro/mark-word
+   "word"
+   "Mark the whole word at point.
+This function is a slightly modified version of the built-in
+`mark-word', that I intend to use only in special circumstances,
+such as when recording a keyboard macro where precision is
+required.  For a general purpose utility, use `nro/mark-symbol'
+instead.")
+
+  (nro/mark
+   nro/mark-symbol
+   "symbol"
+   "Mark the whole symbol at point.
+With optional ARG, mark the current symbol and any remaining
+ARGth symbols away from point.  A negative argument moves
+backward. Repeated invocations of this command mark the next
+symbol in the direction originally specified.
+
+In the absence of a symbol and if a word is present at point,
+this command will operate on it as described above.")
+
+  (defun nro/mark-sexp-backward (&optional arg)
+    (interactive "P")
+    (if arg
+        (mark-sexp (- arg) t)
+      (mark-sexp (- 1) t)))
+
+  (defun nro/mark-construct-dwim (&optional arg)
+    (interactive "P")
+    (cond
+     ((symbol-at-point)
+      (nro/mark-symbol arg t))
+     ((eq (point) (cdr (bounds-of-thing-at-point 'sexp)))
+      (nro/mark-sexp-backward arg))
+     (t
+      (mark-sexp arg t)))))
 
 ;;; init.el ends here
