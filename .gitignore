@@ -16,6 +16,7 @@ smex-items
 tramp
 transient/
 var/
+flycheck_init.el
 
 # compiled files
 *.elc

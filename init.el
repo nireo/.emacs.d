@@ -87,6 +87,9 @@
   (evil-define-key 'normal 'global (kbd "<leader>n") 'nro/mark-word)
   (evil-define-key 'normal 'global (kbd "<leader>m") 'nro/mark-construct-dwim)
 
+  ;; Open treemacs
+  (evil-define-key 'normal 'global (kbd "<leader>t") 'treemacs)
+
   ;; Some keybindings for better window navigation
   (evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
   (evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
@@ -219,6 +222,10 @@
   :ensure t
   :init
   (ivy-rich-mode 1))
+
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :init (all-the-icons-ivy-rich-mode 1))
 
 (use-package counsel
   :diminish counsel-mode
@@ -572,8 +579,6 @@
   :custom ((dired-listing-switches "-agho --group-directories-first")))
 
 (use-package dired-single)
-(use-package all-the-icons-dired
-  :hook (dired-mode . all-the-icons-dired-mode))
 
 (use-package dired-open
   :config
@@ -892,5 +897,23 @@ this command will operate on it as described above.")
       (nro/mark-sexp-backward arg))
      (t
       (mark-sexp arg t)))))
+
+(use-package ibuffer
+  :config
+  (setq ibuffer-use-header-line t)
+  (setq ibuffer-default-sorting-mode 'filename/process)
+  (setq ibuffer-default-shrink-to-minimum-size nil)
+  (setq ibuffer-formats
+        '((mark modified read-only locked " "
+                (name 30 30 :left :elide)
+                " "
+                (size 9 -1 :right)
+                " "
+                (mode 16 16 :left :elide)
+                " " filename-and-process)
+          (mark " "
+                (name 16 -1)
+                " " filename)))
+  (setq ibuffer-saved-filter-groups nil))
 
 ;;; init.el ends here
