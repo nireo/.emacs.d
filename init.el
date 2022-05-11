@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
+;;; Code:
 ;; Enable the package manager
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -48,7 +49,7 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 133)
+(defvar nro/default-font-size 130)
 (defvar nro/default-font "monospace") ;; Use the default monospace font set in fontconfig
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -162,6 +163,8 @@
 (setq-default standard-indent 2)
 (setq-default electric-indent-inhibit t)
 (setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
+
+(setq show-paren-delay 0.0)
 (show-paren-mode 1) ;; Show matching parenthesies
 
 ;; Use UTF-8
@@ -178,6 +181,7 @@
 (setq-default cursor-in-non-selected-windows nil)
 (setq highlight-nonselected-windows nil)
 (setq fast-but-imprecise-scrolling t)
+(setq jit-lock-defer-time 0)
 
 ;; Custom settings
 (setq scroll-margin 0
@@ -192,6 +196,8 @@
       large-file-warning-threshold 100000000
       delete-by-moving-to-trash t
       help-window-select t ;; automatically select help windows, so that they can be deleted.
+      confirm-kill-processes nil
+
       )
 
 ;; Cleanup whitespaces
@@ -915,5 +921,17 @@ this command will operate on it as described above.")
                 (name 16 -1)
                 " " filename)))
   (setq ibuffer-saved-filter-groups nil))
+
+(use-package vundo
+  :ensure t
+  :defer t)
+
+(use-package diff-hl
+  :ensure t
+  :defer 2
+  :hook
+  (dired-mode . diff-hl-dired-mode-unless-remote)
+  :config
+  (global-diff-hl-mode 1))
 
 ;;; init.el ends here
