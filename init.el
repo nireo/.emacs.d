@@ -49,8 +49,9 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 130)
-(defvar nro/default-font "monospace") ;; Use the default monospace font set in fontconfig
+(defvar nro/default-font-size 150)
+(defvar nro/default-font "DejaVu Sans Mono") ;; Use the default monospace font set in fontconfig
+
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size)
@@ -197,8 +198,13 @@
       delete-by-moving-to-trash t
       help-window-select t ;; automatically select help windows, so that they can be deleted.
       confirm-kill-processes nil
-
       )
+
+;; Update a buffer if a file changes on disk.
+(global-auto-revert-mode 1)
+
+;; Update changes into dired as well.
+(add-hook 'dired-mode-hook 'auto-revert-mode)
 
 ;; Cleanup whitespaces
 (add-hook 'before-save-hook 'whitespace-cleanup)
@@ -926,12 +932,14 @@ this command will operate on it as described above.")
   :ensure t
   :defer t)
 
-(use-package diff-hl
+(use-package multiple-cursors
   :ensure t
-  :defer 2
-  :hook
-  (dired-mode . diff-hl-dired-mode-unless-remote)
-  :config
-  (global-diff-hl-mode 1))
+  :bind (("M-." . mc/mark-next-like-this)
+         ("M-," . mc/unmark-next-like-this)
+         ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
+
+(use-package crux
+  :ensure t
+  :bind (("C-c o" . crux-open-with)))
 
 ;;; init.el ends here
