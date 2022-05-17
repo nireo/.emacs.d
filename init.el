@@ -49,14 +49,13 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 150)
+(defvar nro/default-font-size 140)
 (defvar nro/default-font "DejaVu Sans Mono") ;; Use the default monospace font set in fontconfig
 
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size)
 
-(set-background-color "honeydew")
 (font-lock-add-keywords 'org-mode
  '(("^ *\\([-]\\) "
  (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
@@ -941,5 +940,7 @@ this command will operate on it as described above.")
 (use-package crux
   :ensure t
   :bind (("C-c o" . crux-open-with)))
+
+(load-theme 'manoj-dark t)
 
 ;;; init.el ends here
