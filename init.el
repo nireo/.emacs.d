@@ -1,4 +1,7 @@
-;; -*- lexical-binding: t; -*-
+;;; init.el --- Personal configuration file -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;;; Personal configuration files hosted at https://github.com/nireo/.emacs.d
 
 ;;; Code:
 ;; Enable the package manager
@@ -49,7 +52,7 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 140)
+(defvar nro/default-font-size 135)
 (defvar nro/default-font "DejaVu Sans Mono") ;; Use the default monospace font set in fontconfig
 
 (set-face-attribute 'default nil
@@ -473,7 +476,12 @@
 (use-package json-mode
   :defer t
   :ensure t
-  :mode (("\\.json\\'" . json-mode)))
+  :mode (("\\.json\\'" . json-mode))
+  :hook (before-save . nro/json-mode-before-save-hook)
+  :preface
+  (defun nro/json-mode-before-save-hook ()
+    (when (eq major-mode 'json-mode)
+      (json-pretty-print-buffer))))
 
 ;; A better terminal emulator as it isn't written in elisp :P
 (use-package vterm
@@ -618,6 +626,7 @@
 
 ;; Add support for the yaml configuration file
 (use-package yaml-mode
+  :delight "ψ"
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
   :ensure yaml-mode
   :defer t)
@@ -909,24 +918,6 @@ this command will operate on it as described above.")
      (t
       (mark-sexp arg t)))))
 
-(use-package ibuffer
-  :config
-  (setq ibuffer-use-header-line t)
-  (setq ibuffer-default-sorting-mode 'filename/process)
-  (setq ibuffer-default-shrink-to-minimum-size nil)
-  (setq ibuffer-formats
-        '((mark modified read-only locked " "
-                (name 30 30 :left :elide)
-                " "
-                (size 9 -1 :right)
-                " "
-                (mode 16 16 :left :elide)
-                " " filename-and-process)
-          (mark " "
-                (name 16 -1)
-                " " filename)))
-  (setq ibuffer-saved-filter-groups nil))
-
 (use-package vundo
   :ensure t
   :defer t)
@@ -941,6 +932,14 @@ this command will operate on it as described above.")
   :ensure t
   :bind (("C-c o" . crux-open-with)))
 
-(load-theme 'manoj-dark t)
+(use-package ini-mode
+  :defer t
+  :ensure t
+  :mode "\\.ini\\'")
+
+(use-package delight
+  :ensure t)
+
+(load-theme 'manoj-custom t)
 
 ;;; init.el ends here
