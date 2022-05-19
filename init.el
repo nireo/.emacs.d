@@ -176,6 +176,9 @@
 
 (modify-coding-system-alist 'process "*" 'utf-8)
 
+;; Treat clipboard input as UTF-8 string first; compound text next...
+(when (display-graphic-p)
+  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 
 (set-fringe-mode 0) ;; Disable fringes
 (blink-cursor-mode -1) ;; Disable cursor blinking
@@ -595,7 +598,16 @@
   :ensure nil
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
-  :custom ((dired-listing-switches "-agho --group-directories-first")))
+  :custom
+  (dired-listing-switches "-agho --group-directories-first")
+  (dired-recursive-deletes 'always)
+  (dired-recursive-copies 'always)
+  (dired-auto-revert-non-file-buffers t)
+  (auto-revert-verbose nil)
+  (dired-dwim-target t)
+  (load-prefer-newer t)
+  :config
+  (put 'dired-find-alternate-file 'disabled nil))
 
 (use-package dired-single)
 
@@ -940,6 +952,33 @@ this command will operate on it as described above.")
 (use-package delight
   :ensure t)
 
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer)
+  :init
+  (use-package ibuffer-vc
+    :ensure t
+    :commands (ibuffer-vc-set-filter-groups-by-vc-root)
+    :custom
+    (ibuffer-vc-skip-if-remote 'nil))
+  :custom
+  (ibuffer-formats
+   '((mark modified read-only locked " "
+           (name 35 35 :left :elide)
+           " "
+           (size 9 -1 :right)
+           " "
+           (mode 16 16 :left :elide)
+           " " filename-and-process)
+     (mark " "
+           (name 16 -1)
+           " " filename))))
+
+(defun nro/edit-config ()
+  "Opens the Emacs configuration file."
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+
+;; Load custom version of the manoj-dark theme.
 (load-theme 'manoj-custom t)
 
 ;;; init.el ends here

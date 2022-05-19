@@ -71,7 +71,7 @@ jarring angry fruit salad look to reduce eye fatigue.")
 
 (custom-theme-set-faces
  'manoj-custom
- '(default ((t (:background "black" :foreground "WhiteSmoke"))))
+ '(default ((t (:background "#151515" :foreground "white"))))
  ;; Font lock faces
  '(font-lock-builtin-face       ((t (:foreground "LightSteelBlue"))))
  '(font-lock-constant-face      ((t (:foreground "LightSlateBlue" :bold t))))
