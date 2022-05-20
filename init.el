@@ -91,6 +91,8 @@
   (evil-define-key 'normal 'global (kbd "<leader>n") 'nro/mark-word)
   (evil-define-key 'normal 'global (kbd "<leader>m") 'nro/mark-construct-dwim)
 
+  (evil-define-key 'normal 'global (kbd "<leader>i") 'ibuffer)
+
   ;; Open treemacs
   (evil-define-key 'normal 'global (kbd "<leader>t") 'treemacs)
 
@@ -180,7 +182,6 @@
 (when (display-graphic-p)
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 
-(set-fringe-mode 0) ;; Disable fringes
 (blink-cursor-mode -1) ;; Disable cursor blinking
 
 (setq idle-update-delay 1.0)
@@ -558,7 +559,7 @@
   (define-key global-map (kbd "C-c j")
     (lambda () (interactive) (org-capture nil "jj"))))
 
-
+;; Support for Elixir programming.
 (use-package elixir-mode
   :defer t
   :config
@@ -566,6 +567,10 @@
     :defer t
     :hook ((elixir-mode . alchemist-mode)
            (elixir-mode . alchemist-phoenix-mode))))
+
+;; Support for julia programming language
+(use-package julia-mode
+  :ensure t)
 
 ;; Add easy commenting for lots of different languages
 (use-package evil-nerd-commenter
@@ -977,6 +982,8 @@ this command will operate on it as described above.")
   "Opens the Emacs configuration file."
   (interactive)
   (find-file "~/.emacs.d/init.el"))
+
+(global-diff-hl-mode 1)
 
 ;; Load custom version of the manoj-dark theme.
 (load-theme 'manoj-custom t)
