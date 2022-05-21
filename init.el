@@ -183,6 +183,7 @@
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 
 (blink-cursor-mode -1) ;; Disable cursor blinking
+(set-fringe-mode 0)
 
 (setq idle-update-delay 1.0)
 (setq-default cursor-in-non-selected-windows nil)
@@ -204,7 +205,9 @@
       delete-by-moving-to-trash t
       help-window-select t ;; automatically select help windows, so that they can be deleted.
       confirm-kill-processes nil
-      )
+      initial-major-mode 'fundamental-mode
+      inhibit-compacting-font-caches t)
+
 
 ;; Update a buffer if a file changes on disk.
 (global-auto-revert-mode 1)
@@ -285,6 +288,8 @@
 (setq frame-title-format "%b - emacs") ;; Change hostname
 
 (setq vc-follow-symlinks t) ;; When opening a file, always follow symlinks
+(setq vc-handled-backends nil)
+
 (setq auto-window-vscroll nil) ;; Speed up line movement
 (setq blink-matching-paren nil)
 (setq use-dialog-box nil)
@@ -297,7 +302,7 @@
 
 ;; Make numbers relative such that evil navigation is easier
 (setq display-line-numbers-type 'relative)
-(setq-default display-line-numbers-width 4)
+(setq-default display-line-numbers-width 3)
 (setq-default display-line-numbers-widen t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
@@ -384,6 +389,7 @@
   :diminish yas-minor-mode
   :ensure t
   :config
+  (setq yas-verbosity 2)
   (yas-global-mode 1)
   (define-key yas-keymap (kbd "<return>") 'yas/exit-all-snippets))
 
@@ -610,9 +616,10 @@
   (dired-auto-revert-non-file-buffers t)
   (auto-revert-verbose nil)
   (dired-dwim-target t)
-  (load-prefer-newer t)
-  :config
-  (put 'dired-find-alternate-file 'disabled nil))
+  (load-prefer-newer t))
+
+(with-eval-after-load 'dired
+  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
 
 (use-package dired-single)
 
@@ -643,7 +650,6 @@
 
 ;; Add support for the yaml configuration file
 (use-package yaml-mode
-  :delight "ψ"
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
   :ensure yaml-mode
   :defer t)
@@ -841,11 +847,6 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-;; It is more useful to just open up a todo file, compared to just being an empty elisp buffer.
-(let ((filename "~/org/todo.org"))
-  (when (file-exists-p filename)
-    (setq initial-buffer-choice filename)))
-
 (use-package scratch
   :ensure
   :config
@@ -864,7 +865,7 @@
   :bind ("C-c s" . scratch))
 
 ;; These marking functions are taken from:
-;; https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore/
+;; https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore
 (use-package emacs
   :commands (nro/mark-symbol
              nro/mark-sexp-backward)
@@ -983,9 +984,12 @@ this command will operate on it as described above.")
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
-(global-diff-hl-mode 1)
+(use-package git-gutter
+  :ensure t
+  :config
+  (global-git-gutter-mode t))
 
 ;; Load custom version of the manoj-dark theme.
-(load-theme 'manoj-custom t)
+(load-theme 'modus-vivendi t)
 
 ;;; init.el ends here
