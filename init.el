@@ -52,8 +52,8 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 135)
-(defvar nro/default-font "DejaVu Sans Mono") ;; Use the default monospace font set in fontconfig
+(defvar nro/default-font-size 145)
+(defvar nro/default-font "DejaVu Sans Mono Nerd Font") ;; Use the default monospace font set in fontconfig
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -115,7 +115,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  ;; (setq evil-insert-state-cursor 'hbar)
+  (setq evil-insert-state-cursor 'block)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -346,7 +346,7 @@
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 
-(global-set-key (kbd "TAB") #'company-indent-or-complete-common)
+;; (global-set-key (kbd "TAB") #'company-indent-or-complete-common)
 
 (use-package company-box
   :diminish
@@ -355,7 +355,7 @@
 ;; Disable some lsp visuals
 (defun nro/lsp-mode-setup ()
   (setq lsp-lens-enable nil)
-  (setq lsp-headerline-breadcrumb-enable nil))
+  (setq lsp-headerline-breadcrumb-enable t))
 
 (use-package lsp-mode
   :hook (lsp-mode . nro/lsp-mode-setup)
@@ -414,6 +414,9 @@
     lsp-ui-sideline-enable t
         lsp-ui-imenu-enable t
         lsp-ui-sideline-ignore-duplicate t))
+
+(use-package go-mode
+  :ensure t)
 
 
 ;; Configuration for Go LSP support
@@ -576,6 +579,9 @@
 
 ;; Support for julia programming language
 (use-package julia-mode
+  :ensure t)
+
+(use-package tuareg
   :ensure t)
 
 ;; Add easy commenting for lots of different languages
@@ -984,12 +990,20 @@ this command will operate on it as described above.")
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
+;; Show git information.
 (use-package git-gutter
   :ensure t
   :config
   (global-git-gutter-mode t))
 
-;; Load custom version of the manoj-dark theme.
+;; Modus themes
+(setq modus-themes-italic-constructs nil
+      modus-themes-bold-constructs t
+      modus-themes-mode-line '(3d moody borderless (height . 1.1)))
+
+(define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+
+;; Custom theme
 (load-theme 'modus-vivendi t)
 
 ;;; init.el ends here
