@@ -52,7 +52,7 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 145)
+(defvar nro/default-font-size 140)
 (defvar nro/default-font "DejaVu Sans Mono Nerd Font") ;; Use the default monospace font set in fontconfig
 
 (set-face-attribute 'default nil
@@ -205,7 +205,6 @@
       delete-by-moving-to-trash t
       help-window-select t ;; automatically select help windows, so that they can be deleted.
       confirm-kill-processes nil
-      initial-major-mode 'fundamental-mode
       inhibit-compacting-font-caches t)
 
 
@@ -1005,5 +1004,21 @@ this command will operate on it as described above.")
 
 ;; Custom theme
 (load-theme 'modus-vivendi t)
+
+(use-package dashboard
+  :ensure t
+  :config
+  (setq dashboard-banner-logo-title "welcome back to emacs")
+  (setq dashboard-startup-banner "~/.emacs.d/emacs.png")
+  (setq dashboard-center-content t)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-set-init-info t)
+
+  (setq dashboard-items '((recents  . 5)
+                        (projects . 5)
+                        (agenda . 5)))
+
+  (dashboard-setup-startup-hook))
 
 ;;; init.el ends here
