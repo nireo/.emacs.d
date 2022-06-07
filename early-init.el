@@ -46,5 +46,6 @@
 (setq default-input-method nil)
 (setq frame-inhibit-implied-resize t)
 (setq inhibit-x-resources t)
+(setq inhibit-startup-message t) ;; Remove startup message
 
 ;;; early-init.el ends here

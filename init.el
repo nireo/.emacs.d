@@ -16,16 +16,6 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-;; Display the time it took when starting up emacs.
-(defun display-startup-time ()
-  "Display startup time when opening Emacs."
-  (message "Emacs loaded in %s with %d garbage collections."
-           (format "%.4f seconds"
-                   (float-time
-                   (time-subtract after-init-time before-init-time)))
-           gcs-done))
-(add-hook 'emacs-startup-hook #'display-startup-time)
-
 ;; Read process is set to a really low value.
 ;; Setting it to a higher value increases performance especially for LSP-mode.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
@@ -266,11 +256,6 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 
-(setq-default prettify-symbols-alist '(("lambda" . ?λ)
-                                       ("delta" . ?Δ)
-                                       ("gamma" . ?Γ)
-                                       ("phi" . ?φ)
-                                       ("psi" . ?ψ)))
 
 (setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
 (setq create-lockfiles nil) ;; Don't create lock files.
@@ -305,7 +290,6 @@
 (setq-default display-line-numbers-widen t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
-(setq inhibit-startup-message t) ;; Remove startup message
 
 ;; Projectile configuration
 (use-package projectile
@@ -345,8 +329,7 @@
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 
-;; (global-set-key (kbd "TAB") #'company-indent-or-complete-common)
-
+;; A better looking company interface
 (use-package company-box
   :diminish
   :hook (company-mode . company-box-mode))
@@ -384,13 +367,15 @@
 
 ;; Different snippets to help with coding faster
 (use-package yasnippet
-  :defer 15
-  :diminish yas-minor-mode
   :ensure t
   :config
   (setq yas-verbosity 2)
-  (yas-global-mode 1)
-  (define-key yas-keymap (kbd "<return>") 'yas/exit-all-snippets))
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  ;;(yas-global-mode 1)
+  (setq yas-prompt-functions '(yas-dropdown-prompt
+                               yas-ido-prompt
+                               yas-completing-prompt)))
 
 (use-package yasnippet-snippets
   :ensure t
@@ -996,9 +981,22 @@ this command will operate on it as described above.")
   (global-git-gutter-mode t))
 
 ;; Modus themes
-(setq modus-themes-italic-constructs nil
-      modus-themes-bold-constructs t
-      modus-themes-mode-line '(3d moody borderless (height . 1.1)))
+
+(setq modus-themes-italic-constructs nil)
+(setq modus-themes-bold-constructs t)
+(setq modus-themes-mixed-fonts t)
+(setq modus-themes-scale-headings t)
+(setq modus-themes-mode-line '(borderless))
+(setq modus-themes-syntax '(faint))
+(setq modus-themes-lang-checkers '(faint))
+(setq modus-themes-completions '(opinionated))
+(setq modus-themes-operandi-color-overrides
+      '((bg-main . "#FAFAFA")
+        (fg-main . "#101010"))
+      modus-themes-vivendi-color-overrides
+      '((bg-main . "#101010")
+        (fg-main . "#FAFAFA"))
+      modus-themes-org-blocks 'gray-background)
 
 (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
 
