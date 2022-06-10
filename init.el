@@ -42,7 +42,7 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 140)
+(defvar nro/default-font-size 135)
 (defvar nro/default-font "DejaVu Sans Mono Nerd Font") ;; Use the default monospace font set in fontconfig
 
 (set-face-attribute 'default nil
@@ -352,6 +352,7 @@
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
+
 ;; Add support for rust
 (use-package rustic
   :defer t
@@ -400,6 +401,13 @@
         lsp-ui-sideline-ignore-duplicate t))
 
 (use-package go-mode
+  :init
+  (setq gofmt-command "goimports")
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (add-hook 'go-mode-hook 'go-eldoc-setup)
+  :ensure t)
+
+(use-package go-eldoc
   :ensure t)
 
 
@@ -1018,5 +1026,17 @@ this command will operate on it as described above.")
                         (agenda . 5)))
 
   (dashboard-setup-startup-hook))
+
+(defun go-test-repo ()
+  "Unit test all packages."
+  (interactive)
+  (let* ((repo-path (magit-toplevel))
+         (default-directory repo-path))
+    (compile "go test -cover ./..."))))
+
+(defun go-mod-tidy ()
+  "Run go mod tidy."
+  (interactive)
+  (shell-command "go mod tidy"))
 
 ;;; init.el ends here
