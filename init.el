@@ -43,109 +43,9 @@
 
 ;; Font settings
 (defvar nro/default-font-size 135)
-(defvar nro/default-font "DejaVu Sans Mono Nerd Font") ;; Use the default monospace font set in fontconfig
+(defvar nro/default-font "Sauce Code Pro Nerd Font")
 
-(set-face-attribute 'default nil
-                    :family nro/default-font
-                    :height nro/default-font-size)
-
-(font-lock-add-keywords 'org-mode
- '(("^ *\\([-]\\) "
- (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-(font-lock-add-keywords 'org-mode
- '(("^ *\\([+]\\) "
- (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
-
-;; Vim keybindings in emacs.
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (evil-mode 1)
-  :config
-
-  ;; Set leader key to space
-  (evil-set-leader 'normal (kbd "SPC"))
-
-  ;; Define different splits
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-
-  ;; Such that there is no need to use the ESC-key.
-  (define-key evil-insert-state-map (kbd "C-j") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-f") 'evil-normal-state)
-
-  ;; Better marking keywords using the custom functions below.
-  (evil-define-key 'normal 'global (kbd "<leader>n") 'nro/mark-word)
-  (evil-define-key 'normal 'global (kbd "<leader>m") 'nro/mark-construct-dwim)
-
-  (evil-define-key 'normal 'global (kbd "<leader>i") 'ibuffer)
-
-  ;; Open treemacs
-  (evil-define-key 'normal 'global (kbd "<leader>t") 'treemacs)
-
-  ;; Some keybindings for better window navigation
-  (evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
-  (evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
-  (evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
-  (evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
-
-  ;; Other leader keybindings
-  (evil-define-key 'normal 'global (kbd "<leader>p") 'find-file)
-  (evil-define-key 'normal 'global (kbd "<leader>f") 'lsp-format-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>d") 'dired)
-  (evil-define-key 'normal 'global (kbd "<leader>k") 'kill-this-buffer)
-
-  ;; Save a file.
-  (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
-
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-  (setq evil-insert-state-cursor 'block)
-
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
-
-;; Jump around more easily in evil normal mode.
-(use-package evil-snipe
-  :defer t
-  :ensure t
-  :config
-  (evil-snipe-mode +1)
-  (evil-snipe-override-mode +1))
-
-;; Evil support for more modes.
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :config
-  (evil-collection-init))
-
-;; Add support for cmake files
-(use-package cmake-mode
-  :defer t
-  :ensure t
-  :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
-         ("\\.cmake\\'" . cmake-mode)))
-
-;; Nicer buffer name buffers with same name
-(use-package uniquify
-  :defer 5
-  :config
-  (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
-  (setq uniquify-buffer-name-style 'forward)
-  (setq uniquify-separator "/"))
-
-;; Add colored delimiters based on the depth of the delimiters.
-(use-package rainbow-delimiters
-  :ensure t
-  :init
-    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
+;; ---- Emacs settings
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
                 term-mode-hook
@@ -208,6 +108,132 @@
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq-default sentence-end-double-space nil)
 
+(menu-bar-mode -1) ;; Disable menubar
+(scroll-bar-mode -1) ;; Disable scroll bar
+(tool-bar-mode -1) ;; Disable toolbar
+(tooltip-mode -1) ;; Disable tooltips
+;; (global-hl-line-mode 1) ;; Highlight the line where the cursor is
+(fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
+(global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
+
+(setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
+(setq create-lockfiles nil) ;; Don't create lock files.
+(setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
+(setq delete-old-versions t)
+
+(setq x-stretch-cursor t) ;; Make the cursor the size of the underlying character.
+
+;; Enable the usage of the system clipboard.
+(setq select-enable-clipboard t)
+(setq x-select-enable-clipboard t)
+(setq fill-column 80) ;; Make the max width of a line to be 80 characters.
+(setq frame-resize-pixelwise t) ;; Fix the window not being fullscreen and leaving a gap
+(setq frame-title-format "%b - emacs") ;; Change hostname
+
+(setq vc-follow-symlinks t) ;; When opening a file, always follow symlinks
+(setq vc-handled-backends nil)
+
+(setq auto-window-vscroll nil) ;; Speed up line movement
+(setq blink-matching-paren nil)
+(setq use-dialog-box nil)
+(global-auto-revert-mode t) ;; Revert buffers automatically when underlying files are changed externally
+(setq undo-limit 100000000) ;; Increase undo limit
+
+;; Add line number display
+(when (version<= "26.0.50" emacs-version )
+  (global-display-line-numbers-mode))
+
+;; Make numbers relative such that evil navigation is easier
+(setq display-line-numbers-type 'relative)
+(setq-default display-line-numbers-width 3)
+(setq-default display-line-numbers-widen t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
+(global-visual-line-mode 1) ;; Add line wrapping
+
+;; ---- Packages
+
+;; Vim keybindings in emacs.
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (evil-mode 1)
+  :config
+
+  ;; Set leader key to space
+  (evil-set-leader 'normal (kbd "SPC"))
+
+  ;; Define different splits
+  (setq evil-vsplit-window-right t)
+  (setq evil-split-window-below t)
+  (setq evil-vsplit-window-right t)
+  (setq evil-split-window-below t)
+
+  ;; Such that there is no need to use the ESC-key.
+  (define-key evil-insert-state-map (kbd "C-j") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-f") 'evil-normal-state)
+
+  ;; Better marking keywords using the custom functions below.
+  (evil-define-key 'normal 'global (kbd "<leader>n") 'nro/mark-word)
+  (evil-define-key 'normal 'global (kbd "<leader>m") 'nro/mark-construct-dwim)
+
+  (evil-define-key 'normal 'global (kbd "<leader>i") 'ibuffer)
+
+  ;; Open treemacs
+  (evil-define-key 'normal 'global (kbd "<leader>t") 'treemacs)
+
+  ;; Some keybindings for better window navigation
+  (evil-define-key 'normal 'global (kbd "<leader>wj") 'evil-window-bottom)
+  (evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
+  (evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
+  (evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
+
+  ;; Other leader keybindings
+  (evil-define-key 'normal 'global (kbd "<leader>p") 'find-file)
+  (evil-define-key 'normal 'global (kbd "<leader>f") 'lsp-format-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader>d") 'dired)
+  (evil-define-key 'normal 'global (kbd "<leader>k") 'kill-this-buffer)
+
+  ;; Save a file.
+  (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
+
+  ;; Use visual line motions even outside of visual-line-mode buffers
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+  (setq evil-insert-state-cursor 'block)
+
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+
+;; Evil support for more modes.
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :config
+  (evil-collection-init))
+
+;; Add support for cmake files
+(use-package cmake-mode
+  :defer t
+  :ensure t
+  :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
+         ("\\.cmake\\'" . cmake-mode)))
+
+;; Nicer buffer name buffers with same name
+(use-package uniquify
+  :defer 5
+  :config
+  (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
+  (setq uniquify-buffer-name-style 'forward)
+  (setq uniquify-separator "/"))
+
+;; Add colored delimiters based on the depth of the delimiters.
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
 ;; A completion system for M-x and C-p
 (use-package ivy
   :ensure t
@@ -248,48 +274,6 @@
   :config
   (counsel-mode 1))
 
-(menu-bar-mode -1) ;; Disable menubar
-(scroll-bar-mode -1) ;; Disable scroll bar
-(tool-bar-mode -1) ;; Disable toolbar
-(tooltip-mode -1) ;; Disable tooltips
-;; (global-hl-line-mode 1) ;; Highlight the line where the cursor is
-(fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
-(global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
-
-
-(setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
-(setq create-lockfiles nil) ;; Don't create lock files.
-(setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
-(setq delete-old-versions t)
-
-(setq x-stretch-cursor t) ;; Make the cursor the size of the underlying character.
-
-;; Enable the usage of the system clipboard.
-(setq select-enable-clipboard t)
-(setq x-select-enable-clipboard t)
-(setq fill-column 80) ;; Make the max width of a line to be 80 characters.
-(setq frame-resize-pixelwise t) ;; Fix the window not being fullscreen and leaving a gap
-(setq frame-title-format "%b - emacs") ;; Change hostname
-
-(setq vc-follow-symlinks t) ;; When opening a file, always follow symlinks
-(setq vc-handled-backends nil)
-
-(setq auto-window-vscroll nil) ;; Speed up line movement
-(setq blink-matching-paren nil)
-(setq use-dialog-box nil)
-(global-auto-revert-mode t) ;; Revert buffers automatically when underlying files are changed externally
-(setq undo-limit 100000000) ;; Increase undo limit
-
-;; Add line number display
-(when (version<= "26.0.50" emacs-version )
-  (global-display-line-numbers-mode))
-
-;; Make numbers relative such that evil navigation is easier
-(setq display-line-numbers-type 'relative)
-(setq-default display-line-numbers-width 3)
-(setq-default display-line-numbers-widen t)
-(add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
-(global-visual-line-mode 1) ;; Add line wrapping
 
 ;; Projectile configuration
 (use-package projectile
@@ -560,20 +544,8 @@
   (define-key global-map (kbd "C-c j")
     (lambda () (interactive) (org-capture nil "jj"))))
 
-;; Support for Elixir programming.
-(use-package elixir-mode
-  :defer t
-  :config
-  (use-package alchemist
-    :defer t
-    :hook ((elixir-mode . alchemist-mode)
-           (elixir-mode . alchemist-phoenix-mode))))
-
 ;; Support for julia programming language
 (use-package julia-mode
-  :ensure t)
-
-(use-package tuareg
   :ensure t)
 
 ;; Add easy commenting for lots of different languages
@@ -614,10 +586,9 @@
   (dired-auto-revert-non-file-buffers t)
   (auto-revert-verbose nil)
   (dired-dwim-target t)
-  (load-prefer-newer t))
-
-(with-eval-after-load 'dired
-  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
+  (load-prefer-newer t)
+  (with-eval-after-load 'dired
+    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)))
 
 (use-package dired-single)
 
@@ -630,10 +601,10 @@
 
 ;; Cleans up the emacs directory.
 (use-package no-littering
-  :ensure t)
-
-(setq auto-save-file-name-transforms
-      `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+  :ensure t
+  :config
+  (setq auto-save-file-name-transforms
+        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 ;; Highlight some important keywords
 (use-package hl-todo
@@ -683,6 +654,97 @@
 (use-package diminish
   :ensure t)
 
+;; Treemacs packages
+(use-package treemacs
+  :ensure t
+  :defer t)
+
+(use-package treemacs-evil
+  :after (treemacs evil)
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :ensure t)
+
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :ensure t)
+
+;; Support for ASM.
+(use-package nasm-mode
+  :defer 5
+  :ensure t)
+
+;; A package for focused editing, which adds a margin on the left and right side
+;; of the text. Nice for writing.
+(use-package olivetti
+  :defer t
+  :ensure t)
+
+(use-package scratch
+  :ensure
+  :config
+  (defun nro/scratch-buffer-setup ()
+    "Add contents to `scratch' buffer and name it accordingly."
+    (let* ((mode (format "%s" major-mode))
+           (string (concat "scratch buffer for: " mode "\n\n")))
+      (when scratch-buffer
+        (save-excursion
+          (insert string)
+          (goto-char (point-min))
+          (comment-region (point-at-bol) (point-at-eol)))
+        (forward-line 2))
+      (rename-buffer (concat "*scratch for " mode "*") t)))
+  :hook (scratch-create-buffer-hook . nro/scratch-buffer-setup)
+  :bind ("C-c s" . scratch))
+
+(use-package crux
+  :ensure t
+  :bind (("C-c o" . crux-open-with)))
+
+(use-package ini-mode
+  :defer t
+  :ensure t
+  :mode "\\.ini\\'")
+
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer)
+  :custom
+  (ibuffer-formats
+   '((mark modified read-only locked " "
+           (name 35 35 :left :elide)
+           " "
+           (size 9 -1 :right)
+           " "
+           (mode 16 16 :left :elide)
+           " " filename-and-process)
+     (mark " "
+           (name 16 -1)
+           " " filename))))
+
+(use-package dashboard
+  :ensure t
+  :config
+  (setq dashboard-banner-logo-title "welcome back to emacs")
+  (setq dashboard-startup-banner "~/.emacs.d/emacs.png")
+  (setq dashboard-center-content t)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-set-init-info t)
+
+  (setq dashboard-items '((recents  . 5)
+                        (projects . 5)
+                        (agenda . 5)))
+
+  (dashboard-setup-startup-hook))
+
+;; Show git information.
+(use-package git-gutter
+  :ensure t
+  :config
+  (global-git-gutter-mode t))
+
 ;; Compile C++ and C code
 (defun code-compile ()
   "Compiles C++ and C code."
@@ -697,7 +759,6 @@
     (compile compile-command)))
 (global-set-key [f9] 'code-compile)
 
-;; Easily switch themes
 (defun nro/switch-theme (theme)
   "Disable active themes and load THEME."
   (interactive (list (intern (completing-read "Theme: "
@@ -811,56 +872,6 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
-;; Treemacs packages
-(use-package treemacs
-  :ensure t
-  :defer t)
-
-(use-package treemacs-evil
-  :after (treemacs evil)
-  :ensure t)
-
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
-
-(use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
-
-;; Support for ASM.
-(use-package nasm-mode
-  :defer 5
-  :ensure t)
-
-;; A package for focused editing, which adds a margin on the left and right side
-;; of the text. Nice for writing.
-(use-package olivetti
-  :defer t
-  :ensure t)
-
-;; Load custom variables from a custom.el file, such that they don't clutter up
-;; main init.el file.
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
-
-(use-package scratch
-  :ensure
-  :config
-  (defun nro/scratch-buffer-setup ()
-    "Add contents to `scratch' buffer and name it accordingly."
-    (let* ((mode (format "%s" major-mode))
-           (string (concat "scratch buffer for: " mode "\n\n")))
-      (when scratch-buffer
-        (save-excursion
-          (insert string)
-          (goto-char (point-min))
-          (comment-region (point-at-bol) (point-at-eol)))
-        (forward-line 2))
-      (rename-buffer (concat "*scratch for " mode "*") t)))
-  :hook (scratch-create-buffer-hook . nro/scratch-buffer-setup)
-  :bind ("C-c s" . scratch))
 
 ;; These marking functions are taken from:
 ;; https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore
@@ -934,62 +945,24 @@ this command will operate on it as described above.")
      (t
       (mark-sexp arg t)))))
 
-(use-package vundo
-  :ensure t
-  :defer t)
-
-(use-package multiple-cursors
-  :ensure t
-  :bind (("M-." . mc/mark-next-like-this)
-         ("M-," . mc/unmark-next-like-this)
-         ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
-
-(use-package crux
-  :ensure t
-  :bind (("C-c o" . crux-open-with)))
-
-(use-package ini-mode
-  :defer t
-  :ensure t
-  :mode "\\.ini\\'")
-
-(use-package delight
-  :ensure t)
-
-(use-package ibuffer
-  :bind ("C-x C-b" . ibuffer)
-  :init
-  (use-package ibuffer-vc
-    :ensure t
-    :commands (ibuffer-vc-set-filter-groups-by-vc-root)
-    :custom
-    (ibuffer-vc-skip-if-remote 'nil))
-  :custom
-  (ibuffer-formats
-   '((mark modified read-only locked " "
-           (name 35 35 :left :elide)
-           " "
-           (size 9 -1 :right)
-           " "
-           (mode 16 16 :left :elide)
-           " " filename-and-process)
-     (mark " "
-           (name 16 -1)
-           " " filename))))
-
 (defun nro/edit-config ()
   "Opens the Emacs configuration file."
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
-;; Show git information.
-(use-package git-gutter
-  :ensure t
-  :config
-  (global-git-gutter-mode t))
+(defun go-test-repo ()
+  "Unit test all packages."
+  (interactive)
+  (let* ((repo-path (magit-toplevel))
+         (default-directory repo-path))
+    (compile "go test -cover ./...")))
 
-;; Modus themes
+(defun go-mod-tidy ()
+  "Run go mod tidy."
+  (interactive)
+  (shell-command "go mod tidy"))
 
+;; ---- Theme settings
 (setq modus-themes-italic-constructs nil)
 (setq modus-themes-bold-constructs t)
 (setq modus-themes-mixed-fonts t)
@@ -1011,32 +984,14 @@ this command will operate on it as described above.")
 ;; Custom theme
 (load-theme 'modus-vivendi t)
 
-(use-package dashboard
-  :ensure t
-  :config
-  (setq dashboard-banner-logo-title "welcome back to emacs")
-  (setq dashboard-startup-banner "~/.emacs.d/emacs.png")
-  (setq dashboard-center-content t)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-set-init-info t)
+(set-face-attribute 'default nil
+                    :family nro/default-font
+                    :height nro/default-font-size)
 
-  (setq dashboard-items '((recents  . 5)
-                        (projects . 5)
-                        (agenda . 5)))
-
-  (dashboard-setup-startup-hook))
-
-(defun go-test-repo ()
-  "Unit test all packages."
-  (interactive)
-  (let* ((repo-path (magit-toplevel))
-         (default-directory repo-path))
-    (compile "go test -cover ./..."))))
-
-(defun go-mod-tidy ()
-  "Run go mod tidy."
-  (interactive)
-  (shell-command "go mod tidy"))
+;; Load custom variables from a custom.el file, such that they don't clutter up
+;; main init.el file.
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 ;;; init.el ends here
