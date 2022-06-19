@@ -43,7 +43,7 @@
 
 ;; Font settings
 (defvar nro/default-font-size 135)
-(defvar nro/default-font "Sauce Code Pro Nerd Font")
+(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
 
 ;; ---- Emacs settings
 ;; Disable line numbers for some modes
@@ -228,6 +228,12 @@
   (setq uniquify-buffer-name-style 'forward)
   (setq uniquify-separator "/"))
 
+;; Support for Common-Lisp
+(use-package slime
+  :ensure t
+  :config
+  (setq inferior-lisp-program "sbcl"))
+
 ;; Add colored delimiters based on the depth of the delimiters.
 (use-package rainbow-delimiters
   :ensure t
@@ -333,9 +339,6 @@
 
 (setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
 (setq lsp-log-io nil)
-
-;; Set up before-save hooks to format buffer and add/delete imports.
-;; Make sure you don't have other gofmt/goimports hooks enabled.
 
 ;; Add support for rust
 (use-package rustic
@@ -671,17 +674,6 @@
   :after (treemacs magit)
   :ensure t)
 
-;; Support for ASM.
-(use-package nasm-mode
-  :defer 5
-  :ensure t)
-
-;; A package for focused editing, which adds a margin on the left and right side
-;; of the text. Nice for writing.
-(use-package olivetti
-  :defer t
-  :ensure t)
-
 (use-package scratch
   :ensure
   :config
@@ -968,9 +960,14 @@ this command will operate on it as described above.")
 (setq modus-themes-mixed-fonts t)
 (setq modus-themes-scale-headings t)
 (setq modus-themes-mode-line '(borderless))
-(setq modus-themes-syntax '(faint))
 (setq modus-themes-lang-checkers '(faint))
 (setq modus-themes-completions '(opinionated))
+(setq modus-themes-region '(accented))
+(setq  modus-themes-headings
+      '((1 . (rainbow overline background 1.4))
+        (2 . (rainbow background 1.3))
+        (3 . (rainbow bold 1.2))
+        (t . (semilight 1.1))))
 (setq modus-themes-operandi-color-overrides
       '((bg-main . "#FAFAFA")
         (fg-main . "#101010"))
