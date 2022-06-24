@@ -42,8 +42,12 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 135)
-(defvar nro/default-font "DejaVu Sans Mono Nerd Font")
+(defvar nro/default-font-size 140)
+(defvar nro/default-font "Meslo LG S Nerd Font")
+
+(set-face-attribute 'default nil
+                    :family nro/default-font
+                    :height nro/default-font-size)
 
 ;; ---- Emacs settings
 ;; Disable line numbers for some modes
@@ -220,20 +224,6 @@
   :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
-;; Nicer buffer name buffers with same name
-(use-package uniquify
-  :defer 5
-  :config
-  (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
-  (setq uniquify-buffer-name-style 'forward)
-  (setq uniquify-separator "/"))
-
-;; Support for Common-Lisp
-(use-package slime
-  :ensure t
-  :config
-  (setq inferior-lisp-program "sbcl"))
-
 ;; Add colored delimiters based on the depth of the delimiters.
 (use-package rainbow-delimiters
   :ensure t
@@ -355,6 +345,7 @@
 
 ;; Different snippets to help with coding faster
 (use-package yasnippet
+  :defer 15
   :ensure t
   :config
   (setq yas-verbosity 2)
@@ -566,12 +557,6 @@
 
 (define-key global-map "\C-ca" 'org-agenda)
 
-;; Resize windows with better bindings
-(global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
-(global-set-key (kbd "s-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "s-C-<down>") 'shrink-window)
-(global-set-key (kbd "s-C-<up>") 'enlarge-window)
-
 ;; Get the other file
 (add-hook 'c-mode-common-hook
   (lambda()
@@ -594,7 +579,6 @@
     (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)))
 
 (use-package dired-single)
-
 (use-package dired-open
   :config
   ;; Doesn't work as expected!
@@ -699,21 +683,6 @@
   :defer t
   :ensure t
   :mode "\\.ini\\'")
-
-(use-package ibuffer
-  :bind ("C-x C-b" . ibuffer)
-  :custom
-  (ibuffer-formats
-   '((mark modified read-only locked " "
-           (name 35 35 :left :elide)
-           " "
-           (size 9 -1 :right)
-           " "
-           (mode 16 16 :left :elide)
-           " " filename-and-process)
-     (mark " "
-           (name 16 -1)
-           " " filename))))
 
 (use-package dashboard
   :ensure t
@@ -980,10 +949,6 @@ this command will operate on it as described above.")
 
 ;; Custom theme
 (load-theme 'modus-vivendi t)
-
-(set-face-attribute 'default nil
-                    :family nro/default-font
-                    :height nro/default-font-size)
 
 ;; Load custom variables from a custom.el file, such that they don't clutter up
 ;; main init.el file.
