@@ -42,7 +42,7 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 140)
+(defvar nro/default-font-size 130)
 (defvar nro/default-font "Meslo LG S Nerd Font")
 
 (set-face-attribute 'default nil
@@ -694,9 +694,9 @@
   (setq dashboard-set-file-icons t)
   (setq dashboard-set-init-info t)
 
-  (setq dashboard-items '((recents  . 5)
-                        (projects . 5)
-                        (agenda . 5)))
+  (setq dashboard-items '((recents  . 7)
+                        (projects . 7)
+                        (agenda . 7)))
 
   (dashboard-setup-startup-hook))
 
@@ -742,15 +742,6 @@
             (kill-buffer buffer)))
         (buffer-list)))
 
-(defun open-in-browser ()
-  "Open the current file as a URL using `browse-url'."
-  (interactive)
-  (let ((file-name (buffer-file-name)))
-    (if (and (fboundp 'tramp-tramp-file-p)
-             (tramp-tramp-file-p file-name))
-        (error "Cannot open tramp file")
-      (browse-url (concat "file://" file-name)))))
-
 (defun move-file ()
   "Write this file to a new location, and delete the old one."
   (interactive)
@@ -767,24 +758,6 @@
       (unless (file-exists-p dir)
         (make-directory dir :make-parents)))))
 
-;; Open current buffer file in the default browser.
-(defun nro/open-in-file-browser (&optional file)
-  "Open FILE or Dired marked file in external app."
-  (interactive)
-  (let ((file-list (if file
-                       (list file)
-                     (if (equal major-mode "dired-mode")
-                         (dired-get-marked-files)
-                       (list (buffer-file-name)))))
-        (do-it-p   (if (<= (length file-list) 5)
-                       t
-                     (y-or-n-p "Open more than 5 files? "))))
-    (when do-it-p
-      (mapc (lambda (file-path)
-              (let ((process-connection-type nil))
-                (start-process "" nil "xdg-open" file-path)))
-            file-list))))
-
 ;; Stage all changes made in git repository and commit those changes.
 (defun nro/magit-stage-all-and-commit (message)
   "Stage every change, commit with MESSAGE, and push it."
@@ -792,18 +765,6 @@
   (magit-stage-modified)
   (magit-commit-create (list "-m" message))
   (call-interactively #'magit-push-current-to-pushremote))
-
-(defun nro/reload-config ()
-  "Reloads configuration."
-  (interactive)
-  (load-file "~/.emacs.d/init.el"))
-
-(defun nro/find-file-as-sudo ()
-  "Find file as sudo."
-  (interactive)
-  (let ((file-name (buffer-file-name)))
-    (when file-name
-      (find-alternate-file (concat "/sudo::" file-name)))))
 
 (defun rename-this-file (new-name)
   "Renames both current buffer and file it's visiting to NEW-NAME."
@@ -832,7 +793,6 @@
   "Kill all buffers in buffer list."
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
-
 
 ;; These marking functions are taken from:
 ;; https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore
@@ -910,18 +870,6 @@ this command will operate on it as described above.")
   "Opens the Emacs configuration file."
   (interactive)
   (find-file "~/.emacs.d/init.el"))
-
-(defun go-test-repo ()
-  "Unit test all packages."
-  (interactive)
-  (let* ((repo-path (magit-toplevel))
-         (default-directory repo-path))
-    (compile "go test -cover ./...")))
-
-(defun go-mod-tidy ()
-  "Run go mod tidy."
-  (interactive)
-  (shell-command "go mod tidy"))
 
 ;; ---- Theme settings
 (setq modus-themes-italic-constructs nil)
