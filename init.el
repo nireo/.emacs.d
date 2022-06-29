@@ -79,31 +79,48 @@
 (blink-cursor-mode -1) ;; Disable cursor blinking
 (set-fringe-mode 0)
 
-(setq idle-update-delay 1.0)
 (setq-default cursor-in-non-selected-windows nil)
-(setq highlight-nonselected-windows nil)
-(setq fast-but-imprecise-scrolling t)
-(setq jit-lock-defer-time 0)
 
 ;; Custom settings
-(setq scroll-margin 0
-      scroll-conservatively 101
-      scroll-preserve-screen-position t
-      scroll-down-aggressively 0.01
-      scroll-up-aggressively 0.01
+(setq scroll-margin 0 ;; better scrolling
+      scroll-conservatively 101 ;;-
+      scroll-preserve-screen-position t ;;-
+      scroll-down-aggressively 0.01 ;;-
+      scroll-up-aggressively 0.01 ;;-
+      fast-but-imprecise-scrolling t
+      idle-update-delay 1.0 ;; idle time before updating some things on the screen
+      jit-lock-defer-time 0 ;; fontification is deferred when input is loading
+      highlight-nonselected-windows nil
       echo-keystrokes 0.02
-      require-final-newline t
-      select-enable-clipboard t
-      ring-bell-function 'ignore
-      large-file-warning-threshold 100000000
-      delete-by-moving-to-trash t
+      require-final-newline t ;; newline at the end of files
+      select-enable-clipboard t ;; make cutting and pasting use the clipboard
+      ring-bell-function 'ignore ;; ignore
+      large-file-warning-threshold 100000000 ;; increase the file warning threshold
       help-window-select t ;; automatically select help windows, so that they can be deleted.
-      confirm-kill-processes nil
-      inhibit-compacting-font-caches t)
+      confirm-kill-processes nil ;; don't confirm when killing processes
+      inhibit-compacting-font-caches t ;; don't trigger GC when loading larger fonts
+      make-backup-files nil ;; Stop saving backups since they're quite useless in the modern age
+      create-lockfiles nil ;; Don't create lock files.
+      auto-save-default nil ;; Stop auto saving files, since they're not needed
+      delete-old-versions t ;; Delete excess backups silently
+      x-stretch-cursor t ;; Make the cursor the size of the underlying character.
+      fill-column 80 ;; Make the max width of a line to be 80 characters.
+      frame-resize-pixelwise t ;; Fix the window not being fullscreen and leaving a gap
+      frame-title-format "%b - emacs" ;; change window title
+      vc-follow-symlinks t ;; When opening a file, always follow symlinks
+      vc-handled-backends nil
+      auto-window-vscroll nil ;; Speed up line movement
+      blink-matching-paren nil
+      use-dialog-box nil
+      undo-limit 100000000 ;; Increase undo limit
 
+      ;; Make numbers relative such that evil navigation is easier
+      display-line-numbers-type 'relative
+      display-line-numbers-width 3
+      display-line-numbers-widen t
+      )
 
-;; Update a buffer if a file changes on disk.
-(global-auto-revert-mode 1)
+(global-auto-revert-mode 1) ;; Update a buffer if a file changes on disk.
 
 ;; Update changes into dired as well.
 (add-hook 'dired-mode-hook 'auto-revert-mode)
@@ -116,41 +133,14 @@
 (scroll-bar-mode -1) ;; Disable scroll bar
 (tool-bar-mode -1) ;; Disable toolbar
 (tooltip-mode -1) ;; Disable tooltips
-;; (global-hl-line-mode 1) ;; Highlight the line where the cursor is
 (fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
-
-(setq make-backup-files nil) ;; Stop saving backups since they're quite useless in the modern age
-(setq create-lockfiles nil) ;; Don't create lock files.
-(setq auto-save-default nil) ;; Stop auto saving files, since they're not needed
-(setq delete-old-versions t)
-
-(setq x-stretch-cursor t) ;; Make the cursor the size of the underlying character.
-
-;; Enable the usage of the system clipboard.
-(setq select-enable-clipboard t)
-(setq x-select-enable-clipboard t)
-(setq fill-column 80) ;; Make the max width of a line to be 80 characters.
-(setq frame-resize-pixelwise t) ;; Fix the window not being fullscreen and leaving a gap
-(setq frame-title-format "%b - emacs") ;; Change hostname
-
-(setq vc-follow-symlinks t) ;; When opening a file, always follow symlinks
-(setq vc-handled-backends nil)
-
-(setq auto-window-vscroll nil) ;; Speed up line movement
-(setq blink-matching-paren nil)
-(setq use-dialog-box nil)
 (global-auto-revert-mode t) ;; Revert buffers automatically when underlying files are changed externally
-(setq undo-limit 100000000) ;; Increase undo limit
 
 ;; Add line number display
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
 
-;; Make numbers relative such that evil navigation is easier
-(setq display-line-numbers-type 'relative)
-(setq-default display-line-numbers-width 3)
-(setq-default display-line-numbers-widen t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
 
@@ -270,7 +260,6 @@
   :config
   (counsel-mode 1))
 
-
 ;; Projectile configuration
 (use-package projectile
   :diminish projectile-mode
@@ -356,6 +345,7 @@
                                yas-ido-prompt
                                yas-completing-prompt)))
 
+;; A big package for different snippets for many language
 (use-package yasnippet-snippets
   :ensure t
   :after yasnippet)
@@ -380,6 +370,7 @@
 
 (use-package go-mode
   :init
+  ;; Format go imports in alphabetical order and also include any missing imports
   (setq gofmt-command "goimports")
   (add-hook 'before-save-hook 'gofmt-before-save)
   (add-hook 'go-mode-hook 'go-eldoc-setup)
@@ -387,7 +378,6 @@
 
 (use-package go-eldoc
   :ensure t)
-
 
 ;; Configuration for Go LSP support
 (defun lsp-go-install-save-hooks ()
@@ -475,6 +465,11 @@
   (setq vterm-max-scrollback 10000)
   (defun clean-vterm-window ()
     (hl-line-mode -1))
+
+  ;; I have this bad habit of pressing this key combination, and if it doesn't exist it opens a
+  ;; mail window
+  (global-set-key (kbd "C-x m") 'vterm)
+
   :hook (vterm-mode . clean-vterm-window))
 
 (use-package vterm-toggle
@@ -538,26 +533,16 @@
   (define-key global-map (kbd "C-c j")
     (lambda () (interactive) (org-capture nil "jj"))))
 
-;; Support for julia programming language
-(use-package julia-mode
-  :ensure t)
-
 ;; Add easy commenting for lots of different languages
 (use-package evil-nerd-commenter
   :defer t
   :ensure t
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
-;; I have this bad habit of pressing this key combination, and if it doesn't exist it opens a
-;; mail window
-(global-set-key (kbd "C-x m") 'vterm)
-
-;; Make QSC quit prompts
+;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-(define-key global-map "\C-ca" 'org-agenda)
-
-;; Get the other file
+;; Get the other file in C/C++, i.e. foo.h -> foo.cc | foo.cc -> foo.h
 (add-hook 'c-mode-common-hook
   (lambda()
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
@@ -894,6 +879,10 @@ this command will operate on it as described above.")
       modus-themes-org-blocks 'gray-background)
 
 (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+
+(use-package mindre-theme
+  :ensure nil
+  :load-path "themes/")
 
 ;; Custom theme
 (load-theme 'modus-vivendi t)
