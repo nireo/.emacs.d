@@ -195,7 +195,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (setq evil-insert-state-cursor 'block)
+  ;; (setq evil-insert-state-cursor 'block)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -312,12 +312,11 @@
   :hook (lsp-mode . nro/lsp-mode-setup)
   :ensure t
   :init
-  (setq lsp-keymap-prefix "C-c l"))
+  (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
+  (setq lsp-log-io nil))
 
 (add-hook 'go-mode-hook #'lsp-deferred)
-
-(setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
-(setq lsp-log-io nil)
 
 ;; Add support for rust
 (use-package rustic
@@ -466,11 +465,8 @@
   (defun clean-vterm-window ()
     (hl-line-mode -1))
 
-  ;; I have this bad habit of pressing this key combination, and if it doesn't exist it opens a
-  ;; mail window
-  (global-set-key (kbd "C-x m") 'vterm)
-
   :hook (vterm-mode . clean-vterm-window))
+(global-set-key (kbd "C-x m") 'vterm)
 
 (use-package vterm-toggle
   :defer t
@@ -499,7 +495,6 @@
   :defer t
   :ensure t)
 
-(setq org-adapt-indentation nil)
 
 ;; Run different commands related to setting up org-mode
 (defun nro/org-mode-setup ()
@@ -515,6 +510,7 @@
   :config
   (setq org-ellipsis " ▾")
   (variable-pitch-mode 1)
+  (setq org-adapt-indenation nil)
 
   (setq org-hide-emphasis-markers t)
   (setq org-agenda-start-with-log-mode t)
