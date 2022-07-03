@@ -876,10 +876,6 @@ this command will operate on it as described above.")
 
 (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
 
-(use-package mindre-theme
-  :ensure nil
-  :load-path "themes/")
-
 ;; Custom theme
 (load-theme 'modus-vivendi t)
 
