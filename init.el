@@ -43,7 +43,8 @@
 
 ;; Font settings
 (defvar nro/default-font-size 130)
-(defvar nro/default-font "Meslo LG S Nerd Font")
+;; (defvar nro/default-font "Meslo LG S Nerd Font")
+(defvar nro/default-font "JetBrains Mono Nerd Font")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -495,7 +496,6 @@
   :defer t
   :ensure t)
 
-
 ;; Run different commands related to setting up org-mode
 (defun nro/org-mode-setup ()
   (org-indent-mode)
@@ -731,6 +731,7 @@
     (when old-location
       (delete-file old-location))))
 
+;; A helper function that creates all of the underlying directories.
 (defadvice find-file (before make-directory-maybe (filename &optional wildcards)
                              activate)
   "Create parent directory if not exists while visiting file."
@@ -811,25 +812,11 @@
 
   (nro/mark
    nro/mark-word
-   "word"
-   "Mark the whole word at point.
-This function is a slightly modified version of the built-in
-`mark-word', that I intend to use only in special circumstances,
-such as when recording a keyboard macro where precision is
-required.  For a general purpose utility, use `nro/mark-symbol'
-instead.")
+   "word")
 
   (nro/mark
    nro/mark-symbol
-   "symbol"
-   "Mark the whole symbol at point.
-With optional ARG, mark the current symbol and any remaining
-ARGth symbols away from point.  A negative argument moves
-backward. Repeated invocations of this command mark the next
-symbol in the direction originally specified.
-
-In the absence of a symbol and if a word is present at point,
-this command will operate on it as described above.")
+   "symbol")
 
   (defun nro/mark-sexp-backward (&optional arg)
     (interactive "P")
@@ -847,17 +834,12 @@ this command will operate on it as described above.")
      (t
       (mark-sexp arg t)))))
 
-(defun nro/edit-config ()
-  "Opens the Emacs configuration file."
-  (interactive)
-  (find-file "~/.emacs.d/init.el"))
-
 ;; ---- Theme settings
 (setq modus-themes-italic-constructs nil)
 (setq modus-themes-bold-constructs t)
 (setq modus-themes-mixed-fonts t)
 (setq modus-themes-scale-headings t)
-(setq modus-themes-mode-line '(borderless))
+(setq modus-themes-mode-line '(borderless accented))
 (setq modus-themes-lang-checkers '(faint))
 (setq modus-themes-completions '(opinionated))
 (setq modus-themes-region '(accented))
@@ -873,7 +855,6 @@ this command will operate on it as described above.")
       '((bg-main . "#101010")
         (fg-main . "#FAFAFA"))
       modus-themes-org-blocks 'gray-background)
-
 (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
 
 ;; Custom theme
