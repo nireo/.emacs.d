@@ -25,12 +25,6 @@
 (use-package straight
              :custom (straight-use-package-by-default t))
 
-;; Load custom variables from a custom.el file, such that they don't clutter up
-;; main init.el file.
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
-
 ;; Read process is set to a really low value.
 ;; Setting it to a higher value increases performance especially for LSP-mode.
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
@@ -57,12 +51,18 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 160)
+(defvar nro/default-font-size 155)
 (defvar nro/default-font "Iosevka Comfy Fixed")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size)
+
+;; Load custom variables from a custom.el file, such that they don't clutter up
+;; main init.el file.
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 ;; ---- Emacs settings
 ;; Disable line numbers for some modes
@@ -241,18 +241,9 @@
   :config
   (ivy-mode 1))
 
-(use-package ivy-rich
-  :straight t
-  :init
-  (ivy-rich-mode 1))
-
-(use-package all-the-icons-ivy-rich
-  :straight t
-  :init (all-the-icons-ivy-rich-mode 1))
-
 (use-package counsel
-  :diminish counsel-mode
   :straight t
+  :diminish counsel-mode
   :bind (("C-M-j" . 'counsel-switch-buffer)
          :map minibuffer-local-map
          ("C-r" . 'counsel-minibuffer-history))
@@ -260,6 +251,18 @@
   (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
   :config
   (counsel-mode 1))
+
+(use-package ivy-rich
+  :after counsel
+  :straight t
+  :init
+  (ivy-rich-mode 1))
+
+(use-package all-the-icons-ivy-rich
+  :after ivy-rich
+  :straight t
+  :init (all-the-icons-ivy-rich-mode 1))
+
 
 ;; Projectile configuration
 (use-package projectile
@@ -869,5 +872,26 @@
   :config
   ;; load preferred theme
   (load-theme 'lambda-dark))
+
+
+;;;; Notes
+
+(use-package denote
+  :straight t
+  :config
+  (setq denote-directory (expand-file-name "~/notes/"))
+  (setq known-keywords '("journal" "papers"))
+  (setq denote-file-type nil))
+
+(add-hook 'dired-mode-hook #'denote-dired-mode)
+
+(defun nro/new-journal-entry ()
+  "Create an entry tagged 'journal' with the date as its title."
+  (interactive)
+  (denote
+   (format-time-string "%A %e %B %Y")   ; format like Tuesday 14 June 2022
+   '("journal")
+   nil
+   "~/notes/"))
 
 ;;; init.el ends here
