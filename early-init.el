@@ -48,4 +48,11 @@
 (setq inhibit-x-resources t)
 (setq inhibit-startup-message t) ;; Remove startup message
 
+(menu-bar-mode -1) ;; Disable menubar
+(scroll-bar-mode -1) ;; Disable scroll bar
+(tool-bar-mode -1) ;; Disable toolbar
+(tooltip-mode -1) ;; Disable tooltips
+
+(setq package-enable-at-startup nil) ;; disable package.el from loading packages, that we are loading with straight.el
+
 ;;; early-init.el ends here

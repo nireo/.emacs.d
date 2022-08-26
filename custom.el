@@ -11,7 +11,7 @@
  '(awesome-tray-mode-line-inactive-color "#323232")
  '(compilation-message-face 'default)
  '(custom-safe-themes
-   '("9b54ba84f245a59af31f90bc78ed1240fca2f5a93f667ed54bbf6c6d71f664ac" default))
+   '("8060ecf1193c1c4b428d6f6fe671c3e98417d416188054de54e866f3e472e7d7" "3b228dab7cbc6d14ea583e0bb5c857284a01d9489c0e24f5ecc4845e77dc84b0" "9b54ba84f245a59af31f90bc78ed1240fca2f5a93f667ed54bbf6c6d71f664ac" default))
  '(exwm-floating-border-color "#888888")
  '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
  '(flymake-note-bitmap '(exclamation-mark modus-themes-fringe-cyan))
@@ -45,7 +45,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(py-autopep8 lsp-ui lsp-mode dashboard protobuf-mode crux scratch default-text-scale auctex emmet-mode olivetti treemacs elixir-mode diminish company-box dired-open dired-single yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 docker dired-subtree dired-narrow cmake-mode cfrs all-the-icons-dired ace-window))
+   '(solarized-theme anti-zenburn-theme py-autopep8 lsp-ui lsp-mode dashboard protobuf-mode crux scratch default-text-scale auctex emmet-mode olivetti treemacs elixir-mode diminish company-box dired-open dired-single yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 docker dired-subtree dired-narrow cmake-mode cfrs all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0")

@@ -17,6 +17,7 @@ tramp
 transient/
 var/
 flycheck_init.el
+straight/
 
 # compiled files
 *.elc

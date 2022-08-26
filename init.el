@@ -1,20 +1,35 @@
-;;; init.el --- Personal configuration file -*- lexical-binding: t; -*-
+;; init.el --- Personal configuration file -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;; Personal configuration files hosted at https://github.com/nireo/.emacs.d
 
 ;;; Code:
 ;; Enable the package manager
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(package-initialize)
+;; Install use-package
+(straight-use-package 'use-package)
 
-;; Use-package
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; Configure use-package to use straight.el by default
+(use-package straight
+             :custom (straight-use-package-by-default t))
+
+;; Load custom variables from a custom.el file, such that they don't clutter up
+;; main init.el file.
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 ;; Read process is set to a really low value.
 ;; Setting it to a higher value increases performance especially for LSP-mode.
@@ -42,9 +57,8 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 130)
-;; (defvar nro/default-font "Meslo LG S Nerd Font")
-(defvar nro/default-font "JetBrains Mono Nerd Font")
+(defvar nro/default-font-size 160)
+(defvar nro/default-font "Iosevka Comfy Fixed")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -67,20 +81,9 @@
 (setq show-paren-delay 0.0)
 (show-paren-mode 1) ;; Show matching parenthesies
 
-;; Use UTF-8
-(when (fboundp 'set-charset-priority)
-  (set-charset-priority 'unicode))
-
 (modify-coding-system-alist 'process "*" 'utf-8)
-
-;; Treat clipboard input as UTF-8 string first; compound text next...
-(when (display-graphic-p)
-  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
-
 (blink-cursor-mode -1) ;; Disable cursor blinking
 (set-fringe-mode 0)
-
-(setq-default cursor-in-non-selected-windows nil)
 
 ;; Custom settings
 (setq scroll-margin 0 ;; better scrolling
@@ -130,10 +133,6 @@
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq-default sentence-end-double-space nil)
 
-(menu-bar-mode -1) ;; Disable menubar
-(scroll-bar-mode -1) ;; Disable scroll bar
-(tool-bar-mode -1) ;; Disable toolbar
-(tooltip-mode -1) ;; Disable tooltips
 (fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 (global-auto-revert-mode t) ;; Revert buffers automatically when underlying files are changed externally
@@ -149,6 +148,7 @@
 
 ;; Vim keybindings in emacs.
 (use-package evil
+  :straight t
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
@@ -196,7 +196,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  ;; (setq evil-insert-state-cursor 'block)
+  (setq evil-insert-state-cursor 'hbar)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -204,26 +204,26 @@
 ;; Evil support for more modes.
 (use-package evil-collection
   :after evil
-  :ensure t
+  :straight t
   :config
   (evil-collection-init))
 
 ;; Add support for cmake files
 (use-package cmake-mode
   :defer t
-  :ensure t
+  :straight t
   :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
 ;; Add colored delimiters based on the depth of the delimiters.
 (use-package rainbow-delimiters
-  :ensure t
+  :straight t
   :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;; A completion system for M-x and C-p
 (use-package ivy
-  :ensure t
+  :straight t
   :diminish
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
@@ -242,17 +242,17 @@
   (ivy-mode 1))
 
 (use-package ivy-rich
-  :ensure t
+  :straight t
   :init
   (ivy-rich-mode 1))
 
 (use-package all-the-icons-ivy-rich
-  :ensure t
+  :straight t
   :init (all-the-icons-ivy-rich-mode 1))
 
 (use-package counsel
   :diminish counsel-mode
-  :ensure t
+  :straight t
   :bind (("C-M-j" . 'counsel-switch-buffer)
          :map minibuffer-local-map
          ("C-r" . 'counsel-minibuffer-history))
@@ -264,7 +264,7 @@
 ;; Projectile configuration
 (use-package projectile
   :diminish projectile-mode
-  :ensure t
+  :straight t
   :custom ((projectile-completion-system 'ivy))
   :config
   (projectile-mode +1)
@@ -280,7 +280,7 @@
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
-  :ensure t
+  :straight t
   :config
   (counsel-projectile-mode)
   (setq counsel-find-file-ignore-regexp "\.|build")
@@ -290,7 +290,7 @@
 ;; Company configuration
 (use-package company
   :diminish company-mode
-  :ensure t
+  :straight t
   :config
   (global-company-mode)
   (setq company-idle-delay 0)
@@ -301,6 +301,7 @@
 
 ;; A better looking company interface
 (use-package company-box
+  :straight t
   :diminish
   :hook (company-mode . company-box-mode))
 
@@ -311,7 +312,7 @@
 
 (use-package lsp-mode
   :hook (lsp-mode . nro/lsp-mode-setup)
-  :ensure t
+  :straight t
   :init
   (setq lsp-keymap-prefix "C-c l")
   (setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
@@ -322,7 +323,7 @@
 ;; Add support for rust
 (use-package rustic
   :defer t
-  :ensure t
+  :straight t
   :config
   (setq lsp-eldoc-hook nil)
   (setq lsp-enable-symbol-highlighting nil)
@@ -335,7 +336,7 @@
 ;; Different snippets to help with coding faster
 (use-package yasnippet
   :defer 15
-  :ensure t
+  :straight t
   :config
   (setq yas-verbosity 2)
   (yas-reload-all)
@@ -347,18 +348,18 @@
 
 ;; A big package for different snippets for many language
 (use-package yasnippet-snippets
-  :ensure t
+  :straight t
   :after yasnippet)
 
 (use-package flycheck
-  :ensure t
+  :straight t
   :config
   (progn
     (global-flycheck-mode)))
 
 ;; Add some visual elements to lsp mode.
 (use-package lsp-ui
-  :ensure t
+  :straight t
   :commands lsp-ui-mode
   :config (setq lsp-ui-sideline-enable nil
       lsp-ui-peek-enable t
@@ -374,10 +375,10 @@
   (setq gofmt-command "goimports")
   (add-hook 'before-save-hook 'gofmt-before-save)
   (add-hook 'go-mode-hook 'go-eldoc-setup)
-  :ensure t)
+  :straight t)
 
 (use-package go-eldoc
-  :ensure t)
+  :straight t)
 
 ;; Configuration for Go LSP support
 (defun lsp-go-install-save-hooks ()
@@ -400,7 +401,7 @@
 ;; For markdown editing
 (use-package markdown-mode
   :defer t
-  :ensure t
+  :straight t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -430,7 +431,7 @@
 ;; Support for python
 (use-package python-mode
   :defer t
-  :ensure t
+  :straight t
   :hook (python-mode . lsp-deferred)
   :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
@@ -448,7 +449,7 @@
 ;; Support for json
 (use-package json-mode
   :defer t
-  :ensure t
+  :straight t
   :mode (("\\.json\\'" . json-mode))
   :hook (before-save . nro/json-mode-before-save-hook)
   :preface
@@ -459,7 +460,7 @@
 ;; A better terminal emulator as it isn't written in elisp :P
 (use-package vterm
   :defer t
-  :ensure t
+  :straight t
   :commands vterm
   :config
   (setq vterm-max-scrollback 10000)
@@ -471,7 +472,7 @@
 
 (use-package vterm-toggle
   :defer t
-  :ensure t
+  :straight t
   :custom
   (vterm-toggle-scope 'project)
   (vterm-toggle-fullscreen-p nil "Open vterm in another window.")
@@ -480,21 +481,21 @@
 
 ;; Git integration
 (use-package magit
-  :ensure t
+  :straight t
   :defer t
   :bind (("C-x g" . magit-status)))
 
 ;; Completes parenthesies and other punctuators.
 (use-package smartparens
   :defer t
-  :ensure t
+  :straight t
   :init
   (smartparens-global-mode))
 
 ;; Better looks by adding more icons
 (use-package all-the-icons
   :defer t
-  :ensure t)
+  :straight t)
 
 ;; Run different commands related to setting up org-mode
 (defun nro/org-mode-setup ()
@@ -502,7 +503,7 @@
   (visual-line-mode 1))
 
 (use-package org-superstar
-  :ensure t)
+  :straight t)
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
 (use-package org
@@ -532,7 +533,7 @@
 ;; Add easy commenting for lots of different languages
 (use-package evil-nerd-commenter
   :defer t
-  :ensure t
+  :straight t
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 ;; Make ESC quit prompts
@@ -545,7 +546,7 @@
 
 ;; Dired configuration
 (use-package dired
-  :ensure nil
+  :straight (:type built-in)
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
   :custom
@@ -569,14 +570,14 @@
 
 ;; Cleans up the emacs directory.
 (use-package no-littering
-  :ensure t
+  :straight t
   :config
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 ;; Highlight some important keywords
 (use-package hl-todo
-  :ensure t
+  :straight t
   :hook (prog-mode . hl-todo-mode)
   :config
   (setq hl-todo-keyword-faces
@@ -603,41 +604,41 @@
 
 ;; A package to manage docker containers from emacs
 (use-package docker
-  :ensure t
+  :straight t
   :bind ("C-c d" . docker))
 
 ;; Add support to Dockerfiles, such that they have syntax highlighting
 (use-package dockerfile-mode
-  :ensure t
+  :straight t
   :config
   (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode)))
 
 ;; Syntax highlighting support for modern C++ syntax.
 (use-package modern-cpp-font-lock
   :diminish
-  :ensure t
+  :straight t
   :init (modern-c++-font-lock-global-mode t))
 
 ;; A package which hides unnecessary minor-modes from the modeline.
 (use-package diminish
-  :ensure t)
+  :straight t)
 
 ;; Treemacs packages
 (use-package treemacs
-  :ensure t
+  :straight t
   :defer t)
 
 (use-package treemacs-evil
   :after (treemacs evil)
-  :ensure t)
+  :straight t)
 
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+  :straight t)
 
 (use-package treemacs-magit
   :after (treemacs magit)
-  :ensure t)
+  :straight t)
 
 (use-package scratch
   :ensure
@@ -657,16 +658,16 @@
   :bind ("C-c s" . scratch))
 
 (use-package crux
-  :ensure t
+  :straight t
   :bind (("C-c o" . crux-open-with)))
 
 (use-package ini-mode
   :defer t
-  :ensure t
+  :straight t
   :mode "\\.ini\\'")
 
 (use-package dashboard
-  :ensure t
+  :straight t
   :config
   (setq dashboard-banner-logo-title "welcome back to emacs")
   (setq dashboard-startup-banner "~/.emacs.d/emacs.png")
@@ -683,7 +684,7 @@
 
 ;; Show git information.
 (use-package git-gutter
-  :ensure t
+  :straight t
   :config
   (global-git-gutter-mode t))
 
@@ -839,7 +840,7 @@
 (setq modus-themes-bold-constructs t)
 (setq modus-themes-mixed-fonts t)
 (setq modus-themes-scale-headings t)
-(setq modus-themes-mode-line '(borderless accented))
+;; (setq modus-themes-mode-line '(borderless accented))
 (setq modus-themes-lang-checkers '(faint))
 (setq modus-themes-completions '(opinionated))
 (setq modus-themes-region '(accented))
@@ -855,15 +856,18 @@
       '((bg-main . "#101010")
         (fg-main . "#FAFAFA"))
       modus-themes-org-blocks 'gray-background)
+
 (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+;; (load-theme 'modus-operandi t)
 
-;; Custom theme
-(load-theme 'modus-vivendi t)
-
-;; Load custom variables from a custom.el file, such that they don't clutter up
-;; main init.el file.
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
+(use-package lambda-themes
+  :straight (:type git :host github :repo "lambda-emacs/lambda-themes")
+  :custom
+  (lambda-themes-set-italic-comments t)
+  (lambda-themes-set-italic-keywords nil)
+  (lambda-themes-set-variable-pitch t)
+  :config
+  ;; load preferred theme
+  (load-theme 'lambda-dark))
 
 ;;; init.el ends here
