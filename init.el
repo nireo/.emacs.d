@@ -51,8 +51,8 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 155)
-(defvar nro/default-font "Iosevka Comfy Fixed")
+(defvar nro/default-font-size 138)
+(defvar nro/default-font "SF Mono")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -76,14 +76,14 @@
 (setq-default tab-width 2)
 (setq-default standard-indent 2)
 (setq-default electric-indent-inhibit t)
-(setq-default indent-tabs-mode nil) ;; Don't use tabs since it seems to break the code when using github
+(setq-default indent-tabs-mode nil) ;; Don't use tabs
 
-(setq show-paren-delay 0.0)
+(setq show-paren-delay 0.0) ;; Remove delay to display matching parenthesy
 (show-paren-mode 1) ;; Show matching parenthesies
 
 (modify-coding-system-alist 'process "*" 'utf-8)
 (blink-cursor-mode -1) ;; Disable cursor blinking
-(set-fringe-mode 0)
+(set-fringe-mode 0) ;; Hide fringes
 
 ;; Custom settings
 (setq scroll-margin 0 ;; better scrolling
@@ -196,7 +196,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (setq evil-insert-state-cursor 'hbar)
+  ;; (setq evil-insert-state-cursor 'hbar)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal))
@@ -311,7 +311,7 @@
 ;; Disable some lsp visuals
 (defun nro/lsp-mode-setup ()
   (setq lsp-lens-enable nil)
-  (setq lsp-headerline-breadcrumb-enable t))
+  (setq lsp-headerline-breadcrumb-enable nil))
 
 (use-package lsp-mode
   :hook (lsp-mode . nro/lsp-mode-setup)
@@ -597,6 +597,7 @@
 
 ;; Help with some css and html stuff to make programming in those languages easier.
 (use-package emmet-mode
+  :straight t
   :custom
   (emmet-move-cursor-between-quotes t)
   :custom-face
@@ -691,20 +692,7 @@
   :config
   (global-git-gutter-mode t))
 
-;; Compile C++ and C code
-(defun code-compile ()
-  "Compiles C++ and C code."
-  (interactive)
-  (unless (file-exists-p "Makefile")
-    (set (make-local-variable 'compile-command)
-     (let ((file (file-name-nondirectory buffer-file-name)))
-       (format "%s -o %s %s"
-           (if  (equal (file-name-extension file) "cpp") "g++" "gcc" )
-           (file-name-sans-extension file)
-           file)))
-    (compile compile-command)))
-(global-set-key [f9] 'code-compile)
-
+;; Properly switch theme in emacs on the fly.
 (defun nro/switch-theme (theme)
   "Disable active themes and load THEME."
   (interactive (list (intern (completing-read "Theme: "
@@ -844,7 +832,6 @@
 (setq modus-themes-mixed-fonts t)
 (setq modus-themes-scale-headings t)
 ;; (setq modus-themes-mode-line '(borderless accented))
-(setq modus-themes-lang-checkers '(faint))
 (setq modus-themes-completions '(opinionated))
 (setq modus-themes-region '(accented))
 (setq  modus-themes-headings
@@ -861,21 +848,10 @@
       modus-themes-org-blocks 'gray-background)
 
 (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+(load-theme 'modus-vivendi t)
 ;; (load-theme 'modus-operandi t)
 
-(use-package lambda-themes
-  :straight (:type git :host github :repo "lambda-emacs/lambda-themes")
-  :custom
-  (lambda-themes-set-italic-comments t)
-  (lambda-themes-set-italic-keywords nil)
-  (lambda-themes-set-variable-pitch t)
-  :config
-  ;; load preferred theme
-  (load-theme 'lambda-dark))
-
-
 ;;;; Notes
-
 (use-package denote
   :straight t
   :config
@@ -884,6 +860,12 @@
   (setq denote-file-type nil))
 
 (add-hook 'dired-mode-hook #'denote-dired-mode)
+
+(use-package haskell-mode
+  :straight t)
+
+(use-package default-text-scale
+  :straight t)
 
 (defun nro/new-journal-entry ()
   "Create an entry tagged 'journal' with the date as its title."
