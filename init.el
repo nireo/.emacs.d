@@ -50,13 +50,17 @@
 (add-hook 'minibuffer-setup-hook #'nro/defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+
 ;; Font settings
-(defvar nro/default-font-size 138)
-(defvar nro/default-font "SF Mono")
+(defvar nro/default-font-size 115)
+(defvar nro/default-font "Monaco")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
-                    :height nro/default-font-size)
+                    :height nro/default-font-size
+                    :weight 'bold
+                    )
 
 ;; Load custom variables from a custom.el file, such that they don't clutter up
 ;; main init.el file.
@@ -848,7 +852,7 @@
       modus-themes-org-blocks 'gray-background)
 
 (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
-(load-theme 'modus-vivendi t)
+;; (load-theme 'modus-vivendi t)
 ;; (load-theme 'modus-operandi t)
 
 ;;;; Notes
@@ -865,6 +869,17 @@
   :straight t)
 
 (use-package default-text-scale
+  :straight t)
+
+(use-package solarized-theme
+  :straight t
+  :config
+  (setq solarized-use-less-bold t)
+  (setq solarized-high-contrast-mode-line t))
+
+(load-theme 'manoj-custom t)
+
+(use-package rainbow-mode
   :straight t)
 
 (defun nro/new-journal-entry ()
