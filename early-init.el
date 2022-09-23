@@ -8,9 +8,6 @@
 
 (setq frame-inhibit-implied-resize t)
 
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
 (when (featurep 'ns)
   (push '(ns-transparent-titlebar . t) default-frame-alist))
 
@@ -32,27 +29,11 @@
             (redisplay)))
 
 (prefer-coding-system 'utf-8)
-(setq locale-coding-system 'utf-8)
-
-(set-language-environment 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-buffer-file-coding-system 'utf-8)
-(set-clipboard-coding-system 'utf-8)
-(set-file-name-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
+(set-language-environment "UTF-8")
 
 (setq default-input-method nil)
 (setq frame-inhibit-implied-resize t)
 (setq inhibit-x-resources t)
 (setq inhibit-startup-message t) ;; Remove startup message
-
-(menu-bar-mode -1) ;; Disable menubar
-(scroll-bar-mode -1) ;; Disable scroll bar
-(tool-bar-mode -1) ;; Disable toolbar
-(tooltip-mode -1) ;; Disable tooltips
-
-(setq package-enable-at-startup nil) ;; disable package.el from loading packages, that we are loading with straight.el
 
 ;;; early-init.el ends here

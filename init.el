@@ -4,26 +4,55 @@
 ;;; Personal configuration files hosted at https://github.com/nireo/.emacs.d
 
 ;;; Code:
-;; Enable the package manager
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
 
-;; Install use-package
-(straight-use-package 'use-package)
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 
-;; Configure use-package to use straight.el by default
-(use-package straight
-             :custom (straight-use-package-by-default t))
+(package-initialize)
+
+;; Use-package
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(setq inhibit-startup-screen t
+      inhibit-startup-echo-area-message user-login-name)
+(advice-add #'display-startup-echo-area-message :override #'ignore)
+
+(setq initial-major-mode 'fundamental-mode
+      initial-scratch-message nil)
+
+(define-advice load-file (:override (file) silence)
+  (load file nil 'nomessage))
+
+(defvar profile-dotemacs-file "~/.emacs.d" "File to be profiled.")
+
+(define-advice startup--load-user-init-file (:before (&rest _) undo-silence)
+      (advice-remove #'load-file #'load-file@silence))
+
+(setq auto-mode-case-fold nil)
+
+;; Don't ping things that look like domain names.
+(setq ffap-machine-p-known 'reject)
+
+(setq-default cursor-in-non-selected-windows nil)
+(setq idle-update-delay 1.0)
+(setq redisplay-skip-fontification-on-input t)
+
+;; Avoid calling menu-bar-mode...etc because to do extra stuff that is not needed.
+(push '(menu-bar-lines . 0)   default-frame-alist)
+(push '(tool-bar-lines . 0)   default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+;; And set these to nil so users don't have to toggle the modes twice to
+;; reactivate them.
+(setq menu-bar-mode nil
+      tool-bar-mode nil
+      scroll-bar-mode nil)
+(setq default-input-method nil)
+
+
+(setq-default fill-column 80)
 
 ;; Read process is set to a really low value.
 ;; Setting it to a higher value increases performance especially for LSP-mode.
@@ -34,6 +63,10 @@
   (lambda ()
     (setq gc-cons-threshold 31457280 ; 32mb
           gc-cons-percentage 0.1)))
+
+(use-package esup
+  :ensure t)
+(setq esup-depth 0)
 
 ;; This is copied from doom emacs and it increases performance.
 (defun nro/defer-garbage-collection-h ()
@@ -53,20 +86,14 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
 ;; Font settings
-(defvar nro/default-font-size 115)
-(defvar nro/default-font "Monaco")
+(defvar nro/default-font-size 130)
+(defvar nro/default-font "MesloLGS Nerd Font")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size
-                    :weight 'bold
                     )
 
-;; Load custom variables from a custom.el file, such that they don't clutter up
-;; main init.el file.
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
 
 ;; ---- Emacs settings
 ;; Disable line numbers for some modes
@@ -96,7 +123,6 @@
       scroll-down-aggressively 0.01 ;;-
       scroll-up-aggressively 0.01 ;;-
       fast-but-imprecise-scrolling t
-      idle-update-delay 1.0 ;; idle time before updating some things on the screen
       jit-lock-defer-time 0 ;; fontification is deferred when input is loading
       highlight-nonselected-windows nil
       echo-keystrokes 0.02
@@ -112,7 +138,6 @@
       auto-save-default nil ;; Stop auto saving files, since they're not needed
       delete-old-versions t ;; Delete excess backups silently
       x-stretch-cursor t ;; Make the cursor the size of the underlying character.
-      fill-column 80 ;; Make the max width of a line to be 80 characters.
       frame-resize-pixelwise t ;; Fix the window not being fullscreen and leaving a gap
       frame-title-format "%b - emacs" ;; change window title
       vc-follow-symlinks t ;; When opening a file, always follow symlinks
@@ -152,7 +177,7 @@
 
 ;; Vim keybindings in emacs.
 (use-package evil
-  :straight t
+  :ensure t
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
@@ -200,34 +225,33 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  ;; (setq evil-insert-state-cursor 'hbar)
+  (setq evil-insert-state-cursor 'box)
 
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+  (evil-set-initial-state 'messages-buffer-mode 'normal))
 
 ;; Evil support for more modes.
 (use-package evil-collection
   :after evil
-  :straight t
+  :ensure t
   :config
   (evil-collection-init))
 
 ;; Add support for cmake files
 (use-package cmake-mode
   :defer t
-  :straight t
+  :ensure t
   :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
 ;; Add colored delimiters based on the depth of the delimiters.
 (use-package rainbow-delimiters
-  :straight t
+  :ensure t
   :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;; A completion system for M-x and C-p
 (use-package ivy
-  :straight t
+  :ensure t
   :diminish
   :bind (("C-s" . swiper)
          :map ivy-minibuffer-map
@@ -246,7 +270,7 @@
   (ivy-mode 1))
 
 (use-package counsel
-  :straight t
+  :ensure t
   :diminish counsel-mode
   :bind (("C-M-j" . 'counsel-switch-buffer)
          :map minibuffer-local-map
@@ -258,20 +282,20 @@
 
 (use-package ivy-rich
   :after counsel
-  :straight t
+  :ensure t
   :init
   (ivy-rich-mode 1))
 
 (use-package all-the-icons-ivy-rich
   :after ivy-rich
-  :straight t
+  :ensure t
   :init (all-the-icons-ivy-rich-mode 1))
 
 
 ;; Projectile configuration
 (use-package projectile
   :diminish projectile-mode
-  :straight t
+  :ensure t
   :custom ((projectile-completion-system 'ivy))
   :config
   (projectile-mode +1)
@@ -287,7 +311,7 @@
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
-  :straight t
+  :ensure t
   :config
   (counsel-projectile-mode)
   (setq counsel-find-file-ignore-regexp "\.|build")
@@ -297,7 +321,7 @@
 ;; Company configuration
 (use-package company
   :diminish company-mode
-  :straight t
+  :ensure t
   :config
   (global-company-mode)
   (setq company-idle-delay 0)
@@ -308,29 +332,32 @@
 
 ;; A better looking company interface
 (use-package company-box
-  :straight t
+  :ensure t
   :diminish
   :hook (company-mode . company-box-mode))
 
-;; Disable some lsp visuals
-(defun nro/lsp-mode-setup ()
-  (setq lsp-lens-enable nil)
-  (setq lsp-headerline-breadcrumb-enable nil))
-
 (use-package lsp-mode
-  :hook (lsp-mode . nro/lsp-mode-setup)
-  :straight t
+  :ensure t
   :init
   (setq lsp-keymap-prefix "C-c l")
   (setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
-  (setq lsp-log-io nil))
+  (setq lsp-log-io nil)
+
+  ;; Reduce unexpected modifications to code.
+  (setq lsp-enable-on-type-formatting nil)
+
+  ;; Disable features that have great potential to be slow.
+  (setq lsp-enable-folding nil
+        lsp-enable-text-document-color nil)
+  (setq lsp-headerline-breadcrumb-enable nil))
+
 
 (add-hook 'go-mode-hook #'lsp-deferred)
 
 ;; Add support for rust
 (use-package rustic
   :defer t
-  :straight t
+  :ensure t
   :config
   (setq lsp-eldoc-hook nil)
   (setq lsp-enable-symbol-highlighting nil)
@@ -343,7 +370,7 @@
 ;; Different snippets to help with coding faster
 (use-package yasnippet
   :defer 15
-  :straight t
+  :ensure t
   :config
   (setq yas-verbosity 2)
   (yas-reload-all)
@@ -355,18 +382,18 @@
 
 ;; A big package for different snippets for many language
 (use-package yasnippet-snippets
-  :straight t
+  :ensure t
   :after yasnippet)
 
 (use-package flycheck
-  :straight t
+  :ensure t
   :config
   (progn
     (global-flycheck-mode)))
 
 ;; Add some visual elements to lsp mode.
 (use-package lsp-ui
-  :straight t
+  :ensure t
   :commands lsp-ui-mode
   :config (setq lsp-ui-sideline-enable nil
       lsp-ui-peek-enable t
@@ -382,10 +409,10 @@
   (setq gofmt-command "goimports")
   (add-hook 'before-save-hook 'gofmt-before-save)
   (add-hook 'go-mode-hook 'go-eldoc-setup)
-  :straight t)
+  :ensure t)
 
 (use-package go-eldoc
-  :straight t)
+  :ensure t)
 
 ;; Configuration for Go LSP support
 (defun lsp-go-install-save-hooks ()
@@ -408,7 +435,7 @@
 ;; For markdown editing
 (use-package markdown-mode
   :defer t
-  :straight t
+  :ensure t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -438,7 +465,7 @@
 ;; Support for python
 (use-package python-mode
   :defer t
-  :straight t
+  :ensure t
   :hook (python-mode . lsp-deferred)
   :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
@@ -456,7 +483,7 @@
 ;; Support for json
 (use-package json-mode
   :defer t
-  :straight t
+  :ensure t
   :mode (("\\.json\\'" . json-mode))
   :hook (before-save . nro/json-mode-before-save-hook)
   :preface
@@ -467,7 +494,7 @@
 ;; A better terminal emulator as it isn't written in elisp :P
 (use-package vterm
   :defer t
-  :straight t
+  :ensure t
   :commands vterm
   :config
   (setq vterm-max-scrollback 10000)
@@ -479,7 +506,7 @@
 
 (use-package vterm-toggle
   :defer t
-  :straight t
+  :ensure t
   :custom
   (vterm-toggle-scope 'project)
   (vterm-toggle-fullscreen-p nil "Open vterm in another window.")
@@ -488,30 +515,26 @@
 
 ;; Git integration
 (use-package magit
-  :straight t
+  :ensure t
   :defer t
   :bind (("C-x g" . magit-status)))
 
 ;; Completes parenthesies and other punctuators.
 (use-package smartparens
   :defer t
-  :straight t
+  :ensure t
   :init
   (smartparens-global-mode))
 
 ;; Better looks by adding more icons
 (use-package all-the-icons
   :defer t
-  :straight t)
+  :ensure t)
 
 ;; Run different commands related to setting up org-mode
 (defun nro/org-mode-setup ()
   (org-indent-mode)
   (visual-line-mode 1))
-
-(use-package org-superstar
-  :straight t)
-(add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
 (use-package org
   :hook (org-mode . nro/org-mode-setup)
@@ -540,7 +563,7 @@
 ;; Add easy commenting for lots of different languages
 (use-package evil-nerd-commenter
   :defer t
-  :straight t
+  :ensure t
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 
 ;; Make ESC quit prompts
@@ -553,7 +576,6 @@
 
 ;; Dired configuration
 (use-package dired
-  :straight (:type built-in)
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
   :custom
@@ -577,14 +599,14 @@
 
 ;; Cleans up the emacs directory.
 (use-package no-littering
-  :straight t
+  :ensure t
   :config
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 ;; Highlight some important keywords
 (use-package hl-todo
-  :straight t
+  :ensure t
   :hook (prog-mode . hl-todo-mode)
   :config
   (setq hl-todo-keyword-faces
@@ -601,7 +623,7 @@
 
 ;; Help with some css and html stuff to make programming in those languages easier.
 (use-package emmet-mode
-  :straight t
+  :ensure t
   :custom
   (emmet-move-cursor-between-quotes t)
   :custom-face
@@ -612,41 +634,41 @@
 
 ;; A package to manage docker containers from emacs
 (use-package docker
-  :straight t
+  :ensure t
   :bind ("C-c d" . docker))
 
 ;; Add support to Dockerfiles, such that they have syntax highlighting
 (use-package dockerfile-mode
-  :straight t
+  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode)))
 
 ;; Syntax highlighting support for modern C++ syntax.
 (use-package modern-cpp-font-lock
   :diminish
-  :straight t
+  :ensure t
   :init (modern-c++-font-lock-global-mode t))
 
 ;; A package which hides unnecessary minor-modes from the modeline.
 (use-package diminish
-  :straight t)
+  :ensure t)
 
 ;; Treemacs packages
 (use-package treemacs
-  :straight t
+  :ensure t
   :defer t)
 
 (use-package treemacs-evil
   :after (treemacs evil)
-  :straight t)
+  :ensure t)
 
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :straight t)
+  :ensure t)
 
 (use-package treemacs-magit
   :after (treemacs magit)
-  :straight t)
+  :ensure t)
 
 (use-package scratch
   :ensure
@@ -666,33 +688,17 @@
   :bind ("C-c s" . scratch))
 
 (use-package crux
-  :straight t
+  :ensure t
   :bind (("C-c o" . crux-open-with)))
 
 (use-package ini-mode
   :defer t
-  :straight t
+  :ensure t
   :mode "\\.ini\\'")
-
-(use-package dashboard
-  :straight t
-  :config
-  (setq dashboard-banner-logo-title "welcome back to emacs")
-  (setq dashboard-startup-banner "~/.emacs.d/emacs.png")
-  (setq dashboard-center-content t)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-set-init-info t)
-
-  (setq dashboard-items '((recents  . 7)
-                        (projects . 7)
-                        (agenda . 7)))
-
-  (dashboard-setup-startup-hook))
 
 ;; Show git information.
 (use-package git-gutter
-  :straight t
+  :ensure t
   :config
   (global-git-gutter-mode t))
 
@@ -857,7 +863,8 @@
 
 ;;;; Notes
 (use-package denote
-  :straight t
+  :ensure t
+  :defer t
   :config
   (setq denote-directory (expand-file-name "~/notes/"))
   (setq known-keywords '("journal" "papers"))
@@ -865,22 +872,15 @@
 
 (add-hook 'dired-mode-hook #'denote-dired-mode)
 
-(use-package haskell-mode
-  :straight t)
-
 (use-package default-text-scale
-  :straight t)
+  :defer t
+  :ensure t)
 
-(use-package solarized-theme
-  :straight t
-  :config
-  (setq solarized-use-less-bold t)
-  (setq solarized-high-contrast-mode-line t))
+(use-package clojure-mode
+  :defer t
+  :ensure t)
 
-(load-theme 'manoj-custom t)
-
-(use-package rainbow-mode
-  :straight t)
+(load-theme 'tok t)
 
 (defun nro/new-journal-entry ()
   "Create an entry tagged 'journal' with the date as its title."
@@ -890,5 +890,11 @@
    '("journal")
    nil
    "~/notes/"))
+
+;; Load custom variables from a custom.el file, such that they don't clutter up
+;; main init.el file.
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 ;;; init.el ends here
