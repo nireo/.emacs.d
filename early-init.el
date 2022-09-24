@@ -11,17 +11,6 @@
 (when (featurep 'ns)
   (push '(ns-transparent-titlebar . t) default-frame-alist))
 
-(setq-default file-name-handler-alist nil)
-
-;; From doom emacs.
-(let ((old-file-name-handler-alist file-name-handler-alist))
-    (setq-default file-name-handler-alist nil)
-    (defun nro-reset-file-handler-alist-h ()
-      (setq file-name-handler-alist
-            (delete-dups (append file-name-handler-alist
-                                 old-file-name-handler-alist))))
-    (add-hook 'emacs-startup-hook #'nro-reset-file-handler-alist-h 101))
-
 (setq-default inhibit-redisplay t)
 (add-hook 'window-setup-hook
           (lambda ()

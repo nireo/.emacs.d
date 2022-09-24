@@ -16,6 +16,7 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+
 (setq inhibit-startup-screen t
       inhibit-startup-echo-area-message user-login-name)
 (advice-add #'display-startup-echo-area-message :override #'ignore)
@@ -53,6 +54,19 @@
 
 
 (setq-default fill-column 80)
+
+(setq file-name-handler-alist-at-startup file-name-handler-alist)
+(setq file-name-handler-alist nil)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq file-name-handler-alist file-name-handler-alist-at-startup)))
+
+;; Show startup time.
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs loaded in %s with %d garbage collections."
+                     (format "%.2fs" (float-time (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 
 ;; Read process is set to a really low value.
 ;; Setting it to a higher value increases performance especially for LSP-mode.
@@ -214,7 +228,7 @@
 
   ;; Other leader keybindings
   (evil-define-key 'normal 'global (kbd "<leader>p") 'find-file)
-  (evil-define-key 'normal 'global (kbd "<leader>f") 'lsp-format-buffer)
+  ;; (evil-define-key 'normal 'global (kbd "<leader>f") 'lsp-format-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>d") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>k") 'kill-this-buffer)
 
@@ -330,29 +344,36 @@
   (define-key company-active-map (kbd "C-n") 'company-select-next)
   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 
-;; A better looking company interface
+;;; company-box
+;; an enhanced company interface.
 (use-package company-box
   :ensure t
   :diminish
   :hook (company-mode . company-box-mode))
 
-(use-package lsp-mode
+;;; eglot
+;; simple language server interface for emacs. (simpler than lsp-mode)
+(use-package eglot
   :ensure t
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  (setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
-  (setq lsp-log-io nil)
+  :hook ((c-mode c++-mode go-mode) . eglot-ensure))
 
-  ;; Reduce unexpected modifications to code.
-  (setq lsp-enable-on-type-formatting nil)
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :init
+;;   (setq lsp-keymap-prefix "C-c l")
+;;   (setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
+;;   (setq lsp-log-io nil)
 
-  ;; Disable features that have great potential to be slow.
-  (setq lsp-enable-folding nil
-        lsp-enable-text-document-color nil)
-  (setq lsp-headerline-breadcrumb-enable nil))
+;;   ;; Reduce unexpected modifications to code.
+;;   (setq lsp-enable-on-type-formatting nil)
+
+;;   ;; Disable features that have great potential to be slow.
+;;   (setq lsp-enable-folding nil
+;;         lsp-enable-text-document-color nil)
+;;   (setq lsp-headerline-breadcrumb-enable nil))
 
 
-(add-hook 'go-mode-hook #'lsp-deferred)
+;; (add-hook 'go-mode-hook #'lsp-deferred)
 
 ;; Add support for rust
 (use-package rustic
@@ -369,7 +390,7 @@
 
 ;; Different snippets to help with coding faster
 (use-package yasnippet
-  :defer 15
+  :defer t
   :ensure t
   :config
   (setq yas-verbosity 2)
@@ -392,16 +413,16 @@
     (global-flycheck-mode)))
 
 ;; Add some visual elements to lsp mode.
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode
-  :config (setq lsp-ui-sideline-enable nil
-      lsp-ui-peek-enable t
-        lsp-ui-doc-enable nil
-        lsp-ui-flycheck-enable nil
-    lsp-ui-sideline-enable t
-        lsp-ui-imenu-enable t
-        lsp-ui-sideline-ignore-duplicate t))
+;; (use-package lsp-ui
+;;   :ensure t
+;;   :commands lsp-ui-mode
+;;   :config (setq lsp-ui-sideline-enable nil
+;;       lsp-ui-peek-enable t
+;;         lsp-ui-doc-enable nil
+;;         lsp-ui-flycheck-enable nil
+;;     lsp-ui-sideline-enable t
+;;         lsp-ui-imenu-enable t
+;;         lsp-ui-sideline-ignore-duplicate t))
 
 (use-package go-mode
   :init
@@ -415,11 +436,11 @@
   :ensure t)
 
 ;; Configuration for Go LSP support
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-book #'lsp-organize-imports t t))
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-(add-hook 'go-mode-hook #'lsp-deferred)
+;; (defun lsp-go-install-save-hooks ()
+;;   (add-hook 'before-save-hook #'lsp-format-buffer t t)
+;;   (add-hook 'before-save-book #'lsp-organize-imports t t))
+;; (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+;; (add-hook 'go-mode-hook #'lsp-deferred)
 
 ;; For C++ LSP support
 (use-package which-key
@@ -429,8 +450,8 @@
   (setq which-key-idle-delay 1))
 
 ;; Add LSP to C and C++ modes
-(add-hook 'c-mode-hook 'lsp)
-(add-hook 'c++-mode-hook 'lsp)
+;; (add-hook 'c-mode-hook 'lsp)
+;; (add-hook 'c++-mode-hook 'lsp)
 
 ;; For markdown editing
 (use-package markdown-mode
@@ -458,7 +479,7 @@
 (use-package typescript-mode
   :defer t
   :mode "\\.tsx?\\'"
-  :hook (typescript-mode . lsp-deferred)
+  ;; :hook (typescript-mode . lsp-deferred)
   :config
   (setq typescript-indent-level 2))
 
@@ -466,7 +487,7 @@
 (use-package python-mode
   :defer t
   :ensure t
-  :hook (python-mode . lsp-deferred)
+  ;; :hook (python-mode . lsp-deferred)
   :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
   (python-shell-interpreter "python3"))
@@ -880,7 +901,11 @@
   :defer t
   :ensure t)
 
-(load-theme 'tok t)
+(use-package vscode-dark-plus-theme
+  :ensure t)
+
+;; (load-theme 'tok t)
+(load-theme 'lensor t)
 
 (defun nro/new-journal-entry ()
   "Create an entry tagged 'journal' with the date as its title."
