@@ -78,9 +78,12 @@
     (setq gc-cons-threshold 31457280 ; 32mb
           gc-cons-percentage 0.1)))
 
+;;; esup
+;; tool to benchmark emacs start-up time.
 (use-package esup
-  :ensure t)
-(setq esup-depth 0)
+  :ensure t
+  :config
+  (setq esup-depth 0))
 
 ;; This is copied from doom emacs and it increases performance.
 (defun nro/defer-garbage-collection-h ()
@@ -187,9 +190,8 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
 
-;; ---- Packages
-
-;; Vim keybindings in emacs.
+;;; evil
+;; key bindings from vim in emacs.
 (use-package evil
   :ensure t
   :init
@@ -243,27 +245,31 @@
 
   (evil-set-initial-state 'messages-buffer-mode 'normal))
 
-;; Evil support for more modes.
+;;; evil-collection
+;; more evil support for many different modes.
 (use-package evil-collection
   :after evil
   :ensure t
   :config
   (evil-collection-init))
 
-;; Add support for cmake files
+;;; cmake-collection
+;; syntax highlighting and support for cmake files.
 (use-package cmake-mode
   :defer t
   :ensure t
   :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
-;; Add colored delimiters based on the depth of the delimiters.
+;;; rainbow-delimeters
+;; adding colored indicators for depth in parenthesies
 (use-package rainbow-delimiters
   :ensure t
   :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
-;; A completion system for M-x and C-p
+;;; ivy
+;; a fast completion framework for emacs.
 (use-package ivy
   :ensure t
   :diminish
@@ -283,6 +289,8 @@
   :config
   (ivy-mode 1))
 
+;;; counsel
+;; extra functionality to ivy
 (use-package counsel
   :ensure t
   :diminish counsel-mode
@@ -294,19 +302,24 @@
   :config
   (counsel-mode 1))
 
+;;; ivy-rich
+;; make ivy output and usage cleaner and prettier
 (use-package ivy-rich
   :after counsel
   :ensure t
   :init
   (ivy-rich-mode 1))
 
+;;; all-the-icons-ivy-rich
+;; add icons next to ivy entries.
 (use-package all-the-icons-ivy-rich
   :after ivy-rich
   :ensure t
   :init (all-the-icons-ivy-rich-mode 1))
 
 
-;; Projectile configuration
+;;; projectile
+;; project management
 (use-package projectile
   :diminish projectile-mode
   :ensure t
@@ -324,6 +337,8 @@
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-switch-project-action #'projectile-dired))
 
+;;; counsel-projectile
+;; interact with projectile from consul
 (use-package counsel-projectile
   :ensure t
   :config
@@ -332,7 +347,9 @@
   :bind ( :map evil-normal-state-map
      ("C-p" . counsel-projectile)))
 
-;; Company configuration
+;;; company
+;; a text completion framework used with eglot to provide completion
+;; when programming.
 (use-package company
   :diminish company-mode
   :ensure t
@@ -357,38 +374,20 @@
   :ensure t
   :hook ((c-mode c++-mode go-mode) . eglot-ensure))
 
-;; (use-package lsp-mode
-;;   :ensure t
-;;   :init
-;;   (setq lsp-keymap-prefix "C-c l")
-;;   (setq lsp-idle-delay 0.1) ;; Change delay since most of the LSP are fast.
-;;   (setq lsp-log-io nil)
-
-;;   ;; Reduce unexpected modifications to code.
-;;   (setq lsp-enable-on-type-formatting nil)
-
-;;   ;; Disable features that have great potential to be slow.
-;;   (setq lsp-enable-folding nil
-;;         lsp-enable-text-document-color nil)
-;;   (setq lsp-headerline-breadcrumb-enable nil))
-
-
-;; (add-hook 'go-mode-hook #'lsp-deferred)
-
-;; Add support for rust
+;;; rustic
+;; better support for rust programming than rust-mode
 (use-package rustic
   :defer t
-  :ensure t
-  :config
-  (setq lsp-eldoc-hook nil)
-  (setq lsp-enable-symbol-highlighting nil)
-  (setq lsp-signature-auto-activate nil))
+  :ensure t)
 
+;;; eldoc
+;; show function information and possible docstrings
 (use-package eldoc
   :diminish
   :hook (after-init . global-eldoc-mode))
 
-;; Different snippets to help with coding faster
+;;; yasnippet
+;; inserting templated text at given point.
 (use-package yasnippet
   :defer t
   :ensure t
@@ -400,30 +399,22 @@
   (setq yas-prompt-functions '(yas-dropdown-prompt
                                yas-ido-prompt
                                yas-completing-prompt)))
-
-;; A big package for different snippets for many language
+;;; yasnippet-snippets
+;; a set of predefined snippets for many different languages.
 (use-package yasnippet-snippets
   :ensure t
   :after yasnippet)
 
+;;; flycheck
+;; error checking
 (use-package flycheck
   :ensure t
   :config
   (progn
     (global-flycheck-mode)))
 
-;; Add some visual elements to lsp mode.
-;; (use-package lsp-ui
-;;   :ensure t
-;;   :commands lsp-ui-mode
-;;   :config (setq lsp-ui-sideline-enable nil
-;;       lsp-ui-peek-enable t
-;;         lsp-ui-doc-enable nil
-;;         lsp-ui-flycheck-enable nil
-;;     lsp-ui-sideline-enable t
-;;         lsp-ui-imenu-enable t
-;;         lsp-ui-sideline-ignore-duplicate t))
-
+;;; go-mode
+;; support for the go programming language
 (use-package go-mode
   :init
   ;; Format go imports in alphabetical order and also include any missing imports
@@ -432,28 +423,21 @@
   (add-hook 'go-mode-hook 'go-eldoc-setup)
   :ensure t)
 
+;;; go-eldoc
+;; using eldoc in go
 (use-package go-eldoc
   :ensure t)
 
-;; Configuration for Go LSP support
-;; (defun lsp-go-install-save-hooks ()
-;;   (add-hook 'before-save-hook #'lsp-format-buffer t t)
-;;   (add-hook 'before-save-book #'lsp-organize-imports t t))
-;; (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-;; (add-hook 'go-mode-hook #'lsp-deferred)
-
-;; For C++ LSP support
+;;; which-key
+;; display available keybindings in a popup
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
 
-;; Add LSP to C and C++ modes
-;; (add-hook 'c-mode-hook 'lsp)
-;; (add-hook 'c++-mode-hook 'lsp)
-
-;; For markdown editing
+;;; markdown-mode
+;; support for editing and displaying markdown
 (use-package markdown-mode
   :defer t
   :ensure t
@@ -463,6 +447,8 @@
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
+;;; web-mode
+;; basic support for mark-up and programming languages associated with the web
 (use-package web-mode
   :mode (("\\.html?\\'" . web-mode)
          ("\\.css\\'"   . web-mode)
@@ -475,7 +461,8 @@
   (setq web-mode-code-indent-offset 2)   ; JS/JSX/TS/TSX
   (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
 
-;; Support for typescript
+;;; typescript-mode
+;; support for typescript
 (use-package typescript-mode
   :defer t
   :mode "\\.tsx?\\'"
@@ -483,7 +470,8 @@
   :config
   (setq typescript-indent-level 2))
 
-;; Support for python
+;;; python-mode
+;; support for python
 (use-package python-mode
   :defer t
   :ensure t
@@ -501,7 +489,8 @@
               (append flycheck-disabled-checkers
                       '(javascript-jshint json-jsonlist)))
 
-;; Support for json
+;;; json-mode
+;; support for json
 (use-package json-mode
   :defer t
   :ensure t
@@ -512,7 +501,8 @@
     (when (eq major-mode 'json-mode)
       (json-pretty-print-buffer))))
 
-;; A better terminal emulator as it isn't written in elisp :P
+;;; vterm
+;; a better terminal emulator as it isn't written in elisp :P
 (use-package vterm
   :defer t
   :ensure t
@@ -524,7 +514,6 @@
 
   :hook (vterm-mode . clean-vterm-window))
 (global-set-key (kbd "C-x m") 'vterm)
-
 (use-package vterm-toggle
   :defer t
   :ensure t
@@ -534,20 +523,23 @@
   :bind(:map vterm-mode-map
              ("s-t" . #'vterm)))
 
-;; Git integration
+;;; magit
+;; git interaction made easy with emacs
 (use-package magit
   :ensure t
   :defer t
   :bind (("C-x g" . magit-status)))
 
-;; Completes parenthesies and other punctuators.
+;;; smartparens
+;; completes parenthesies and other punctuators.
 (use-package smartparens
   :defer t
   :ensure t
   :init
   (smartparens-global-mode))
 
-;; Better looks by adding more icons
+;;; all-the-icons
+;; enables usage of many different icons in emacs
 (use-package all-the-icons
   :defer t
   :ensure t)
@@ -557,6 +549,8 @@
   (org-indent-mode)
   (visual-line-mode 1))
 
+;;; org
+;; the classic text editing mode for emacs
 (use-package org
   :hook (org-mode . nro/org-mode-setup)
   :config
@@ -581,7 +575,9 @@
   (define-key global-map (kbd "C-c j")
     (lambda () (interactive) (org-capture nil "jj"))))
 
-;; Add easy commenting for lots of different languages
+;;; evil-nerd-commenter
+;; support for easily commenting regions in many different languages
+;; that have different comment symbols
 (use-package evil-nerd-commenter
   :defer t
   :ensure t
@@ -595,7 +591,8 @@
   (lambda()
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
-;; Dired configuration
+;;; dired
+;; the emacs file manager
 (use-package dired
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
@@ -618,31 +615,31 @@
   (setq dired-open-extensions '(("png" . "feh")
                                 ("mkv" . "mpv"))))
 
-;; Cleans up the emacs directory.
+;; no-littering
+;; package to clean-up the ~/.emacs.d folder
 (use-package no-littering
   :ensure t
   :config
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
-;; Highlight some important keywords
+;; fl-todo
+;; highlight different different keywords in comments such as
+;; TODO: NOTE: ...
 (use-package hl-todo
   :ensure t
   :hook (prog-mode . hl-todo-mode)
-  :config
-  (setq hl-todo-keyword-faces
-    '(("FIXME" error bold)
-      ("TODO" org-todo)
-      ("DONE" org-done)
-      ("NOTE" bold))))
+  :config)
 
-;; Add support for the yaml configuration file
+;;; yaml-mode
+;; add support for yaml files
 (use-package yaml-mode
   :mode ("\\.\\(yml\\|yaml\\|\\config\\|sls\\)$" . yaml-mode)
   :ensure yaml-mode
   :defer t)
 
-;; Help with some css and html stuff to make programming in those languages easier.
+;;; emmet-mode
+;; help with some css and html stuff to make programming in those languages easier.
 (use-package emmet-mode
   :ensure t
   :custom
@@ -653,71 +650,61 @@
   (web-mode . emmet-mode)
   (css-mode . emmet-mode))
 
-;; A package to manage docker containers from emacs
+;;; docker
+;; a package to manage docker containers from emacs
 (use-package docker
   :ensure t
   :bind ("C-c d" . docker))
 
-;; Add support to Dockerfiles, such that they have syntax highlighting
+;; dockerfile-mode
+;; support for dockerfiles, such that they have syntax highlighting
 (use-package dockerfile-mode
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode)))
 
-;; Syntax highlighting support for modern C++ syntax.
+;;; modern-cpp-font-lock
+;; better highlighting for fonts in cpp
 (use-package modern-cpp-font-lock
   :diminish
   :ensure t
   :init (modern-c++-font-lock-global-mode t))
 
-;; A package which hides unnecessary minor-modes from the modeline.
+;;; diminish
+;; a package which hides unnecessary minor-modes from the modeline.
 (use-package diminish
   :ensure t)
 
-;; Treemacs packages
+;;; treemacs
+;; a cleaner interface to many different emacs packages.
 (use-package treemacs
   :ensure t
   :defer t)
-
 (use-package treemacs-evil
   :after (treemacs evil)
   :ensure t)
-
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once)
   :ensure t)
-
 (use-package treemacs-magit
   :after (treemacs magit)
   :ensure t)
 
-(use-package scratch
-  :ensure
-  :config
-  (defun nro/scratch-buffer-setup ()
-    "Add contents to `scratch' buffer and name it accordingly."
-    (let* ((mode (format "%s" major-mode))
-           (string (concat "scratch buffer for: " mode "\n\n")))
-      (when scratch-buffer
-        (save-excursion
-          (insert string)
-          (goto-char (point-min))
-          (comment-region (point-at-bol) (point-at-eol)))
-        (forward-line 2))
-      (rename-buffer (concat "*scratch for " mode "*") t)))
-  :hook (scratch-create-buffer-hook . nro/scratch-buffer-setup)
-  :bind ("C-c s" . scratch))
-
+;;; crux
+;; a collection of useful keybindings for emacs
 (use-package crux
   :ensure t
   :bind (("C-c o" . crux-open-with)))
 
+;;; ini-mode
+;; support for .ini files.
 (use-package ini-mode
   :defer t
   :ensure t
   :mode "\\.ini\\'")
 
-;; Show git information.
+;;; git-gutter
+;; show changed/deleted/created lines in the fringe.
 (use-package git-gutter
   :ensure t
   :config
@@ -882,7 +869,8 @@
 ;; (load-theme 'modus-vivendi t)
 ;; (load-theme 'modus-operandi t)
 
-;;;; Notes
+;;; denote
+;; a very simple note taking framework
 (use-package denote
   :ensure t
   :defer t
@@ -893,10 +881,14 @@
 
 (add-hook 'dired-mode-hook #'denote-dired-mode)
 
+;;; default-text-scale
+;; easily change the font size in every buffer.
 (use-package default-text-scale
   :defer t
   :ensure t)
 
+;;; clojure-mode
+;; support for clojure files
 (use-package clojure-mode
   :defer t
   :ensure t)
