@@ -4,7 +4,6 @@
 ;;; Personal configuration files hosted at https://github.com/nireo/.emacs.d
 
 ;;; Code:
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
@@ -16,7 +15,6 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-
 (setq inhibit-startup-screen t
       inhibit-startup-echo-area-message user-login-name)
 (advice-add #'display-startup-echo-area-message :override #'ignore)
@@ -26,9 +24,7 @@
 
 (define-advice load-file (:override (file) silence)
   (load file nil 'nomessage))
-
 (defvar profile-dotemacs-file "~/.emacs.d" "File to be profiled.")
-
 (define-advice startup--load-user-init-file (:before (&rest _) undo-silence)
       (advice-remove #'load-file #'load-file@silence))
 
@@ -51,8 +47,6 @@
       tool-bar-mode nil
       scroll-bar-mode nil)
 (setq default-input-method nil)
-
-
 (setq-default fill-column 80)
 
 (setq file-name-handler-alist-at-startup file-name-handler-alist)
@@ -103,8 +97,8 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
 ;; Font settings
-(defvar nro/default-font-size 130)
-(defvar nro/default-font "MesloLGS Nerd Font")
+(defvar nro/default-font-size 150)
+(defvar nro/default-font "InconsolataGo Nerd Font")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -167,8 +161,7 @@
       ;; Make numbers relative such that evil navigation is easier
       display-line-numbers-type 'relative
       display-line-numbers-width 3
-      display-line-numbers-widen t
-      )
+      display-line-numbers-widen t)
 
 (global-auto-revert-mode 1) ;; Update a buffer if a file changes on disk.
 
@@ -230,9 +223,9 @@
 
   ;; Other leader keybindings
   (evil-define-key 'normal 'global (kbd "<leader>p") 'find-file)
-  ;; (evil-define-key 'normal 'global (kbd "<leader>f") 'lsp-format-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>d") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>k") 'kill-this-buffer)
+  (evil-define-key 'normal 'global (kbd "<leader>r") 'eglot-rename)
 
   ;; Save a file.
   (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
@@ -363,10 +356,10 @@
 
 ;;; company-box
 ;; an enhanced company interface.
-(use-package company-box
-  :ensure t
-  :diminish
-  :hook (company-mode . company-box-mode))
+;; (use-package company-box
+;;   :ensure t
+;;   :diminish
+;;   :hook (company-mode . company-box-mode))
 
 ;;; eglot
 ;; simple language server interface for emacs. (simpler than lsp-mode)
@@ -844,31 +837,6 @@
      (t
       (mark-sexp arg t)))))
 
-;; ---- Theme settings
-(setq modus-themes-italic-constructs nil)
-(setq modus-themes-bold-constructs t)
-(setq modus-themes-mixed-fonts t)
-(setq modus-themes-scale-headings t)
-;; (setq modus-themes-mode-line '(borderless accented))
-(setq modus-themes-completions '(opinionated))
-(setq modus-themes-region '(accented))
-(setq  modus-themes-headings
-      '((1 . (rainbow overline background 1.4))
-        (2 . (rainbow background 1.3))
-        (3 . (rainbow bold 1.2))
-        (t . (semilight 1.1))))
-(setq modus-themes-operandi-color-overrides
-      '((bg-main . "#FAFAFA")
-        (fg-main . "#101010"))
-      modus-themes-vivendi-color-overrides
-      '((bg-main . "#101010")
-        (fg-main . "#FAFAFA"))
-      modus-themes-org-blocks 'gray-background)
-
-(define-key global-map (kbd "<f5>") #'modus-themes-toggle)
-;; (load-theme 'modus-vivendi t)
-;; (load-theme 'modus-operandi t)
-
 ;;; denote
 ;; a very simple note taking framework
 (use-package denote
@@ -878,7 +846,6 @@
   (setq denote-directory (expand-file-name "~/notes/"))
   (setq known-keywords '("journal" "papers"))
   (setq denote-file-type nil))
-
 (add-hook 'dired-mode-hook #'denote-dired-mode)
 
 ;;; default-text-scale
@@ -893,11 +860,7 @@
   :defer t
   :ensure t)
 
-(use-package vscode-dark-plus-theme
-  :ensure t)
-
-;; (load-theme 'tok t)
-(load-theme 'lensor t)
+(load-theme 'sexy-monochrome t)
 
 (defun nro/new-journal-entry ()
   "Create an entry tagged 'journal' with the date as its title."
