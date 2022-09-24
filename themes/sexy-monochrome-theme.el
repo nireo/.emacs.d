@@ -78,6 +78,7 @@
    `(lazy-highlight ((,class (:foreground ,gblack :background ,lgray))))
    `(linum ((t (:foreground ,linum))))
    `(trailing-whitespace ((,class (:background ,error-color))))
+   `(line-number ((,class (:foreground ,lgray :weight bold ))))
 
    ;; Mode line faces
    `(mode-line ((t ( :box (:line-width -1 :style released-button)))))
@@ -104,7 +105,7 @@
    `(font-lock-type-face ((,class (:foreground ,foreground :slant italic))))
    `(font-lock-function-name-face ((,class (:foreground ,foreground :weight bold))))
    `(font-lock-variable-name-face ((,class (:foreground ,foreground))))
-   `(font-lock-comment-delimiter-face ((,class (:foreground ,comment))))
+   `(font-lock-comment-delimiter-face ((,class (:foreground "DarkGoldenrod3" :weight bold))))
    `(font-lock-comment-face ((,class (:foreground "DarkGoldenrod3" :weight bold))))
    `(font-lock-doc-face ((,class (:inherit (font-lock-comment-face)))))
    `(font-lock-string-face ((,class (:foreground ,foreground :foreground ,string))))
@@ -205,50 +206,6 @@
    `(org-todo ((t (:bold t :foreground ,error-color))))
    `(org-done ((t (:bold t :foreground "green"))))
    `(org-verbatim ((t (:foreground "dim gray"))))
-
-   ;; helm
-   `(helm-header ((t (:foreground ,dgray :background ,gblack :underline nil :box nil))))
-   `(helm-source-header
-     ((t (:foreground ,gwhite
-                      :background ,gblack
-                      :underline nil
-                      :weight bold
-                      :box (:line-width 1 :style released-button)))))
-   `(helm-selection-line ((t (:background ,gblack))))
-   `(helm-visible-mark ((t (:foreground ,gblack :background ,gwhite))))
-   `(helm-candidate-number ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-separator ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-time-zone-current ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-time-zone-home ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-bookmark-addressbook ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-bookmark-directory ((t (:foreground nil :background nil :inherit helm-ff-directory))))
-   `(helm-bookmark-file ((t (:foreground nil :background nil :inherit helm-ff-file))))
-   `(helm-bookmark-gnus ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-bookmark-info ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-bookmark-man ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-bookmark-w3m ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-buffer-directory ((t (:background ,gwhite :foreground ,sgray :weight bold))))
-   `(helm-buffer-not-saved ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-buffer-process ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-buffer-saved-out ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-buffer-size ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-ff-directory ((t (:foreground ,gwhite :background ,gblack :weight bold))))
-   `(helm-ff-file ((t (:foreground ,lgray :background ,gblack :weight normal))))
-   `(helm-ff-executable ((t (:foreground ,lgray :background ,gblack :weight normal))))
-   `(helm-ff-invalid-symlink ((t (:foreground ,gwhite :background ,gblack :weight bold))))
-   `(helm-ff-symlink ((t (:foreground ,gwhite :background ,gblack :weight bold))))
-   `(helm-ff-prefix ((t (:foreground ,gblack :background ,gwhite :weight normal))))
-   `(helm-grep-cmd-line ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-grep-file ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-grep-finish ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-grep-lineno ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-grep-match ((t (:foreground nil :background nil :inherit helm-match))))
-   `(helm-grep-running ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-moccur-buffer ((t (:foreground ,gwhite :background ,gblack))))
-   `(helm-mu-contacts-address-face ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-mu-contacts-name-face ((t (:foreground ,lgray :background ,gblack))))
-   `(helm-match ((t (:background "dim gray"))))
-   `(helm-selection ((t (:background "#3b3b3b" :underline nil))))
 
    ;; diff
    '(diff-added ((t (:foreground "dark sea green"))))
