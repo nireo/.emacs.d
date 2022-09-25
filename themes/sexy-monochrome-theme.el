@@ -94,15 +94,15 @@
    ;; Escape and prompt faces
    `(minibuffer-prompt ((,class (:weight bold :foreground ,gwhite))))
    `(escape-glyph ((,class (:foreground ,lgray))))
-   `(error ((,class (:weight bold :slant italic :foreground ,error-color))))
+   `(error ((,class (:weight bold :slant italic :foreground ,paren-match))))
    `(warning ((,class (:foreground ,warning-color))))
-   `(success ((,class (:foreground "green"))))
+   `(success ((,class (:foreground ,paren-match))))
 
    ;; Font lock faces
    `(font-lock-builtin-face ((,class (:foreground ,foreground :weight bold))))
    `(font-lock-constant-face ((,class (:foreground ,foreground :weight bold))))
    `(font-lock-keyword-face ((,class (:foreground ,foreground :weight bold))))
-   `(font-lock-type-face ((,class (:foreground ,foreground :slant italic))))
+   `(font-lock-type-face ((,class (:foreground ,foreground))))
    `(font-lock-function-name-face ((,class (:foreground ,foreground :weight bold))))
    `(font-lock-variable-name-face ((,class (:foreground ,foreground))))
    `(font-lock-comment-delimiter-face ((,class (:foreground "DarkGoldenrod3" :weight bold))))

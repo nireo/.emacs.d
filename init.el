@@ -97,14 +97,13 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
 ;; Font settings
-(defvar nro/default-font-size 150)
-(defvar nro/default-font "InconsolataGo Nerd Font")
+(defvar nro/default-font-size 140)
+(defvar nro/default-font "Iosevka Comfy")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size
                     )
-
 
 ;; ---- Emacs settings
 ;; Disable line numbers for some modes
@@ -220,6 +219,7 @@
   (evil-define-key 'normal 'global (kbd "<leader>wh") 'evil-window-left)
   (evil-define-key 'normal 'global (kbd "<leader>wl") 'evil-window-right)
   (evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
+  (evil-define-key 'normal 'global (kbd "<leader>fb") 'eglot-format-buffer)
 
   ;; Other leader keybindings
   (evil-define-key 'normal 'global (kbd "<leader>p") 'find-file)
@@ -356,10 +356,10 @@
 
 ;;; company-box
 ;; an enhanced company interface.
-;; (use-package company-box
-;;   :ensure t
-;;   :diminish
-;;   :hook (company-mode . company-box-mode))
+(use-package company-box
+  :ensure t
+  :diminish
+  :hook (company-mode . company-box-mode))
 
 ;;; eglot
 ;; simple language server interface for emacs. (simpler than lsp-mode)
@@ -884,6 +884,10 @@
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 ;; Load custom variables from a custom.el file, such that they don't clutter up
 ;; main init.el file.
