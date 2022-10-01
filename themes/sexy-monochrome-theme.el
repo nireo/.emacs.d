@@ -74,7 +74,7 @@
    'sexy-monochrome
 
    `(default ((,class (:foreground ,lgray :background ,gblack))))
-   `(cursor ((,class (:background ,lgray))))
+   `(cursor ((,class (:background ,magenta))))
 
    ;; Highlighting faces
    `(fringe ((t (:background "black" :foreground "light gray"))))

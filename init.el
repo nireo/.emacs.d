@@ -10,7 +10,8 @@
 
 (package-initialize)
 
-;; Use-package
+;;; use-package
+;; a macro to simplify package management in emacs.
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -24,6 +25,7 @@
 
 (define-advice load-file (:override (file) silence)
   (load file nil 'nomessage))
+
 (defvar profile-dotemacs-file "~/.emacs.d" "File to be profiled.")
 (define-advice startup--load-user-init-file (:before (&rest _) undo-silence)
       (advice-remove #'load-file #'load-file@silence))
@@ -41,6 +43,7 @@
 (push '(menu-bar-lines . 0)   default-frame-alist)
 (push '(tool-bar-lines . 0)   default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+
 ;; And set these to nil so users don't have to toggle the modes twice to
 ;; reactivate them.
 (setq menu-bar-mode nil
@@ -98,7 +101,7 @@
 
 ;; Font settings
 (defvar nro/default-font-size 135)
-(defvar nro/default-font "Iosevka SS08")
+(defvar nro/default-font "Fantasque Sans Mono")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -262,84 +265,58 @@
   :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
-;;; ivy
-;; a fast completion framework for emacs.
-(use-package ivy
-  :ensure t
-  :diminish
-  :bind (("C-s" . swiper)
-         :map ivy-minibuffer-map
-         ("TAB" . ivy-alt-done)
-         ("C-l" . ivy-alt-done)
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map ivy-switch-buffer-map
-         ("C-k" . ivy-previous-line)
-         ("C-l" . ivy-done)
-         ("C-d" . ivy-switch-buffer-kill)
-         :map ivy-reverse-i-search-map
-         ("C-k" . ivy-previous-line)
-         ("C-d" . ivy-reverse-i-search-kill))
-  :config
-  (ivy-mode 1))
-
-;;; counsel
-;; extra functionality to ivy
-(use-package counsel
-  :ensure t
-  :diminish counsel-mode
-  :bind (("C-M-j" . 'counsel-switch-buffer)
-         :map minibuffer-local-map
-         ("C-r" . 'counsel-minibuffer-history))
-  :custom
-  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
-  :config
-  (counsel-mode 1))
-
-;;; ivy-rich
-;; make ivy output and usage cleaner and prettier
-(use-package ivy-rich
-  :after counsel
+;;; vertico
+;; a minimal completion framework
+(use-package vertico
   :ensure t
   :init
-  (ivy-rich-mode 1))
+  (vertico-mode))
 
-;;; all-the-icons-ivy-rich
-;; add icons next to ivy entries.
-(use-package all-the-icons-ivy-rich
-  :after ivy-rich
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;;; orderless
+;; orderless completion
+(use-package orderless
   :ensure t
-  :init (all-the-icons-ivy-rich-mode 1))
+  :custom (completion-styles '(orderless basic)))
 
+;;; consult
+;; consulting completing-read
+(use-package consult
+  :ensure t
+  :bind(
+        ("C-x b" . consult-buffer)))
+
+(use-package consult-projectile
+  :ensure t
+  :after consult)
+
+;;; marginalia
+;; add marginalia to minibuffer completions
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode))
 
 ;;; projectile
 ;; project management
 (use-package projectile
   :diminish projectile-mode
   :ensure t
-  :custom ((projectile-completion-system 'ivy))
+  :hook (after-init-hook . projectile-mode)
+  :init
+  (setq-default
+   projectile-cache-file (expand-file-name ".projectile-cache" user-emacs-directory)
+   projectile-known-projects-file (expand-file-name ".projectile-bookmarks" user-emacs-directory))
+
+  :custom
+  (projectile-enable-caching t)
+  (projectile-track-known-projects-automatically nil)
+
   :config
-  (projectile-mode +1)
-
-  ;; ignore some useless directories in cmake projects.
-  (add-to-list 'projectile-globally-ignored-directories "build")
-  (add-to-list 'projectile-globally-ignored-directories ".cache")
-  (add-to-list 'projectile-globally-ignored-directories "cache")
-  (add-to-list 'projectile-globally-ignored-directories "*clangd")
-
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (setq projectile-switch-project-action #'projectile-dired))
-
-;;; counsel-projectile
-;; interact with projectile from consul
-(use-package counsel-projectile
-  :ensure t
-  :config
-  (counsel-projectile-mode)
-  (setq counsel-find-file-ignore-regexp "\.|build")
-  :bind ( :map evil-normal-state-map
-     ("C-p" . counsel-projectile)))
 
 ;;; company
 ;; a text completion framework used with eglot to provide completion
@@ -366,7 +343,11 @@
 ;; simple language server interface for emacs. (simpler than lsp-mode)
 (use-package eglot
   :ensure t
-  :hook ((c-mode c++-mode go-mode) . eglot-ensure))
+  :hook ((c-mode c++-mode go-mode rustic-mode) . eglot-ensure)
+  :config
+  (setq-default eglot-workspace-configuration
+                '((:gopls .
+                          ((staticcheck . t))))))
 
 (require 'project)
 
@@ -387,7 +368,10 @@
 ;; better support for rust programming than rust-mode
 (use-package rustic
   :defer t
-  :ensure t)
+  :ensure t
+  :config
+  (setq rustic-lsp-client 'eglot)
+  )
 
 ;;; eldoc
 ;; show function information and possible docstrings
@@ -553,36 +537,23 @@
   :defer t
   :ensure t)
 
-;; Run different commands related to setting up org-mode
-(defun nro/org-mode-setup ()
-  (org-indent-mode)
-  (visual-line-mode 1))
-
 ;;; org
 ;; the classic text editing mode for emacs
 (use-package org
-  :hook (org-mode . nro/org-mode-setup)
   :config
-  (setq org-ellipsis " ▾")
-  (variable-pitch-mode 1)
-  (setq org-adapt-indenation nil)
-
+  (setq org-ellipsis "↪")
   (setq org-hide-emphasis-markers t)
-  (setq org-agenda-start-with-log-mode t)
-  (setq org-use-fast-todo-selection t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
   (setq org-agenda-files "~/org/todo.org")
-  (require 'org-habit)
-  (add-to-list 'org-modules 'org-habit)
-  (setq org-habit-graph-column 60)
-  (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
    (setq org-todo-keywords
     '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
       (sequence "PLAN(p)" "READY(r)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
   (define-key global-map (kbd "C-c j")
     (lambda () (interactive) (org-capture nil "jj"))))
+(add-hook 'org-mode-hook 'org-indent-mode)
+(global-set-key "\C-ca" 'org-agenda)
 
 ;;; evil-nerd-commenter
 ;; support for easily commenting regions in many different languages
@@ -887,7 +858,7 @@
    nil
    "~/notes/"))
 
-
+;; Setup for org mode latex
 (with-eval-after-load 'ox-latex
 (add-to-list 'org-latex-classes
              '("org-plain-latex"
@@ -900,12 +871,6 @@
                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                ("\\paragraph{%s}" . "\\paragraph*{%s}")
                ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
-
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
-
-
 
 ;; Load custom variables from a custom.el file, such that they don't clutter up
 ;; main init.el file.
