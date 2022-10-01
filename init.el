@@ -285,9 +285,19 @@
 ;;; consult
 ;; consulting completing-read
 (use-package consult
+  :after projectile
   :ensure t
   :bind(
-        ("C-x b" . consult-buffer)))
+        ("C-x b" . consult-buffer))
+  :config
+  (projectile-load-known-projects)
+  (setq my-consult-source-projectile-projects
+        `(:name "Projectile projects"
+                :narrow   ?P
+                :category project
+                :action   ,#'projectile-switch-project-by-name
+                :items    ,projectile-known-projects))
+  (add-to-list 'consult-buffer-sources my-consult-source-projectile-projects 'append))
 
 (use-package consult-projectile
   :ensure t
@@ -304,19 +314,17 @@
 ;; project management
 (use-package projectile
   :diminish projectile-mode
-  :ensure t
-  :hook (after-init-hook . projectile-mode)
-  :init
-  (setq-default
-   projectile-cache-file (expand-file-name ".projectile-cache" user-emacs-directory)
-   projectile-known-projects-file (expand-file-name ".projectile-bookmarks" user-emacs-directory))
-
-  :custom
-  (projectile-enable-caching t)
-  (projectile-track-known-projects-automatically nil)
-
   :config
-  (setq projectile-switch-project-action #'projectile-dired))
+  (progn
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (projectile-mode +1)
+    (setq projectile-completion-system 'default)
+    (setq projectile-enable-caching t)
+    (setq projectile-indexing-method 'alien)
+    (add-to-list 'projectile-globally-ignored-files "node_modules")
+    (add-to-list 'projectile-globally-ignored-files ".cache")
+    (add-to-list 'projectile-globally-ignored-files "_cache")
+    ))
 
 ;;; company
 ;; a text completion framework used with eglot to provide completion
@@ -655,20 +663,6 @@
 (use-package diminish
   :ensure t)
 
-;;; treemacs
-;; a cleaner interface to many different emacs packages.
-(use-package treemacs
-  :ensure t
-  :defer t)
-(use-package treemacs-evil
-  :after (treemacs evil)
-  :ensure t)
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
-(use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
 
 ;;; crux
 ;; a collection of useful keybindings for emacs

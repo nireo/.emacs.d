@@ -88,8 +88,13 @@
    `(line-number ((,class (:foreground ,lgray))))
 
    ;; Mode line faces
-   `(mode-line ((t ( :box (:line-width -1 :style released-button)))))
-   `(mode-line-inactive ((t (:box (:line-width -1 :style released-button)))))
+   `(mode-line ((,class (:foreground "white" :background "grey10" ))))
+   (when (>= emacs-major-version 29)
+     `(mode-line-active ((,class (:inherit mode-line)))))
+   `(mode-line-inactive ((,class (:weight light :foreground "white" :background "grey20"))))
+   `(mode-line-highlight ((t (nil))))
+   `(mode-line-emphasis ((,class (:weight bold))))
+   `(mode-line-buffer-id ((,class (:weight bold))))
 
    ;; Whitespace-mode
    `(whitespace-empty ((,class (:background unspecified :foreground ,error-color))))

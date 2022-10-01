@@ -45,7 +45,7 @@
  '(org-blank-before-new-entry '((heading) (plain-list-item)))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(rainbow-mode exec-path-from-shell company-box punpun-theme arjen-grey-theme distinguished-theme hemisu-theme eziam-theme solarized-theme anti-zenburn-theme py-autopep8 dashboard protobuf-mode crux scratch default-text-scale auctex emmet-mode olivetti treemacs elixir-mode diminish dired-open dired-single yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 docker dired-subtree dired-narrow cmake-mode cfrs all-the-icons-dired ace-window))
+   '(rainbow-mode exec-path-from-shell company-box punpun-theme arjen-grey-theme distinguished-theme hemisu-theme eziam-theme solarized-theme anti-zenburn-theme py-autopep8 dashboard protobuf-mode crux scratch default-text-scale auctex emmet-mode olivetti elixir-mode diminish dired-open dired-single yaml-mode which-key web-mode wc-mode vterm-toggle use-package typescript-mode toml-mode smartparens rustic rust-mode rainbow-delimiters prettier-js pfuture persp-mode page-break-lines org-superstar org-roam no-littering modern-cpp-font-lock memoize magit json-reformat hydra hl-todo go-mode flycheck evil-org evil-collection emacsql-sqlite3 docker dired-subtree dired-narrow cmake-mode cfrs all-the-icons-dired ace-window))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#222225")
  '(pos-tip-foreground-color "#c8c8d0")
