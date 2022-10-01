@@ -54,14 +54,21 @@
       (sgray "#778899")
       (foreground "#e5e5e5")
       (region "#191970")
-      (comment "#616161")
+      (comment "#ac5959")
       (string "#4682b4")
       (linum "#696969")
       (paren-match "#483d8b")
       (paren-mismatch "#ff0000")
       (whitespace-mode-color "gray30")
       (warning-color "yellow")
-      (error-color "red"))
+      (error-color "red")
+      (cyan "#00d3d0")
+      (blue "#2fafff")
+      (magenta "#feacd0")
+      (yellow "#d0bc00")
+      (red "#ff8059")
+      (green "#44bc44")
+      )
 
   (custom-theme-set-faces
    'sexy-monochrome
@@ -78,7 +85,7 @@
    `(lazy-highlight ((,class (:foreground ,gblack :background ,lgray))))
    `(linum ((t (:foreground ,linum))))
    `(trailing-whitespace ((,class (:background ,error-color))))
-   `(line-number ((,class (:foreground ,lgray :weight bold ))))
+   `(line-number ((,class (:foreground ,lgray))))
 
    ;; Mode line faces
    `(mode-line ((t ( :box (:line-width -1 :style released-button)))))
@@ -105,8 +112,8 @@
    `(font-lock-type-face ((,class (:foreground ,foreground))))
    `(font-lock-function-name-face ((,class (:foreground ,foreground :weight bold))))
    `(font-lock-variable-name-face ((,class (:foreground ,foreground))))
-   `(font-lock-comment-delimiter-face ((,class (:foreground "DarkGoldenrod3" :weight bold))))
-   `(font-lock-comment-face ((,class (:foreground "DarkGoldenrod3" :weight bold))))
+   `(font-lock-comment-delimiter-face ((,class (:foreground ,comment :weight bold))))
+   `(font-lock-comment-face ((,class (:foreground ,comment :weight bold))))
    `(font-lock-doc-face ((,class (:inherit (font-lock-comment-face)))))
    `(font-lock-string-face ((,class (:foreground ,foreground :foreground ,string))))
    `(font-lock-warning-face ((,class (:foreground ,warning-color))))
@@ -267,6 +274,18 @@
    `(rainbow-delimiters-depth-9-face ((t (:foreground "#9cb6ad" :weight bold))))
    `(rainbow-delimiters-mismatched-face ((t (:inherit rainbow-delimiters-unmatched-face :weight bold))))
    `(rainbow-delimiters-unmatched-face ((t (:foreground "#88090B" :weight bold))))
+
+   ;; vterm
+    `(vterm-color-black ((,class :background "gray35" :foreground "gray35")))
+    `(vterm-color-blue ((,class :background ,blue :foreground ,blue)))
+    `(vterm-color-cyan ((,class :background ,cyan :foreground ,cyan)))
+    `(vterm-color-default ((,class :background ,gblack :foreground ,gwhite)))
+    `(vterm-color-green ((,class :background ,green :foreground ,green)))
+    `(vterm-color-inverse-video ((,class :background ,gblack :inverse-video t)))
+    `(vterm-color-magenta ((,class :background ,magenta :foreground ,magenta)))
+    `(vterm-color-red ((,class :background ,red :foreground ,red)))
+    `(vterm-color-white ((,class :background "gray65" :foreground "gray65")))
+    `(vterm-color-yellow ((,class :background ,yellow :foreground ,yellow)))
 
    ;; Flyspell
    `(flyspell-duplicate ((,class (:weight unspecified :foreground unspecified

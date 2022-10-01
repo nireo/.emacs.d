@@ -97,12 +97,13 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 
 ;; Font settings
-(defvar nro/default-font-size 140)
-(defvar nro/default-font "Iosevka Comfy")
+(defvar nro/default-font-size 135)
+(defvar nro/default-font "Iosevka SS08")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size
+                    :weight 'semibold
                     )
 
 ;; ---- Emacs settings
@@ -366,6 +367,21 @@
 (use-package eglot
   :ensure t
   :hook ((c-mode c++-mode go-mode) . eglot-ensure))
+
+(require 'project)
+
+(defun project-find-go-module (dir)
+  (when-let ((root (locate-dominating-file dir "go.mod")))
+    (cons 'go-module root)))
+
+(cl-defmethod project-root ((project (head go-module)))
+  (cdr project))
+
+(add-hook 'project-find-functions #'project-find-go-module)
+
+(defun eglot-format-buffer-on-save ()
+  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+(add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
 
 ;;; rustic
 ;; better support for rust programming than rust-mode
@@ -888,6 +904,8 @@
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
+
+
 
 ;; Load custom variables from a custom.el file, such that they don't clutter up
 ;; main init.el file.
