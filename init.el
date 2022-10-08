@@ -101,12 +101,12 @@
 
 ;; Font settings
 (defvar nro/default-font-size 135)
-(defvar nro/default-font "Fantasque Sans Mono")
+(defvar nro/default-font "InconsolataGo Nerd Font")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size
-                    :weight 'semibold
+                    :weight 'bold
                     )
 
 ;; ---- Emacs settings
@@ -225,11 +225,14 @@
   (evil-define-key 'normal 'global (kbd "<leader>wk") 'evil-window-up)
   (evil-define-key 'normal 'global (kbd "<leader>fb") 'eglot-format-buffer)
 
+  (evil-define-key 'normal 'global (kbd "<leader>l") 'consult-buffer)
+
   ;; Other leader keybindings
   (evil-define-key 'normal 'global (kbd "<leader>p") 'find-file)
   (evil-define-key 'normal 'global (kbd "<leader>d") 'dired)
   (evil-define-key 'normal 'global (kbd "<leader>k") 'kill-this-buffer)
   (evil-define-key 'normal 'global (kbd "<leader>r") 'eglot-rename)
+  (evil-define-key 'normal 'global (kbd "<leader>c") 'consult-projectile-find-file)
 
   ;; Save a file.
   (evil-define-key 'normal 'global (kbd "<leader>s") 'save-buffer)
@@ -288,7 +291,8 @@
   :after projectile
   :ensure t
   :bind(
-        ("C-x b" . consult-buffer))
+        ("C-x b" . consult-buffer)
+        )
   :config
   (projectile-load-known-projects)
   (setq my-consult-source-projectile-projects
@@ -358,17 +362,16 @@
                           ((staticcheck . t))))))
 
 (require 'project)
-
 (defun project-find-go-module (dir)
   (when-let ((root (locate-dominating-file dir "go.mod")))
     (cons 'go-module root)))
 
 (cl-defmethod project-root ((project (head go-module)))
   (cdr project))
-
 (add-hook 'project-find-functions #'project-find-go-module)
 
 (defun eglot-format-buffer-on-save ()
+  "Format BUFFER on save."
   (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
 (add-hook 'go-mode-hook #'eglot-format-buffer-on-save)
 
@@ -663,7 +666,6 @@
 (use-package diminish
   :ensure t)
 
-
 ;;; crux
 ;; a collection of useful keybindings for emacs
 (use-package crux
@@ -684,81 +686,7 @@
   :config
   (global-git-gutter-mode t))
 
-;; Properly switch theme in emacs on the fly.
-(defun nro/switch-theme (theme)
-  "Disable active themes and load THEME."
-  (interactive (list (intern (completing-read "Theme: "
-                               (->> (custom-available-themes)
-                                 (-map #'symbol-name))))))
-  (mapc #'disable-theme custom-enabled-themes)
-  (load-theme theme 'no-confirm))
-
-;; Kill every other buffer other than the sellected one.
-(defun kill-other-buffers ()
-  "Kill all other buffers."
-  (interactive)
-  (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
-
-(defun kill-dired-buffers ()
-  "Kill all open Dired buffers."
-  (interactive)
-  (mapc (lambda (buffer)
-          (when (eq 'dired-mode (buffer-local-value 'major-mode buffer))
-            (kill-buffer buffer)))
-        (buffer-list)))
-
-(defun move-file ()
-  "Write this file to a new location, and delete the old one."
-  (interactive)
-  (let ((old-location (buffer-file-name)))
-   (call-interactively #'write-file)
-    (when old-location
-      (delete-file old-location))))
-
-;; A helper function that creates all of the underlying directories.
-(defadvice find-file (before make-directory-maybe (filename &optional wildcards)
-                             activate)
-  "Create parent directory if not exists while visiting file."
-  (unless (file-exists-p filename)
-    (let ((dir (file-name-directory filename)))
-      (unless (file-exists-p dir)
-        (make-directory dir :make-parents)))))
-
-;; Stage all changes made in git repository and commit those changes.
-(defun nro/magit-stage-all-and-commit (message)
-  "Stage every change, commit with MESSAGE, and push it."
-  (interactive (list (progn (magit-diff-unstaged) (read-string "Commit Message: "))))
-  (magit-stage-modified)
-  (magit-commit-create (list "-m" message))
-  (call-interactively #'magit-push-current-to-pushremote))
-
-(defun rename-this-file (new-name)
-  "Renames both current buffer and file it's visiting to NEW-NAME."
-  (interactive "sNew name: ")
-  (let ((name (buffer-name))
-        (filename (buffer-file-name)))
-    (unless filename
-      (error "Buffer '%s' is not visiting a file!" name))
-    (progn
-      (when (file-exists-p filename)
-        (rename-file filename new-name 1))
-      (set-visited-file-name new-name)
-      (rename-buffer new-name))))
-
-(defun delete-this-file ()
-  "Delete the current file, and kill the buffer."
-  (interactive)
-  (unless (buffer-file-name)
-    (error "No file is currently being edited"))
-  (when (yes-or-no-p (format "Really delete '%s'?"
-                             (file-name-nondirectory buffer-file-name)))
-    (delete-file (buffer-file-name))
-    (kill-this-buffer)))
-
-(defun kill-all-buffers ()
-  "Kill all buffers in buffer list."
-  (interactive)
-  (mapc 'kill-buffer (buffer-list)))
+(load "~/.emacs.d/lisp/functions.el")
 
 ;; These marking functions are taken from:
 ;; https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore
@@ -841,7 +769,9 @@
   :defer t
   :ensure t)
 
-(load-theme 'sexy-monochrome t)
+(setq modus-themes-syntax '(faint))
+;; (setq modus-themes-mode-line '(accented 3d borderless))
+(load-theme 'modus-vivendi t)
 
 (defun nro/new-journal-entry ()
   "Create an entry tagged 'journal' with the date as its title."

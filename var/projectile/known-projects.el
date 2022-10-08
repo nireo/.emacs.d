@@ -1,1 +1,1 @@
-("~/.emacs.d/" "~/dev/rustcask/" "~/dev/norppadb/" "~/dev/homepage/" "~/.config/dotfiles/" "~/.config/dotfiles/dwm/")
+("~/.emacs.d/" "~/dev/norppadb/" "~/dev/notes/" "~/dev/rapu/" "~/dev/rustcask/" "~/dev/homepage/" "~/.config/dotfiles/" "~/.config/dotfiles/dwm/")
