@@ -39,6 +39,11 @@
 (setq idle-update-delay 1.0)
 (setq redisplay-skip-fontification-on-input t)
 
+(dolist (entry '(("/LICENSE\\'" . text-mode)
+                 ("\\.log\\'" . text-mode)
+                 ("rc\\'" . conf-mode)))
+  (push entry auto-mode-alist))
+
 ;; Avoid calling menu-bar-mode...etc because to do extra stuff that is not needed.
 (push '(menu-bar-lines . 0)   default-frame-alist)
 (push '(tool-bar-lines . 0)   default-frame-alist)
@@ -52,6 +57,17 @@
 (setq default-input-method nil)
 (setq-default fill-column 80)
 
+;; Disable bidirectional text scanning for a modest performance boost.
+;; I've set this to `nil' in the past, but the `bidi-display-reordering's docs
+;; say that is an undefined state and suggest this to be just as good:
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+
+;; Disabling BPA makes redisplay faster, but might produce incorrect
+;; reordering of bidirectional text with embedded parentheses (and other
+;; bracket characters whose 'paired-bracket' Unicode property is non-nil).
+(setq bidi-inhibit-bpa t)
+
 (setq file-name-handler-alist-at-startup file-name-handler-alist)
 (setq file-name-handler-alist nil)
 (add-hook 'emacs-startup-hook
@@ -62,7 +78,7 @@
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "Emacs loaded in %s with %d garbage collections."
-                     (format "%.2fs" (float-time (time-subtract after-init-time before-init-time)))
+                     (format "%.4fs" (float-time (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 
 ;; Read process is set to a really low value.
@@ -128,7 +144,6 @@
 
 (modify-coding-system-alist 'process "*" 'utf-8)
 (blink-cursor-mode -1) ;; Disable cursor blinking
-(set-fringe-mode 0) ;; Hide fringes
 
 ;; Custom settings
 (setq scroll-margin 0 ;; better scrolling
@@ -266,7 +281,7 @@
 (use-package rainbow-delimiters
   :ensure t
   :init
-    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;;; vertico
 ;; a minimal completion framework
@@ -548,24 +563,6 @@
   :defer t
   :ensure t)
 
-;;; org
-;; the classic text editing mode for emacs
-(use-package org
-  :config
-  (setq org-ellipsis "↪")
-  (setq org-hide-emphasis-markers t)
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-  (setq org-agenda-files "~/org/todo.org")
-
-   (setq org-todo-keywords
-    '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-      (sequence "PLAN(p)" "READY(r)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
-  (define-key global-map (kbd "C-c j")
-    (lambda () (interactive) (org-capture nil "jj"))))
-(add-hook 'org-mode-hook 'org-indent-mode)
-(global-set-key "\C-ca" 'org-agenda)
-
 ;;; evil-nerd-commenter
 ;; support for easily commenting regions in many different languages
 ;; that have different comment symbols
@@ -763,13 +760,7 @@
   :defer t
   :ensure t)
 
-;;; clojure-mode
-;; support for clojure files
-(use-package clojure-mode
-  :defer t
-  :ensure t)
-
-(setq modus-themes-syntax '(faint))
+(setq modus-themes-syntax '(faint yellow-comments))
 ;; (setq modus-themes-mode-line '(accented 3d borderless))
 (load-theme 'modus-vivendi t)
 
