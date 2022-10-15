@@ -18,6 +18,7 @@ transient/
 var/
 flycheck_init.el
 straight/
+history
 
 # compiled files
 *.elc
