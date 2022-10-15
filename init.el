@@ -98,8 +98,6 @@
 (add-hook 'minibuffer-setup-hook #'nro/defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-
 ;; Font settings
 (defvar nro/default-font-size 120)
 (defvar nro/default-font "MesloLGS")
