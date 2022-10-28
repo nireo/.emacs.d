@@ -80,5 +80,13 @@
   (interactive)
   (mapc 'kill-buffer (buffer-list)))
 
+(defun nro/new-journal-entry ()
+  "Create an entry tagged 'journal' with the date as its title."
+  (interactive)
+  (denote
+   (format-time-string "%A %e %B %Y")   ; format like Tuesday 14 June 2022
+   '("journal")
+   nil
+   "~/notes/"))
 
 ;;; functions.el ends here

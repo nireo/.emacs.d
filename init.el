@@ -16,9 +16,13 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+
+(setq inferior-lisp-program "sbcl")
 (setq inhibit-startup-screen t
       inhibit-startup-echo-area-message user-login-name)
 (advice-add #'display-startup-echo-area-message :override #'ignore)
+
+(add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes/"))
 
 (setq initial-major-mode 'fundamental-mode
       initial-scratch-message nil)
@@ -40,6 +44,8 @@
 (push '(menu-bar-lines . 0)   default-frame-alist)
 (push '(tool-bar-lines . 0)   default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+
+(fringe-mode 0)
 
 ;; And set these to nil so users don't have to toggle the modes twice to
 ;; reactivate them.
@@ -99,13 +105,12 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Font settings
-(defvar nro/default-font-size 120)
-(defvar nro/default-font "MesloLGS")
+(defvar nro/default-font-size 125)
+(defvar nro/default-font "Menlo")
 
 (set-face-attribute 'default nil
                     :family nro/default-font
                     :height nro/default-font-size
-;;                    :weight 'bold
                     )
 
 ;; ---- Emacs settings
@@ -173,7 +178,10 @@
 (add-hook 'before-save-hook 'whitespace-cleanup)
 (setq-default sentence-end-double-space nil)
 
-(fset 'yes-or-no-p 'y-or-n-p) ;; Shorten yes-or-no questions
+;; Shorten answers
+(if (boundp 'use-short-answers)
+    (setq use-short-answers t))
+
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 (global-auto-revert-mode t) ;; Revert buffers automatically when underlying files are changed externally
 
@@ -183,7 +191,6 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
-
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -196,6 +203,7 @@
 ;; Load functions and packages
 (load "~/.emacs.d/lisp/packages.el")
 (load "~/.emacs.d/lisp/functions.el")
+(load "~/.emacs.d/lisp/org.el")
 
 ;; These marking functions are taken from:
 ;; https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore
@@ -261,32 +269,19 @@
   :defer t
   :ensure t)
 
-(setq modus-themes-syntax '(faint yellow-comments))
+;;(setq modus-themes-syntax 'yellow-comments)
+(setq modus-themes-scale-headings t
+      modus-themes-headings ; this is an alist: read the manual or its doc string
+      '((1 . (overline background variable-pitch 1.3))
+        (2 . (rainbow overline 1.1))
+        (t . (semibold))))
+(setq modus-themes-completions
+      '((matches . (extrabold background intense))
+        (selection . (semibold accented intense))
+        (popup . (accented))))
+
 ;; (setq modus-themes-mode-line '(accented 3d borderless))
 (load-theme 'modus-vivendi t)
-
-(defun nro/new-journal-entry ()
-  "Create an entry tagged 'journal' with the date as its title."
-  (interactive)
-  (denote
-   (format-time-string "%A %e %B %Y")   ; format like Tuesday 14 June 2022
-   '("journal")
-   nil
-   "~/notes/"))
-
-;; Setup for org mode latex
-(with-eval-after-load 'ox-latex
-(add-to-list 'org-latex-classes
-             '("org-plain-latex"
-               "\\documentclass{article}
-           [NO-DEFAULT-PACKAGES]
-           [PACKAGES]
-           [EXTRA]"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 
 ;; Load custom variables from a custom.el file, such that they don't clutter up
 ;; main init.el file.
