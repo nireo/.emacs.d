@@ -16,8 +16,6 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-
-(setq inferior-lisp-program "sbcl")
 (setq inhibit-startup-screen t
       inhibit-startup-echo-area-message user-login-name)
 (advice-add #'display-startup-echo-area-message :override #'ignore)
@@ -270,6 +268,7 @@
   :ensure t)
 
 ;;(setq modus-themes-syntax 'yellow-comments)
+(setq modus-themes-syntax '(alt-syntax faint))
 (setq modus-themes-scale-headings t
       modus-themes-headings ; this is an alist: read the manual or its doc string
       '((1 . (overline background variable-pitch 1.3))

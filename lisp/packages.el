@@ -101,8 +101,22 @@
 ;; a minimal completion framework
 (use-package vertico
   :ensure t
+  :custom
+  (vertico-count 14)
+  (vertico-multiform-categories
+   '((file flat)))
   :init
-  (vertico-mode))
+  (vertico-mode)
+  (vertico-multiform-mode))
+
+(advice-add #'vertico--format-candidate :around
+            (lambda (orig cand prefix suffix index _start)
+              (setq cand (funcall orig cand prefix suffix index _start))
+              (concat
+               (if (= vertico--index index)
+                   (propertize "> " 'face 'vertico-current)
+                 "  ")
+               cand)))
 
 (use-package savehist
   :init
@@ -157,27 +171,6 @@
     (add-to-list 'projectile-globally-ignored-files "node_modules")
     (add-to-list 'projectile-globally-ignored-files ".cache")
     (add-to-list 'projectile-globally-ignored-files "_cache")))
-
-;;; company
-;; a text completion framework used with eglot to provide completion
-;; when programming.
-;; (use-package company
-;;   :diminish company-mode
-;;   :ensure t
-;;   :config
-;;   (global-company-mode)
-;;   (setq company-idle-delay 0)
-;;   (setq company-selection-wrap-around t)
-;;   (define-key company-active-map [tab] 'company-complete)
-;;   (define-key company-active-map (kbd "C-n") 'company-select-next)
-;;   (define-key company-active-map (kbd "C-p") 'company-select-previous))
-
-;; ;;; company-box
-;; ;; an enhanced company interface.
-;; (use-package company-box
-;;   :ensure t
-;;   :diminish
-;;   :hook (company-mode . company-box-mode))
 
 ;;; eglot
 ;; simple language server interface for emacs. (simpler than lsp-mode)
@@ -499,6 +492,8 @@
   (setq denote-file-type nil))
 (add-hook 'dired-mode-hook #'denote-dired-mode)
 
+;;; blacken
+;; format python files with black
 (use-package blacken
   :ensure t
   :defer t
@@ -507,16 +502,37 @@
   (blacken-skip-string-normalization t)
   :hook (python-mode-hook . blacken-mode))
 
+;;; writeroom-mode
+;; nice focused writing mode
 (use-package writeroom-mode
   :ensure t)
 
+;;; corfu
+;; completion package as an alternative for company. a lot simpler
+;; and faster in my experience. looks nicer as well :P
 (use-package corfu
   :ensure t
-  :custom
-  (corfu-auto t)
-  (corfu-cycle t)
   :init
+  (setq corfu-auto t
+        corfu-auto-delay 0
+        corfu-auto-prefix 0
+        completion-styles '(basic))
   (global-corfu-mode))
+
+(define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up)  ;; corfu-previous
+(define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down) ;; corfu-next
+(add-hook 'corfu-mode-hook #'corfu-doc-mode)
+
+(use-package corfu-doc
+  :ensure t)
+
+(use-package kind-icon
+  :ensure t
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (with-eval-after-load 'eglot
    (setq completion-category-defaults nil))
