@@ -161,23 +161,23 @@
 ;;; company
 ;; a text completion framework used with eglot to provide completion
 ;; when programming.
-(use-package company
-  :diminish company-mode
-  :ensure t
-  :config
-  (global-company-mode)
-  (setq company-idle-delay 0)
-  (setq company-selection-wrap-around t)
-  (define-key company-active-map [tab] 'company-complete)
-  (define-key company-active-map (kbd "C-n") 'company-select-next)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous))
+;; (use-package company
+;;   :diminish company-mode
+;;   :ensure t
+;;   :config
+;;   (global-company-mode)
+;;   (setq company-idle-delay 0)
+;;   (setq company-selection-wrap-around t)
+;;   (define-key company-active-map [tab] 'company-complete)
+;;   (define-key company-active-map (kbd "C-n") 'company-select-next)
+;;   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 
-;;; company-box
-;; an enhanced company interface.
-(use-package company-box
-  :ensure t
-  :diminish
-  :hook (company-mode . company-box-mode))
+;; ;;; company-box
+;; ;; an enhanced company interface.
+;; (use-package company-box
+;;   :ensure t
+;;   :diminish
+;;   :hook (company-mode . company-box-mode))
 
 ;;; eglot
 ;; simple language server interface for emacs. (simpler than lsp-mode)
@@ -499,15 +499,6 @@
   (setq denote-file-type nil))
 (add-hook 'dired-mode-hook #'denote-dired-mode)
 
-(use-package darktooth-theme
-  :ensure t)
-
-(use-package doom-themes
-  :ensure t
-  :config
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic nil))
-
 (use-package blacken
   :ensure t
   :defer t
@@ -518,5 +509,16 @@
 
 (use-package writeroom-mode
   :ensure t)
+
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-auto t)
+  (corfu-cycle t)
+  :init
+  (global-corfu-mode))
+
+(with-eval-after-load 'eglot
+   (setq completion-category-defaults nil))
 
 ;;; packages.el ends here
