@@ -4,7 +4,7 @@
 ;;; List of custom functions for my Emacs configuration.
 
 ;;; Code:
-;; Properly switch theme in emacs on the fly.
+
 (defun nro/switch-theme (theme)
   "Disable active themes and load THEME."
   (interactive (list (intern (completing-read "Theme: "
@@ -13,7 +13,6 @@
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme theme 'no-confirm))
 
-;; Kill every other buffer other than the sellected one.
 (defun kill-other-buffers ()
   "Kill all other buffers."
   (interactive)
@@ -26,6 +25,11 @@
           (when (eq 'dired-mode (buffer-local-value 'major-mode buffer))
             (kill-buffer buffer)))
         (buffer-list)))
+
+(defun kill-all-buffers ()
+  "Kill all buffers in buffer list."
+  (interactive)
+  (mapc 'kill-buffer (buffer-list)))
 
 (defun move-file ()
   "Write this file to a new location, and delete the old one."
@@ -75,11 +79,6 @@
     (delete-file (buffer-file-name))
     (kill-this-buffer)))
 
-(defun kill-all-buffers ()
-  "Kill all buffers in buffer list."
-  (interactive)
-  (mapc 'kill-buffer (buffer-list)))
-
 (defun nro/new-journal-entry ()
   "Create an entry tagged 'journal' with the date as its title."
   (interactive)
@@ -88,5 +87,53 @@
    '("journal")
    nil
    "~/notes/"))
+
+
+(defmacro nro/mark (name object &optional docstring)
+  `(defun ,name (&optional arg allow-extend)
+     ,docstring
+     (interactive "P\np")
+     (let ((x (format "%s-%s" "forward" ,object)))
+       (cond ((and allow-extend
+                   (or (and (eq last-command this-command) (mark t))
+                       (region-active-p)))
+              (setq arg (if arg (prefix-numeric-value arg)
+                          (if (< (mark) (point)) -1 1)))
+              (set-mark
+               (save-excursion
+                 (goto-char (mark))
+                 (funcall (intern x) arg)
+                 (point))))
+             (t
+              (let ((bounds (bounds-of-thing-at-point (intern ,object))))
+                (unless (consp bounds)
+                  (error "No %s at point" ,object))
+                (if (>= (prefix-numeric-value arg) 0)
+                    (goto-char (car bounds))
+                  (goto-char (cdr bounds)))
+                (push-mark
+                 (save-excursion
+                   (funcall (intern x) (prefix-numeric-value arg))
+                   (point)))
+                (activate-mark)))))))
+
+(nro/mark nro/mark-word "word")
+(nro/mark nro/mark-symbol "symbol")
+
+(defun nro/mark-sexp-backward (&optional arg)
+  (interactive "P")
+  (if arg
+      (mark-sexp (- arg) t)
+    (mark-sexp (- 1) t)))
+
+(defun nro/mark-construct-dwim (&optional arg)
+  (interactive "P")
+  (cond
+   ((symbol-at-point)
+    (nro/mark-symbol arg t))
+   ((eq (point) (cdr (bounds-of-thing-at-point 'sexp)))
+    (nro/mark-sexp-backward arg))
+   (t
+    (mark-sexp arg t))))
 
 ;;; functions.el ends here

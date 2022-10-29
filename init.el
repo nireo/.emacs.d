@@ -102,16 +102,13 @@
 (add-hook 'minibuffer-setup-hook #'nro/defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
-;; Font settings
+;; Set custom font
 (defvar nro/default-font-size 125)
 (defvar nro/default-font "Menlo")
-
 (set-face-attribute 'default nil
                     :family nro/default-font
-                    :height nro/default-font-size
-                    )
+                    :height nro/default-font-size)
 
-;; ---- Emacs settings
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
                 term-mode-hook
@@ -182,11 +179,7 @@
 
 (global-subword-mode) ;; Make it so that 'w' in evil moves to the next camel case word
 (global-auto-revert-mode t) ;; Revert buffers automatically when underlying files are changed externally
-
-;; Add line number display
-(when (version<= "26.0.50" emacs-version )
-  (global-display-line-numbers-mode))
-
+(global-display-line-numbers-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete trailing whitespaces after saving
 (global-visual-line-mode 1) ;; Add line wrapping
 
@@ -199,73 +192,9 @@
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
 ;; Load functions and packages
-(load "~/.emacs.d/lisp/packages.el")
-(load "~/.emacs.d/lisp/functions.el")
-(load "~/.emacs.d/lisp/org.el")
-
-;; These marking functions are taken from:
-;; https://protesilaos.com/codelog/2020-08-03-emacs-custom-functions-galore
-(use-package emacs
-  :commands (nro/mark-symbol
-             nro/mark-sexp-backward)
-  :config
-  (defmacro nro/mark (name object &optional docstring)
-    `(defun ,name (&optional arg allow-extend)
-       ,docstring
-       (interactive "P\np")
-       (let ((x (format "%s-%s" "forward" ,object)))
-         (cond ((and allow-extend
-                     (or (and (eq last-command this-command) (mark t))
-                         (region-active-p)))
-                (setq arg (if arg (prefix-numeric-value arg)
-                            (if (< (mark) (point)) -1 1)))
-                (set-mark
-                 (save-excursion
-                   (goto-char (mark))
-                   (funcall (intern x) arg)
-                   (point))))
-               (t
-                (let ((bounds (bounds-of-thing-at-point (intern ,object))))
-                  (unless (consp bounds)
-                    (error "No %s at point" ,object))
-                  (if (>= (prefix-numeric-value arg) 0)
-                      (goto-char (car bounds))
-                    (goto-char (cdr bounds)))
-                  (push-mark
-                   (save-excursion
-                     (funcall (intern x) (prefix-numeric-value arg))
-                     (point)))
-                  (activate-mark)))))))
-
-  (nro/mark
-   nro/mark-word
-   "word")
-
-  (nro/mark
-   nro/mark-symbol
-   "symbol")
-
-  (defun nro/mark-sexp-backward (&optional arg)
-    (interactive "P")
-    (if arg
-        (mark-sexp (- arg) t)
-      (mark-sexp (- 1) t)))
-
-  (defun nro/mark-construct-dwim (&optional arg)
-    (interactive "P")
-    (cond
-     ((symbol-at-point)
-      (nro/mark-symbol arg t))
-     ((eq (point) (cdr (bounds-of-thing-at-point 'sexp)))
-      (nro/mark-sexp-backward arg))
-     (t
-      (mark-sexp arg t)))))
-
-;;; default-text-scale
-;; easily change the font size in every buffer.
-(use-package default-text-scale
-  :defer t
-  :ensure t)
+(load "~/.emacs.d/lisp/packages.el") ;; all packages and their configurations
+(load "~/.emacs.d/lisp/functions.el") ;; custom functions
+(load "~/.emacs.d/lisp/org.el") ;; org settings
 
 ;;(setq modus-themes-syntax 'yellow-comments)
 (setq modus-themes-syntax '(alt-syntax faint))
@@ -280,7 +209,7 @@
         (popup . (accented))))
 
 ;; (setq modus-themes-mode-line '(accented 3d borderless))
-(load-theme 'modus-vivendi t)
+(load-theme 'modus-operandi t)
 
 ;; Load custom variables from a custom.el file, such that they don't clutter up
 ;; main init.el file.

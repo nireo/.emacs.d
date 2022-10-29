@@ -5,21 +5,6 @@
 
 ;;; Code:
 
-;; For esup
-(define-advice load-file (:override (file) silence)
-  (load file nil 'nomessage))
-
-(defvar profile-dotemacs-file "~/.emacs.d" "File to be profiled.")
-(define-advice startup--load-user-init-file (:before (&rest _) undo-silence)
-      (advice-remove #'load-file #'load-file@silence))
-
-;;; esup
-;; tool to benchmark emacs start-up time.
-(use-package esup
-  :ensure t
-  :config
-  (setq esup-depth 0))
-
 ;;; evil
 ;; key bindings from vim in emacs.
 (use-package evil
@@ -70,7 +55,7 @@
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (setq evil-insert-state-cursor 'hbar)
+  ;; (setq evil-insert-state-cursor 'hbar)
 
   (evil-set-initial-state 'messages-buffer-mode 'normal))
 
@@ -81,14 +66,6 @@
   :ensure t
   :config
   (evil-collection-init))
-
-;;; cmake-collection
-;; syntax highlighting and support for cmake files.
-(use-package cmake-mode
-  :defer t
-  :ensure t
-  :mode (("/CMakeLists\\.txt\\'" . cmake-mode)
-         ("\\.cmake\\'" . cmake-mode)))
 
 ;;; rainbow-delimeters
 ;; adding colored indicators for depth in parenthesies
@@ -139,13 +116,15 @@
   :config
   (projectile-load-known-projects)
   (setq my-consult-source-projectile-projects
-        `(:name "Projectile projects"
+        `(:name "Projects"
                 :narrow   ?P
                 :category project
                 :action   ,#'projectile-switch-project-by-name
                 :items    ,projectile-known-projects))
   (add-to-list 'consult-buffer-sources my-consult-source-projectile-projects 'append))
 
+;;; consult-projectile
+;; projectile integration into consult
 (use-package consult-projectile
   :ensure t
   :after consult)
@@ -286,15 +265,6 @@
   (setq web-mode-code-indent-offset 2)   ; JS/JSX/TS/TSX
   (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'"))))
 
-;;; typescript-mode
-;; support for typescript
-(use-package typescript-mode
-  :defer t
-  :mode "\\.tsx?\\'"
-  ;; :hook (typescript-mode . lsp-deferred)
-  :config
-  (setq typescript-indent-level 2))
-
 ;;; python-mode
 ;; support for python
 (use-package python-mode
@@ -304,15 +274,6 @@
   :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
   (python-shell-interpreter "python3"))
-
-(defun web-mode-init-prettier-hook ()
-  (add-node-modules-path)
-  (prettier-js-mode))
-
-(add-hook 'web-mode-hook  'web-mode-init-prettier-hook)
-(setq-default flycheck-disabled-checkers
-              (append flycheck-disabled-checkers
-                      '(javascript-jshint json-jsonlist)))
 
 ;;; json-mode
 ;; support for json
@@ -515,7 +476,7 @@
   :init
   (setq corfu-auto t
         corfu-auto-delay 0
-        corfu-auto-prefix 0
+        corfu-auto-prefix 3
         completion-styles '(basic))
   (global-corfu-mode))
 
@@ -536,5 +497,11 @@
 
 (with-eval-after-load 'eglot
    (setq completion-category-defaults nil))
+
+;;; default-text-scale
+;; easily change the font size in every buffer.
+(use-package default-text-scale
+  :defer t
+  :ensure t)
 
 ;;; packages.el ends here
