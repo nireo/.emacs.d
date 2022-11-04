@@ -103,7 +103,7 @@
 (add-hook 'minibuffer-exit-hook #'nro/restore-garbage-collection-h)
 
 ;; Set custom font
-(defvar nro/default-font-size 125)
+(defvar nro/default-font-size 140)
 (defvar nro/default-font "Menlo")
 (set-face-attribute 'default nil
                     :family nro/default-font
@@ -197,7 +197,7 @@
 (load "~/.emacs.d/lisp/org.el") ;; org settings
 
 ;;(setq modus-themes-syntax 'yellow-comments)
-(setq modus-themes-syntax '(alt-syntax faint))
+(setq modus-themes-syntax '(alt-syntax))
 (setq modus-themes-scale-headings t
       modus-themes-headings ; this is an alist: read the manual or its doc string
       '((1 . (overline background variable-pitch 1.3))
@@ -209,7 +209,7 @@
         (popup . (accented))))
 
 ;; (setq modus-themes-mode-line '(accented 3d borderless))
-(load-theme 'modus-operandi t)
+(load-theme 'dakrone t)
 
 ;; Load custom variables from a custom.el file, such that they don't clutter up
 ;; main init.el file.

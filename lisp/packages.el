@@ -97,6 +97,7 @@
 
 (use-package savehist
   :init
+
   (savehist-mode))
 
 ;;; orderless
@@ -485,7 +486,9 @@
 (add-hook 'corfu-mode-hook #'corfu-doc-mode)
 
 (use-package corfu-doc
-  :ensure t)
+  :ensure t
+  :defer t
+  )
 
 (use-package kind-icon
   :ensure t
@@ -503,5 +506,28 @@
 (use-package default-text-scale
   :defer t
   :ensure t)
+
+;;; erlang
+;; support for erlang programming
+(use-package erlang
+  :ensure t
+  :defer t)
+
+;;; tree-sitter
+;; A faster alternative for syntax highlighting in Emacs.
+;; It replaces the slow font-lock-mode provided by Emacs
+;; which is slowed by the usage of regex compared to incremental
+;; parsing.
+(use-package tree-sitter-langs
+  :ensure t)
+
+(use-package tree-sitter
+  :ensure t
+  :after tree-sitter-langs
+
+  (add-hook 'c++-mode #'tree-sitter-hl-mode)
+  (add-hook 'go-mode #'tree-sitter-hl-mode)
+  (add-hook 'c-mode #'tree-sitter-hl-mode)
+  (add-hook 'python-mode #'tree-sitter-hl-mode))
 
 ;;; packages.el ends here
