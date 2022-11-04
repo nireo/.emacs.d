@@ -1,0 +1,27 @@
+* emacs
+
+A extensive Emacs configuration with support for Go, Rust, C/C++ and Web development. It contains documentation for most of the settings, functions and hooks.
+
+It tries to use minimal and performant packages to make the editing experience as smooth as possible. For example switching Ivy for Vertico and Company for Corfu has made my Emacs experience a lot smoother.
+
+** Most important packages
+
+- [[https://github.com/joaotavora/eglot][eglot]]: the LSP client.
+- [[https://github.com/minad/vertico][vertico]]: for completion
+- [[https://github.com/emacs-evil/evil][evil]]: vim keybindings
+- [[https://github.com/akermu/emacs-libvterm][vterm]]: a better terminal for emacs
+- [[https://github.com/minad/corfu][corfu]]: a minimal complete-at-point enhancement to replace comapny
+- [[https://github.com/emacs-tree-sitter/elisp-tree-sitter][tree-sitter-mode]]: faster syntax highlighting compared to regex]
+
+** Installation
+
+#+BEGIN_SRC
+$ rm -rf .emacs.d
+$ git clone https://github.com/nireo/.emacs.d
+#+END_SRC
+
+Some packages might not be automatically installed, so you need to use the =package-install= command.
+
+## Screenshot
+
+[[./editor-screenshot.png]]
